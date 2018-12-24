@@ -1,0 +1,46 @@
+extends ../layout.pug
+
+block body
+    include navbar.pug
+
+    .container
+        .card.card-shadowed
+            .card-body
+
+                if error
+                    p.alert.alert-danger= error
+
+                .mb-1 Nom de l'horaire:
+                form.mb-2(action='?action=update-name' method='post')
+                    .d-flex.flex-row
+                        input.form-control.flex-grow-1.mr-2(type='text' name='name' value=schedule.name)
+                        input.btn.btn-secondary(type='submit' value='Enregistrer')
+                
+                hr
+
+                p.mb-1 Chaque année et les options:
+                form(action='?action=update-years' method='post')
+                    .d-flex.flex-row
+                        input.form-control.flex-grow-1.mr-2(type='text' name='years_data' value=schedule.years_data)
+                        input.btn.btn-secondary(type='submit' value='Enregistrer')
+                
+                hr
+
+                p.mb-1 Le nombre de jours d'examen:
+                form(action='?action=update-horizon' method='post')
+                    .d-flex.flex-row
+                        input.form-control.flex-grow-1.mr-2(type='number' name='horizon' value=schedule.horizon)
+                        input.btn.btn-secondary(type='submit' value='Enregistrer')
+                
+                hr
+
+                p.mb-1 Le premier jour d'examen est un:
+                form(action='?action=update-start-day' method='post')
+                    .d-flex.flex-row
+                        select.form-control.flex-grow-1.mr-2(name='start_day')
+                            each day, i in ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi']
+                                if i == schedule.start_day
+                                    option(value=i selected)= day
+                                else
+                                    option(value=i)= day
+                        input.btn.btn-secondary(type='submit' value='Enregistrer')

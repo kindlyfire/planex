@@ -1,0 +1,10 @@
+extends ../../layout.pug
+
+block body
+    include ../navbar.pug
+
+    .container
+        .card.card-shadowed
+            .card-body
+                form.text-center(action="" method="post")
+                    input.btn.btn-secondary(type="submit" value="Créer une solution")

@@ -1,0 +1,44 @@
+extends ../../layout.pug
+
+block body
+    include ../navbar.pug
+
+    .ml-2.mr-2.mt-2
+        .card.card-shadowed
+            .card-body
+                .d-flex.flex-row.align-items-center
+                    p.mb-0 Solution
+
+                    .ml-auto
+                        form.d-flex(action="" method="get")
+                            input.form-control.form-control-sm(placeholder="Filtre" name="filtre" value=targetYear)
+                            input.btn.btn-secondary.btn-sm.ml-2(type="submit" value="Filtrer")
+
+                hr
+
+                if table.data.length == 0
+                    p.text-muted.text-center Pas de données pour ce filtre
+
+                else
+                    table.table 
+                        thead
+                            tr
+                                th
+                                each h in table.columnTitles
+                                    th.text-center= h
+                        tbody
+                            - for (let i = 0; i < schedule.horizon; i += 1)
+                                - let style = (table.breakLines.indexOf(i) !== -1) ? 'border-bottom: 2px solid #888' : ''
+                                tr(style=style)
+                                    td= table.rowTitles[i]
+                                    each row in table.data
+                                        td.text-center(colspan=row.colspan || 1)
+                                            each l in row[i] || []
+                                                - let color = randomColor({seed: l.label, luminosity: 'dark'})
+                                                p.m-0
+                                                    if l.start_hour != 0
+                                                        | +
+                                                    span.font-weight-bold(style=`color: ${color}`) #{l.label}
+                                                    |  (#{l.length})
+                                                    br
+                                                    small.d-block(style='margin-top: -2px')= l.profs.join(', ')

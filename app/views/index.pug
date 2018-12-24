@@ -1,0 +1,12 @@
+extends layout.pug
+
+block body
+    .container
+        h2.m-0.mb-3 Planex
+
+        p.mb-1 Horaires:
+
+        .card.card-shadowed
+            .list-group.list-group-flush
+                each s in schedules
+                    a.list-group-item.list-group-item-action(href='/' + s.id)= s.name

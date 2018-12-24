@@ -1,0 +1,40 @@
+extends ../layout.pug
+
+block body
+    include navbar.pug
+
+    .container
+        .card.card-shadowed
+            form#form(action="" method="post")
+                input(type='hidden' name='file_data')
+
+                .card-body
+                    .d-flex.flex-row.align-items-center.mb-3
+                        p.mb-0 Fichier de contraintes:
+                        p.mb-0.ml-auto
+                            input.btn.btn-secondary(type='submit' value='Sauvegarder')
+                    hr
+                #editor= schedule.constraints_file_data
+
+append scripts
+    script(src='/static/vendor/ace-min-noconflict/ace.js')
+    script.
+        var editor = ace.edit('editor')
+        editor.session.setMode('ace/mode/text')
+        editor.setOptions({
+            maxLines: 25
+        })
+        
+        var form = document.getElementById('form')
+        var fileContentInput = document.getElementsByName('file_data')[0]
+        form.addEventListener('submit', (e) => {
+            fileContentInput.value = editor.getValue()
+        })
+
+        document.addEventListener('keydown', function(event) {
+            let key = String.fromCharCode(event.which).toLowerCase()
+            if ((event.ctrlKey || event.metaKey) && key == 's') {
+                event.preventDefault()
+                form.querySelectorAll('input[type="submit"]')[0].click()
+            }
+        })

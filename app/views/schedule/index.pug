@@ -1,0 +1,24 @@
+extends ../layout.pug
+
+block body
+    include navbar.pug
+
+    .container
+        .card.card-shadowed
+            .card-body
+                .d-flex.flex-row.align-items-center.mb-3
+                    p.mb-0 Solutions:
+                    p.mb-0.ml-auto
+                        a.btn.btn-secondary(href='/' + schedule.id + '/solution/create') Créer
+                hr
+
+                if solutions.length == 0
+                    p No Solutions
+                else
+                    each sol in solutions
+                        p
+                            a(href='/' + schedule.id + '/solution/' + sol.id) Solution du #{dateFormat(sol.created_date, "dd/mm/yyyy' à 'HH:MM:ss")} 
+                            if sol.status == 'busy'
+                                | (en cours)
+                            else if sol.status == 'error'
+                                | (erreur)

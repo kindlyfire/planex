@@ -1,0 +1,14 @@
+.container
+    h2.m-0
+        | #{schedule.name}&nbsp;
+        a(href='/', style='font-size: 15px;') Retour
+.nav-container
+    .container
+        ul.nav.justify-content-center.mb-4.mt-0
+            a.nav-item.nav-link(href='/' + schedule.id) Solutions
+            a.nav-item.nav-link(href='/' + schedule.id + '/exams') Examens
+            a.nav-item.nav-link(href='/' + schedule.id + '/courses') Cours
+            a.nav-item.nav-link(href='/' + schedule.id + '/constraints') Contraintes
+            a.nav-item.nav-link(href='/' + schedule.id + '/settings') Paramètres
+
+div(style='margin-bottom: -35px')
