@@ -1,6 +1,7 @@
 
 from pyschedule import Scenario, solvers, plotters
 
+
 def solve(solver_data):
     # create scenario
     scenario = Scenario(name='scenario', horizon=int(solver_data['horizon']))
@@ -17,7 +18,7 @@ def solve(solver_data):
     tasks_mapi = {}
     tasks_ai = 0
 
-    # 
+    #
     # enter resources
 
     for resource in solver_data['resources']:
@@ -32,10 +33,10 @@ def solve(solver_data):
         resources_map[rname] = resource[0]
         resources_mapi[resource[0]] = rname
         resources_ai += 1
-    
-    # 
+
+    #
     # enter tasks
-    
+
     for task in solver_data['tasks']:
         tname = 't' + str(tasks_ai)
 
@@ -51,19 +52,22 @@ def solve(solver_data):
         tasks_ai += 1
 
         if task['length'] == 4:
-            tasks[tname].periods = [i for i in range(0, solver_data['horizon']) if i % 4 == 0]
+            tasks[tname].periods = [i for i in range(
+                0, solver_data['horizon']) if i % 4 == 0]
         else:
-            tasks[tname].periods = [i for i in range(0, solver_data['horizon']) if i % 2 == 0]
+            tasks[tname].periods = [i for i in range(
+                0, solver_data['horizon']) if i % 2 == 0]
 
         # add resources to task
         for res_name in task['resources']:
             tasks[tname] += resources[resources_mapi[res_name]]
-    
-    # 
+
+    #
     # solve
 
     if solvers.mip.solve(scenario, msg=1, time_limit=180):
-        plotters.matplotlib.plot(scenario, img_filename='out.png', fig_size=(resources_ai / 3, resources_ai / 2))
+        plotters.matplotlib.plot(scenario, img_filename='out.png', fig_size=(
+            resources_ai / 3, resources_ai / 2))
 
         solution = scenario.solution()
         real_solution = [list(l) for l in solution]
@@ -71,7 +75,7 @@ def solve(solver_data):
         for item in real_solution:
             item[0] = tasks_map[str(item[0])]
             item[1] = resources_map[str(item[1])]
-        
+
         return {
             'solved': True,
             'data': real_solution
