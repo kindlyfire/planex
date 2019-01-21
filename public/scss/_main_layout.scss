@@ -12,7 +12,7 @@ $sidebar-width: 300px;
     width: $sidebar-width;
 
     color: white;
-    background-color: #19478a;
+    background-color: $primary-color;
 }
 
 .main-layout-content {
@@ -37,6 +37,11 @@ $sidebar-width: 300px;
     justify-content: center;
 }
 
+.main-layout-content-center {
+    padding-right: $sidebar-width;
+}
+
 .navbar-title {
-    font-size: 30px;
+    font-size: 25px;
+    font-weight: 300;
 }

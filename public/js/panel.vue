@@ -2,20 +2,30 @@
     <div class="main-layout">
         <div class="main-layout-sidebar">
             <div class="main-layout-navbar-container">
-                <span class="navbar-title">Planex</span>
+                <span
+                    class="navbar-title cursor-pointer"
+                    @click.prevent="pushRouterState('/')"
+                >Planex</span>
             </div>
-            <p>Yep</p>
+
+            <slot name="sidebar"></slot>
         </div>
         <div class="main-layout-content">
             <div class="main-layout-content-inner">
                 <div class="main-layout-navbar-container"></div>
 
-                <p>Content</p>
+                <slot name="content"></slot>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-export default {};
+export default {
+    methods: {
+        pushRouterState(location) {
+            this.$router.push(location);
+        }
+    }
+};
 </script>

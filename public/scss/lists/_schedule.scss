@@ -1,0 +1,21 @@
+.schedule-list {
+    background-color: white;
+    border: 1px solid rgba($primary-color, 0.1);
+
+    .schedule-list-item {
+        display: block;
+        padding: 10px 15px;
+
+        text-decoration: none;
+        color: inherit;
+
+        &:hover {
+            background-color: rgba($primary-color, 0.1);
+        }
+
+        .schedule-list-item-description {
+            color: #878787;
+            font-size: 15px;
+        }
+    }
+}
