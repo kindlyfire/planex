@@ -1,0 +1,11 @@
+{
+  "devDependencies": {
+    "@vue/component-compiler-utils": "^2.5.0",
+    "node-sass": "^4.10.0",
+    "vue-template-compiler": "^2.5.22"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "vue": "^2.5.22"
+  }
+}

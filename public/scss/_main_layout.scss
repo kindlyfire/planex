@@ -1,0 +1,42 @@
+$sidebar-width: 300px;
+
+.main-layout {
+    height: 100%;
+}
+
+.main-layout-sidebar {
+    position: absolute;
+    left: 0;
+
+    height: 100%;
+    width: $sidebar-width;
+
+    color: white;
+    background-color: #19478a;
+}
+
+.main-layout-content {
+    height: 100%;
+    width: 100%;
+
+    background-color: #f7f7f7;
+
+    .main-layout-content-inner {
+        padding-left: $sidebar-width;
+        height: 100%;
+        overflow-y: auto;
+    }
+}
+
+.main-layout-navbar-container {
+    height: 50px;
+    // background-color: rgba(0, 0, 0, 0.1);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.navbar-title {
+    font-size: 30px;
+}

@@ -1,12 +1,15 @@
-extends layout.pug
+doctype html
+html
+    head
+        meta(charset="utf-8")
+        title Planex
 
-block body
-    .container
-        h2.m-0.mb-3 Planex
+        link(rel="stylesheet" href="/static/vendor/bootstrap.min.css")
+        link(rel="stylesheet" href="/static/dist/main.css")
+    
+    body
+        #app
 
-        p.mb-1 Horaires:
+        link(rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700&subset=latin-ext")
 
-        .card.card-shadowed
-            .list-group.list-group-flush
-                each s in schedules
-                    a.list-group-item.list-group-item-action(href='/' + s.id)= s.name
+        script(src="/static/dist/main.js")

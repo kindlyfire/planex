@@ -1,46 +1,20 @@
-
-const Koa = require('koa')
-const Router = require('koa-router')
-const static = require('koa-static')
-const mount = require('koa-mount')
-const views = require('koa-views')
-const dateFormat = require('dateformat')
-const randomColor = require('randomcolor')
-const body = require('koa-body')
+const Koa = require("koa")
+const Router = require("koa-router")
+const static = require("koa-static")
+const mount = require("koa-mount")
+const views = require("koa-views")
+const body = require("koa-body")
 
 let app = new Koa()
 let router = new Router()
 
-app.use(mount('/static', static(__dirname + '/../static/')))
+app.use(mount("/static", static(__dirname + "/../public/")))
 
-app.use(views(__dirname + '/views'), {
-    extension: 'pug'
+app.use(views(__dirname + "/views"), {
+    extension: "pug"
 })
 
 app.use(body())
-
-app.use(async (ctx, next) => {
-    ctx.state.dateFormat = dateFormat
-    ctx.state.randomColor = randomColor
-
-    ctx.state.darkOrLightColor = (bgColor, lightColor, darkColor) => {
-        let color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor
-        let r = parseInt(color.substring(0, 2), 16) // hexToR
-        let g = parseInt(color.substring(2, 4), 16) // hexToG
-        let b = parseInt(color.substring(4, 6), 16) // hexToB
-        let uicolors = [r / 255, g / 255, b / 255]
-        let c = uicolors.map((col) => {
-            if (col <= 0.03928) {
-                return col / 12.92
-            }
-            return Math.pow((col + 0.055) / 1.055, 2.4)
-        })
-        let L = (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2])
-        return (L > 0.179) ? darkColor : lightColor
-    }
-
-    await next()
-})
 
 app.use(router.routes())
 app.use(router.allowedMethods())
