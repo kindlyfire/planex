@@ -1,4 +1,3 @@
-
 const globby = require('globby')
 
 let s = require('./server')
@@ -10,7 +9,10 @@ module.exports = async (config) => {
     s.models = {}
     s.model = (name) => s.models[name]
 
-    let models = await globby([__dirname + '/models/**/*.js', '!' + __dirname + '/models/model.js'])
+    let models = await globby([
+        __dirname + '/models/**/*.js',
+        '!' + __dirname + '/models/model.js'
+    ])
     for (model of models) {
         require(model)(s)
     }
@@ -26,5 +28,5 @@ module.exports = async (config) => {
     }
 
     s.app.listen(3000)
-    console.log('Listening on port ' + 3000)
+    console.log('Listening on http://localhost:' + 3000 + '/')
 }

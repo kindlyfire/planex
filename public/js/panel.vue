@@ -12,7 +12,9 @@
         </div>
         <div class="main-layout-content">
             <div class="main-layout-content-inner">
-                <div class="main-layout-navbar-container"></div>
+                <div class="main-layout-navbar-container">
+                    <slot name="header"></slot>
+                </div>
 
                 <slot name="content"></slot>
             </div>

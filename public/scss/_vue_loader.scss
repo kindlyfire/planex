@@ -1,0 +1,23 @@
+.vue-progress-path {
+    width: 600px;
+}
+
+.vue-progress-path svg {
+    transform: translateY(-12px);
+}
+
+.vue-progress-path path {
+    stroke-width: 6;
+}
+
+.vue-progress-path .progress {
+    stroke: $primary-color;
+}
+
+.vue-progress-path .background {
+    stroke: rgba(0, 0, 0, 0.1);
+}
+
+.hollow-dots-spinner {
+    display: inline;
+}
