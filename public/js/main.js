@@ -1,4 +1,4 @@
-import Vue from 'vue/dist/vue.min'
+import Vue from 'vue/dist/vue.js'
 import VueRouter from 'vue-router'
 import VueProgress from 'vue-progress-path'
 

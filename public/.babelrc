@@ -6,6 +6,7 @@
                 "polyfill": false,
                 "regenerator": true
             }
-        ]
+        ],
+        "transform-object-rest-spread"
     ]
 }

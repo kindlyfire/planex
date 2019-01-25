@@ -68,7 +68,7 @@ export default {
                 },
                 {
                     label: "Taille",
-                    width: "10%",
+                    width: "20%",
                     key: "size"
                 }
             ]
@@ -87,10 +87,7 @@ export default {
         async loadTeachers() {
             this.loading = true;
 
-            let res = (await Promise.all([
-                api.getScheduleTeachers(this.schedule.id),
-                new Promise(resolve => setTimeout(resolve, 400))
-            ]))[0];
+            let res = await api.getScheduleTeachers(this.schedule.id);
 
             if (res.status === 200) {
                 this.teachers = res.data;

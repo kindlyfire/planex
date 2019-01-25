@@ -8,6 +8,7 @@
             :options="{ placement: 'bottom-end' }"
             :visible-arrow="false"
             ref="popper"
+            @show="opened"
         >
             <div class="popper">
                 <slot name="popper-content"></slot>
@@ -31,6 +32,10 @@ export default {
     methods: {
         doClose() {
             this.$refs.popper.doClose();
+        },
+
+        opened() {
+            this.$emit("show");
         }
     }
 };

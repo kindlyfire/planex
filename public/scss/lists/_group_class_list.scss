@@ -1,0 +1,60 @@
+$group-class-list-input-height: 40px;
+
+.comp-group-class-list {
+    min-height: 200px;
+    max-height: 400px;
+
+    position: relative;
+    padding-bottom: $group-class-list-input-height;
+
+    .gcl-list-item {
+        padding: 4px 10px;
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+
+        .actions {
+            margin-left: auto;
+            display: none;
+        }
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+
+            .actions {
+                display: block;
+            }
+        }
+    }
+
+    .gcl-list-container {
+        width: 100%;
+        height: 100%;
+
+        overflow: auto;
+    }
+
+    .gcl-input-container {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: $group-class-list-input-height;
+
+        display: flex;
+
+        input[type='text'] {
+            border: 0;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            flex-grow: 1;
+        }
+
+        button {
+            border: 0;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            border-left: 1px solid rgba(0, 0, 0, 0.1);
+            width: 35px;
+            outline: none;
+        }
+    }
+}

@@ -12,7 +12,7 @@
                     </div>
 
                     <template v-if="loading">
-                        <loading padding="5"/>
+                        <loading padding="5"></loading>
                     </template>
                     <template v-else>
                         <div class="schedule-list">
@@ -57,11 +57,8 @@ export default {
         };
     },
 
-    created() {
-        this.loading = true;
-        setTimeout(() => {
-            this.loadSchedules();
-        }, 250);
+    async created() {
+        this.loadSchedules();
     },
 
     methods: {

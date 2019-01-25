@@ -9,8 +9,8 @@
                 <a href @click.prevent="changeTab('')">Résumé</a>
                 <a href @click.prevent="changeTab('solutions')">Solutions</a>
                 <a href @click.prevent="changeTab('exams')">Examens</a>
-                <a href @click.prevent="changeTab('teachers')">Profs</a>
-                <a href @click.prevent="changeTab('classes')">Classes</a>
+                <a href @click.prevent="changeTab('teachers')">Profs (fait)</a>
+                <a href @click.prevent="changeTab('classes')">Classes (fait)</a>
                 <a href @click.prevent="changeTab('constraints')">Contraintes</a>
                 <a href @click.prevent="changeTab('settings')">Paramètres</a>
             </div>
@@ -25,7 +25,7 @@
                         :dot-size="8"
                         :dots-num="3"
                         color="inherit"
-                    />
+                    ></hollow-dots-spinner>
 
                     <span v-if="!loading">{{ schedule.name }}</span>
                 </span>

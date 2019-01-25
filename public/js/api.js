@@ -55,5 +55,67 @@ export default {
             { teacher },
             { params: { scheduleId } }
         )).data
+    },
+
+    async getScheduleClassGroups(scheduleId) {
+        return (await axios.get('/api/schedule/class-groups', {
+            params: {
+                scheduleId
+            }
+        })).data
+    },
+
+    async getScheduleClasses(scheduleId) {
+        return (await axios.get('/api/schedule/classes', {
+            params: {
+                scheduleId
+            }
+        })).data
+    },
+
+    async createClassGroup(scheduleId, group) {
+        return (await axios.post(
+            '/api/schedule/class-groups',
+            { group },
+            { params: { scheduleId } }
+        )).data
+    },
+
+    async getClassGroup(groupId) {
+        return (await axios.get('/api/class-group', {
+            params: {
+                groupId
+            }
+        })).data
+    },
+
+    async deleteClassGroup(groupId) {
+        return (await axios.delete('/api/class-group', {
+            params: {
+                groupId
+            }
+        })).data
+    },
+
+    async updateClassGroup(group) {
+        return (await axios.put('/api/class-group', {
+            group
+        })).data
+    },
+
+    async createClass(scheduleId, cls) {
+        return (await axios.post(
+            '/api/schedule/classes',
+            { class: cls },
+            { params: { scheduleId } }
+        )).data
+    },
+
+    async deleteClass(classId) {
+        return (await axios.delete('/api/class', {
+            params: {
+                classId
+            }
+        })).data
     }
 }

@@ -7,7 +7,7 @@
             size="200"
             width="200"
             height="6"
-        />
+        ></loading-progress>
     </div>
 </template>
 
@@ -15,8 +15,8 @@
 export default {
     props: {
         padding: {
-            type: Number,
-            default: 0
+            type: String,
+            default: "0"
         }
     },
 

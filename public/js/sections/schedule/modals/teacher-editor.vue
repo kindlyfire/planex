@@ -148,7 +148,7 @@ export default {
 
             if (res.status === 200) {
                 this.teacher = res.data;
-                this.$emit("saved", this.teacher);
+                this.$emit("saved", { ...this.teacher });
                 this.saving = false;
             } else {
                 console.error("Error: " + res.error);

@@ -1,20 +1,20 @@
-
-let model = require('./model')
+const Sequelize = require('sequelize')
 
 module.exports = (s) => {
-    let solution = model(s, {
-        tableName: 'solutions',
-        emptyRow: {
-            id: null,
-            schedule_id: null,
-            status: '',
-            solution_data: '',
-            solver_output: '',
-            
-            updated_date: '',
-            created_date: ''
-        }
-    })
+    s.models.Solution = s.db.define('solutions', {
+        status: Sequelize.STRING,
+        solution_data: Sequelize.STRING,
+        solver_output: Sequelize.STRING,
 
-    s.models.solution = solution
+        schedule_id: {
+            type: Sequelize.INTEGER,
+            references: {
+                model: s.models.Schedule,
+                key: 'id'
+            }
+        },
+
+        updated_date: Sequelize.DATE,
+        created_date: Sequelize.DATE
+    })
 }

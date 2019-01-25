@@ -43,6 +43,13 @@ module.exports = (s) => {
 
     // Schedule teacher
     s.router.get('/api/teacher', async (ctx, next) => {
+        let teacherId = ctx.query.teacherId
+
+        if (!teacherId) {
+            ctx.body = { status: 401, error: 'teacherId param required' }
+            return
+        }
+
         let teacher = await Teacher.findOne('id = ?', ctx.query.teacherId)
 
         if (!teacher) {

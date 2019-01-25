@@ -9,24 +9,17 @@ module.exports = async (config) => {
     s.models = {}
     s.model = (name) => s.models[name]
 
-    let models = await globby([
-        __dirname + '/models/**/*.js',
-        '!' + __dirname + '/models/model.js'
-    ])
-    for (model of models) {
-        require(model)(s)
-    }
+    let autoloadDirectories = ['models', 'middleware', 'controllers']
 
-    let controllers = await globby(__dirname + '/middleware/**/*.js')
-    for (controller of controllers) {
-        require(controller)(s)
-    }
+    for (let dir of autoloadDirectories) {
+        let files = await globby(__dirname + '/' + dir + '/**/*.js')
 
-    controllers = await globby(__dirname + '/controllers/**/*.js')
-    for (controller of controllers) {
-        require(controller)(s)
+        for (let file of files) {
+            require(file)(s)
+        }
     }
 
     s.app.listen(3000)
+
     console.log('Listening on http://localhost:' + 3000 + '/')
 }

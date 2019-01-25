@@ -1,11 +1,23 @@
-
 const mysql = require('mysql2/promise')
+const Sequelize = require('sequelize')
 
 module.exports = async (s) => {
-    const pool = mysql.createPool(s.config.mysql)
+    const db = new Sequelize(
+        s.config.mysql.database,
+        s.config.mysql.user,
+        s.config.mysql.password,
+        {
+            host: s.config.mysql.host,
+            dialect: 'mysql',
 
-    let conn = await pool.getConnection()
-    conn.release()
+            pool: {
+                max: 5,
+                min: 0
+            }
+        }
+    )
 
-    return pool
+    await db.authenticate()
+
+    return db
 }

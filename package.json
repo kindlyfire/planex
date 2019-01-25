@@ -20,6 +20,10 @@
     "mysql2": "^1.6.4",
     "pug": "^2.0.3",
     "randomcolor": "^0.5.3",
+    "sequelize": "^4.42.0",
     "temp-write": "^3.4.0"
+  },
+  "devDependencies": {
+    "typescript": "^3.2.4"
   }
 }
