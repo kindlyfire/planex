@@ -2,6 +2,7 @@ const globby = require('globby')
 
 let s = require('./server')
 let database = require('./database')
+let api = require('./api')
 
 module.exports = async (config) => {
     s.config = config
@@ -18,6 +19,12 @@ module.exports = async (config) => {
             require(file)(s)
         }
     }
+
+    api({
+        prefix: '/api',
+        router: s.router,
+        models: s.models
+    })
 
     s.app.listen(3000)
 
