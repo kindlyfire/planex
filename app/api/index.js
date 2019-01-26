@@ -36,25 +36,111 @@ module.exports = (config) => {
             }
         )
 
-        // Ex: GET /api/user/:id
-        router.get(
+        // Ex: POST /api/users
+        router.post(
+            config.prefix + '/' + model.options.name.plural,
+            async (ctx, next) => {
+                let resource = model.build({})
+
+                // Don't allow some attributes
+                let allowedAttributes = Object.keys(model.rawAttributes).filter(
+                    (attr) => !['id', 'updated_at', 'created_at'].includes(attr)
+                )
+
+                for (let attr of allowedAttributes) {
+                    if (ctx.request.body[attr] !== undefined) {
+                        resource[attr] = ctx.request.body[attr]
+                    }
+                }
+
+                // TODO: No error handling yet
+                await resource.save()
+
+                ctx.body = {
+                    status: 200,
+                    data: resource
+                }
+            }
+        )
+
+        // Middleware
+        // Ex: GET|POST|PUT|DELETE /api/user/:id
+        router.use(
             config.prefix + '/' + model.options.name.singular + '/:id',
             async (ctx, next) => {
                 let id = ctx.params.id
 
                 if (!id) {
-                    throw new Error('ID is required')
+                    ctx.body = {
+                        status: 400,
+                        error: 'id is required'
+                    }
+                    return
                 }
 
-                let res = await model.findOne({
+                let res = (ctx.state.resource = await model.findOne({
                     where: {
                         id
                     }
-                })
+                }))
+
+                if (!res) {
+                    ctx.body = {
+                        error: 404
+                    }
+                    return
+                }
+
+                await next()
+            }
+        )
+
+        // Ex: GET /api/user/:id
+        router.get(
+            config.prefix + '/' + model.options.name.singular + '/:id',
+            async (ctx, next) => {
+                ctx.body = {
+                    status: 200,
+                    data: ctx.state.resource
+                }
+            }
+        )
+
+        // Ex: DELETE /api/user/:id
+        router.delete(
+            config.prefix + '/' + model.options.name.singular + '/:id',
+            async (ctx, next) => {
+                await ctx.state.resource.destroy()
 
                 ctx.body = {
                     status: 200,
-                    data: res
+                    data: ctx.state.resource
+                }
+            }
+        )
+
+        // Ex: PUT /api/user/:id
+        router.put(
+            config.prefix + '/' + model.options.name.singular + '/:id',
+            async (ctx, next) => {
+                let resource = ctx.state.resource
+
+                // Don't allow some attributes
+                allowedAttributes = Object.keys(model.rawAttributes).filter(
+                    (attr) => !['id', 'created_at', 'updated_at'].includes(attr)
+                )
+
+                for (let attr of allowedAttributes) {
+                    if (ctx.request.body[attr] !== undefined) {
+                        resource[attr] = ctx.request.body[attr]
+                    }
+                }
+
+                await resource.save()
+
+                ctx.body = {
+                    status: 200,
+                    data: resource
                 }
             }
         )
