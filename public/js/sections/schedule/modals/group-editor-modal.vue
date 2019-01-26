@@ -136,14 +136,18 @@ export default {
         async loadGroup() {
             this.loading = true;
 
-            let res = await api.getClassGroup(this.groupId);
+            try {
+                let res = await Promise.all([
+                    api.get("/class-group/" + this.groupId),
+                    api.get("/classes", {
+                        group_id: this.groupId,
+                        $order: "name"
+                    })
+                ]);
 
-            if (res.status === 200) {
-                this.group = res.data.group;
-                this.classes = res.data.classes;
-            } else {
-                console.error("Error: ", res.error);
-            }
+                this.group = res[0];
+                this.classes = res[1];
+            } catch (e) {}
 
             this.loading = false;
         },
@@ -151,38 +155,41 @@ export default {
         async save() {
             this.saving = true;
 
-            // Get classes again, sync changes
-            let res = await api.getClassGroup(this.groupId);
+            try {
+                // Get classes again, sync changes
+                let classes = await api.get("/classes", {
+                    group_id: this.groupId
+                });
 
-            // Save classes
-            await (async () => {
-                if (res.status !== 200) {
-                    console.error("Error:", res.error);
-                    return;
-                }
-
-                let deletedClasses = res.data.classes.filter(
+                let deletedClasses = classes.filter(
                     c => this.classes.findIndex(d => d.id == c.id) === -1
                 );
 
-                res = await Promise.all([
+                let resources = await Promise.all([
                     ...deletedClasses.map(async cls => {
-                        return api.deleteClass(cls.id);
+                        return api.delete("/class/" + cls.id);
                     }),
                     ...this.addedClasses.map(async cls => {
-                        return api.createClass(this.schedule.id, {
-                            name: cls,
-                            group_id: this.group.id
-                        });
-                    })
+                        return api.post(
+                            "/classes",
+                            {},
+                            {
+                                name: cls,
+                                group_id: this.groupId,
+                                schedule_id: this.schedule.id
+                            }
+                        );
+                    }),
+                    api.put("/class-group/" + this.groupId, {}, this.group)
                 ]);
-            })();
 
-            // Update group
-            res = await api.updateClassGroup(this.group);
-
-            if (res.status !== 200) {
-                console.error("Error:", res.error);
+                this.$set(this, "classes", [
+                    ...this.classes,
+                    ...resources.slice(deletedClasses.length, -1)
+                ]);
+                this.$set(this, "addedClasses", []);
+            } catch (e) {
+                console.error("Error:", e);
             }
 
             this.$emit("saved");
@@ -194,12 +201,12 @@ export default {
         async _delete() {
             this.saving = true;
 
-            let res = await api.deleteClassGroup(this.groupId);
+            try {
+                await api.delete("/class-group/" + this.groupId);
 
-            if (res.status === 200) {
                 this.$emit("deleted", this.group);
                 this.close();
-            }
+            } catch (e) {}
 
             this.saving = false;
         },

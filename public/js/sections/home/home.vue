@@ -69,7 +69,8 @@ export default {
         async loadSchedules() {
             this.loading = true;
 
-            this.schedules = (await api.getSchedules()).data;
+            this.schedules = await api.get("/schedules");
+
             this.loading = false;
         }
     }

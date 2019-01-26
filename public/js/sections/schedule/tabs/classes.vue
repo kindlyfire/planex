@@ -41,7 +41,7 @@
 
             <group-editor-modal
                 v-if="editingGroupId !== null"
-                :groupId="editingGroupId"
+                :group-id="editingGroupId"
                 :schedule="schedule"
                 @closed="editingGroupId = null"
                 @saved="groupSaved"
@@ -101,23 +101,28 @@ export default {
 
     methods: {
         async loadClassGroups() {
-            let res = await api.getScheduleClassGroups(this.schedule.id);
-
-            if (res.status === 200) {
-                this.$set(this, "groups", res.data);
-            } else {
-                console.error("Error:", res.error);
-            }
+            try {
+                this.$set(
+                    this,
+                    "groups",
+                    await api.get("/class-groups", {
+                        schedule_id: this.schedule.id
+                    })
+                );
+            } catch (e) {}
         },
 
         async loadClasses() {
-            let res = await api.getScheduleClasses(this.schedule.id);
-
-            if (res.status === 200) {
-                this.$set(this, "classes", res.data);
-            } else {
-                console.error("Error:", res.error);
-            }
+            try {
+                this.$set(
+                    this,
+                    "classes",
+                    await api.get("/classes", {
+                        schedule_id: this.schedule.id,
+                        $order: "name"
+                    })
+                );
+            } catch (e) {}
         },
 
         groupAdded(group) {

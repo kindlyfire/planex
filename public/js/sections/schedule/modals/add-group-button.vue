@@ -51,22 +51,26 @@ export default {
 
             this.saving = true;
 
-            let res = (await Promise.all([
-                api.createClassGroup(this.schedule.id, { name: this.name }),
-                new Promise(resolve => setTimeout(resolve, 400))
-            ]))[0];
+            try {
+                let resource = await api.post(
+                    "/class-groups",
+                    {},
+                    {
+                        name: this.name,
+                        schedule_id: this.schedule.id
+                    }
+                );
 
-            if (res.status !== 200) {
-                console.log("Error: " + res.error);
-            } else {
                 this.$refs.popper.doClose();
-                this.$emit("saved", res.data);
+                this.$emit("saved", resource);
 
                 this.$nextTick(() => {
                     this.saving = false;
                     this.name = "";
                 });
-            }
+            } catch (e) {}
+
+            this.saving = false;
         },
 
         opened() {

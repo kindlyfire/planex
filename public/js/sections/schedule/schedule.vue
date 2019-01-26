@@ -52,20 +52,21 @@ export default {
 
     data() {
         return {
-            loading: true,
+            loading: false,
             schedule: {}
         };
     },
 
     async created() {
-        let res = await api.getSchedule(this.$route.params.id);
+        this.loading = true;
 
-        if (res.status !== 200) {
+        try {
+            this.schedule = await api.get("/schedule/" + this.$route.params.id);
+        } catch (e) {
             this.pushRouterState("/");
             return;
         }
 
-        this.schedule = res.data;
         this.loading = false;
     },
 

@@ -25,7 +25,7 @@
 
             <teacher-editor
                 v-if="editingTeacherId !== null"
-                :teacherId="editingTeacherId"
+                :teacher-id="editingTeacherId"
                 :schedule="schedule"
                 @closed="editingTeacherId = null"
                 @saved="teacherSaved"
@@ -87,13 +87,11 @@ export default {
         async loadTeachers() {
             this.loading = true;
 
-            let res = await api.getScheduleTeachers(this.schedule.id);
-
-            if (res.status === 200) {
-                this.teachers = res.data;
-            } else {
-                console.error("Error: " + res.error);
-            }
+            try {
+                this.teachers = await api.get("/teachers", {
+                    schedule_id: this.schedule.id
+                });
+            } catch (e) {}
 
             this.loading = false;
         },

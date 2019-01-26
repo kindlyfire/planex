@@ -116,7 +116,8 @@ export default {
                 id: null,
                 name: "",
                 email: "",
-                size: 1
+                size: 1,
+                schedule_id: this.schedule.id
             };
         } else {
             this.loadTeacher();
@@ -134,37 +135,33 @@ export default {
 
             let res;
 
-            if (this.teacherId === -1) {
-                res = (await Promise.all([
-                    api.createTeacher(this.schedule.id, this.teacher),
-                    new Promise(resolve => setTimeout(resolve, 200))
-                ]))[0];
-            } else {
-                res = (await Promise.all([
-                    api.updateTeacher(this.teacher),
-                    new Promise(resolve => setTimeout(resolve, 200))
-                ]))[0];
-            }
+            try {
+                if (this.teacherId === -1) {
+                    this.teacher = await api.post(
+                        "/teachers",
+                        {},
+                        this.teacher
+                    );
+                } else {
+                    this.teacher = await api.put(
+                        "/teacher/" + this.teacher.id,
+                        {},
+                        this.teacher
+                    );
+                }
 
-            if (res.status === 200) {
-                this.teacher = res.data;
                 this.$emit("saved", { ...this.teacher });
-                this.saving = false;
-            } else {
-                console.error("Error: " + res.error);
-            }
+            } catch (e) {}
+
+            this.saving = false;
         },
 
         async loadTeacher() {
             this.loading = true;
 
-            let res = await api.getTeacher(this.teacherId);
-
-            if (res.status === 200) {
-                this.teacher = res.data;
-            } else {
-                console.error("Error: " + res.error);
-            }
+            try {
+                this.teacher = await api.get("/teacher/" + this.teacherId);
+            } catch (e) {}
 
             this.loading = false;
         },
@@ -172,12 +169,12 @@ export default {
         async _delete() {
             this.saving = true;
 
-            let res = await api.deleteTeacher(this.teacherId);
+            try {
+                await api.delete("/teacher/" + this.teacherId);
 
-            if (res.status === 200) {
                 this.$emit("deleted");
                 this.close();
-            }
+            } catch (e) {}
 
             this.saving = false;
         }

@@ -56,22 +56,17 @@ export default {
 
             this.saving = true;
 
-            let res = (await Promise.all([
-                api.createSchedule(this.name),
-                new Promise(resolve => setTimeout(resolve, 400))
-            ]))[0];
+            try {
+                await api.post("/schedules", {}, { name: this.name });
 
-            if (res.status !== 200) {
-                console.log("Error: " + res.error);
-            } else {
                 this.$refs.popper.doClose();
                 this.$emit("saved");
 
-                setTimeout(() => {
+                this.$nextTick(() => {
                     this.saving = false;
                     this.name = "";
-                }, 100);
-            }
+                });
+            } catch (e) {}
         }
     }
 };

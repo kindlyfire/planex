@@ -3,7 +3,7 @@
         <loading-progress
             shape="line"
             :indeterminate="true"
-            fillDuration="1.2"
+            fill-duration="1.2"
             size="200"
             width="200"
             height="6"
