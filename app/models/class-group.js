@@ -10,9 +10,6 @@ module.exports = (s) => {
                 model: s.models.Schedule,
                 key: 'id'
             }
-        },
-
-        updated_date: Sequelize.DATE,
-        created_date: Sequelize.DATE
+        }
     })
 }

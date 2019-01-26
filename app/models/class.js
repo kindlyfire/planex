@@ -18,9 +18,6 @@ module.exports = (s) => {
                 model: s.models.ClassGroup,
                 key: 'id'
             }
-        },
-
-        updated_date: Sequelize.DATE,
-        created_date: Sequelize.DATE
+        }
     })
 }

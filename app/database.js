@@ -13,6 +13,10 @@ module.exports = async (s) => {
             pool: {
                 max: 5,
                 min: 0
+            },
+
+            define: {
+                underscored: true
             }
         }
     )
