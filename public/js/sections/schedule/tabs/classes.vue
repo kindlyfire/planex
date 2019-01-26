@@ -135,6 +135,11 @@ export default {
                 "groups",
                 this.groups.filter(g => g.id !== group.id)
             );
+            this.$set(
+                this,
+                "classes",
+                this.classes.filter(c => c.group_id !== group.id)
+            );
         },
 
         groupSaved() {
