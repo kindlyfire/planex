@@ -39,7 +39,24 @@ module.exports = (config) => {
         // Ex: GET /api/user/:id
         router.get(
             config.prefix + '/' + model.options.name.singular + '/:id',
-            async (ctx, next) => {}
+            async (ctx, next) => {
+                let id = ctx.params.id
+
+                if (!id) {
+                    throw new Error('ID is required')
+                }
+
+                let res = await model.findOne({
+                    where: {
+                        id
+                    }
+                })
+
+                ctx.body = {
+                    status: 200,
+                    data: res
+                }
+            }
         )
     }
 }
