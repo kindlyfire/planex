@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize')
 
 module.exports = (s) => {
-    s.models.Class = s.db.define('classes', {
+    s.models.Exam = s.db.define('exams', {
         name: Sequelize.STRING
     })
 }

@@ -44,3 +44,61 @@
         background-color: rgba(0, 0, 0, 0.05);
     }
 }
+
+$tree-cell-width: 80px;
+$tree-cell-color: rgba($primary-color, 0.5);
+
+.exams-table .tree-cell {
+    width: $tree-cell-width;
+    position: relative;
+
+    &::before {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 50%;
+        width: $tree-cell-width - 30px;
+
+        content: '';
+        display: block;
+
+        border-bottom: 2px solid $tree-cell-color;
+        border-left: 2px solid $tree-cell-color;
+    }
+
+    &::after {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        height: 50%;
+        width: $tree-cell-width - 30px;
+
+        content: '';
+        display: block;
+
+        border-left: 2px solid $tree-cell-color;
+    }
+}
+
+.exams-table .advanced-table-content-line:last-child .tree-cell::after {
+    display: none;
+}
+
+.anim-show-enter-active {
+    animation: anim-show 0.2s forwards;
+}
+
+@keyframes anim-show {
+    0% {
+        opacity: 0;
+        transform: translateX(-10px) translateY(-10px);
+    }
+
+    50% {
+        transform: translateX(0) translateY(0);
+    }
+
+    100% {
+        opacity: 1;
+    }
+}

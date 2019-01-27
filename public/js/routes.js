@@ -2,6 +2,7 @@ import home from './sections/home/home.vue'
 
 import schedule from './sections/schedule/schedule.vue'
 import scheduleSummary from './sections/schedule/tabs/summary.vue'
+import scheduleExams from './sections/schedule/tabs/exams.vue'
 import scheduleTeachers from './sections/schedule/tabs/teachers.vue'
 import scheduleClasses from './sections/schedule/tabs/classes.vue'
 
@@ -22,6 +23,10 @@ export default [
             {
                 path: 'classes',
                 component: scheduleClasses
+            },
+            {
+                path: 'exams',
+                component: scheduleExams
             }
         ]
     }

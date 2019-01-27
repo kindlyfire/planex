@@ -8,6 +8,7 @@ module.exports = (config) => {
         try {
             await next()
         } catch (e) {
+            console.error(e)
             ctx.body = {
                 status: 500,
                 error: e.message
@@ -25,7 +26,7 @@ module.exports = (config) => {
         router.get(
             config.prefix + '/' + model.options.name.plural,
             async (ctx, next) => {
-                let options = util.parseOptions(model, ctx.query)
+                let options = util.parseOptions(model, ctx.query, config.models)
 
                 let res = await model.findAll(options)
 

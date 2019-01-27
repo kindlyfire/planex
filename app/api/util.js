@@ -1,14 +1,14 @@
 module.exports = {
-    parseOptions(model, query = {}) {
+    parseOptions(model, query = {}, models) {
         let keys = Object.keys(query)
         let res = {
             where: {},
-            limit: 100
+            limit: 100,
+            include: []
         }
 
         for (let k of keys) {
             // Special prop
-            console.log(k)
             if (k[0] === '$') {
                 if (k === '$limit') {
                     let limit = parseInt(query[k])
@@ -18,6 +18,14 @@ module.exports = {
                 } else if (k === '$order') {
                     // UNSECURE ?
                     res.order = model.sequelize.literal(query[k])
+                } else if (k === '$include') {
+                    let modelNames = ('' + query[k]).split(',')
+
+                    for (let modelName of modelNames) {
+                        let subNames = modelName.split('.')
+
+                        this.deepModelInclude(res.include, subNames, models)
+                    }
                 }
             }
 
@@ -32,5 +40,33 @@ module.exports = {
         }
 
         return res
+    },
+
+    deepModelInclude(include, subNames, models) {
+        let ref = { include }
+        models = Object.values(models)
+
+        console.log('')
+
+        for (let subName of subNames) {
+            let newRef = ref.include.find((i) => i.model.name === subName)
+
+            if (!newRef) {
+                newRef = {
+                    model: models.find((m) => m.name === subName),
+                    include: []
+                }
+
+                if (!newRef.model) {
+                    throw new Error('Could not find model with name ' + subName)
+                }
+
+                ref.include.push(newRef)
+            }
+
+            ref = newRef
+        }
+
+        console.log(include)
     }
 }
