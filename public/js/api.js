@@ -8,13 +8,12 @@ export default {
             let d
 
             if (method === 'get') {
-                d = (await axios[method](prefix + url, { params })).data.data
+                d = await axios[method](prefix + url, { params })
             } else {
-                d = (await axios[method](prefix + url, data, { params })).data
-                    .data
+                d = await axios[method](prefix + url, data, { params })
             }
-
-            return d
+            console.log(d.data.data)
+            return d.data.data
         } catch (e) {
             console.error(e)
             // TODO: Should show error on screen, return empty data

@@ -1,0 +1,36 @@
+.comp-exam-list {
+    min-height: 200px;
+    max-height: 400px;
+
+    position: relative;
+    padding-bottom: $group-class-list-input-height;
+
+    .el-list-item {
+        padding: 4px 10px;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+    }
+
+    .el-list-container {
+        width: 100%;
+        height: 100%;
+
+        overflow: auto;
+    }
+
+    .el-input-container {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: $group-class-list-input-height;
+
+        button {
+            border: 0;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            outline: none;
+        }
+    }
+}

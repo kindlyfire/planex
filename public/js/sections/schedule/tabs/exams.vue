@@ -21,24 +21,33 @@
                 <div class="advanced-table-content">
                     <div v-for="(exam, i) in exams" :key="i">
                         <div
-                            class="advanced-table-content-line actionable no-select"
-                            @click.exact="examNameClicked(exam)"
+                            class="advanced-table-content-line actionable no-select can-be-clicked"
+                            @click="examNameClicked(exam, $event)"
                         >
-                            <div class="advanced-table-content-cell no-border">{{ exam.name }}</div>
                             <div
-                                class="advanced-table-content-cell no-border ml-auto"
+                                class="advanced-table-content-cell no-border can-be-clicked"
+                            >{{ exam.name }}</div>
+                            <div
+                                class="advanced-table-content-cell no-border ml-auto pr-2"
                                 v-if="exam.id === openedExamId"
                             >
-                                <button class="btn btn-secondary" @click.prevent="showEditor">Ouvrir</button>
+                                <button class="btn btn-secondary" @click.prevent="showEditor">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                <button
+                                    class="btn btn-secondary"
+                                    @click.prevent="editorExamInstanceId = -1"
+                                >Ajouter</button>
                             </div>
                         </div>
 
                         <transition name="anim-show">
                             <div v-if="exam.id === openedExamId">
                                 <div
-                                    class="advanced-table-content-line align-items-center"
+                                    class="advanced-table-content-line align-items-center actionable"
                                     v-for="(instance, i) in exam['exam-instances']"
                                     :key="i"
+                                    @click="editorExamInstanceId = instance.id"
                                 >
                                     <div class="advanced-table-content-cell tree-cell no-border"></div>
 
@@ -84,13 +93,25 @@
             </div>
         </div>
 
+        <!-- Exam editor modal -->
         <exam-editor-modal
-            v-if="this.editorExamId !== null"
+            v-if="editorExamId !== null"
             :schedule="schedule"
-            :examId="editorExamId"
+            :exam-id="editorExamId"
             @saved="loadExams"
+            @deleted="examDeleted"
             @closed="editorExamId = null"
         ></exam-editor-modal>
+
+        <!-- Exam instance editor modal -->
+        <exam-instance-editor-modal
+            v-if="editorExamInstanceId !== null"
+            :schedule="schedule"
+            :exam="exams.find(e => e.id === editorExamInstanceId)"
+            :exam-instance-id="editorExamInstanceId"
+            @saved="loadExams"
+            @closed="editorExamInstanceId = null"
+        ></exam-instance-editor-modal>
     </div>
 </template>
 
@@ -100,6 +121,7 @@ import api from "../../../api";
 
 import addExamButton from "../modals/add-exam-button.vue";
 import examEditorModal from "../modals/exam-editor-modal.vue";
+import examInstanceEditorModal from "../modals/exam-instance-editor-modal.vue";
 
 export default {
     props: ["schedule"],
@@ -107,17 +129,23 @@ export default {
     components: {
         loading,
         addExamButton,
-        examEditorModal
+        examEditorModal,
+        examInstanceEditorModal
     },
 
     data() {
         return {
             loading: false,
-            openedExamId: null,
-            editorExamId: null,
             exams: [],
-            classGroups: [],
-            classes: []
+
+            // ID of exam corrently unfolded
+            openedExamId: null,
+
+            // ID of exam open in exam editor
+            editorExamId: null,
+
+            // ID of exam instance open in editor
+            editorExamInstanceId: null
         };
     },
 
@@ -126,11 +154,16 @@ export default {
     },
 
     methods: {
-        examAdded(exam) {
-            this.loadExams();
+        async examAdded(exam) {
+            await this.loadExams();
+            this.openedExamId = exam.id;
         },
 
-        examNameClicked(exam) {
+        examNameClicked(exam, ev) {
+            if (!ev.target.classList.contains("can-be-clicked")) {
+                return false;
+            }
+
             if (this.openedExamId === exam.id) {
                 this.openedExamId = null;
             } else {
@@ -140,18 +173,23 @@ export default {
             }
         },
 
-        showEditor() {
-            let openedExamId = this.openedExamId;
-
-            this.$nextTick(() => {
-                this.openedExamId = openedExamId;
-            });
-
+        showEditor(ev) {
             this.editorExamId = this.openedExamId;
         },
 
         editorClosed() {
             this.editorExamId = null;
+        },
+
+        examDeleted(exam) {
+            this.$set(this, "exams", this.exams.filter(e => e.id !== exam.id));
+            this.openedExamId = null;
+            this.editorExamId = null;
+        },
+
+        // Open exam instance creator for currently opened exam
+        openExamInstanceEditor() {
+            this.editorExamInstanceId = this.openedExamId;
         },
 
         // Loading
@@ -166,7 +204,6 @@ export default {
                         "exam-instances.class-groups.classes"
                     ].join(",")
                 });
-                console.log(JSON.parse(JSON.stringify(this.exams)));
             } catch (e) {}
         }
     }

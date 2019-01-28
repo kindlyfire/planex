@@ -41,6 +41,11 @@ h6 {
     user-select: none;
 }
 
+.v-select * {
+    line-height: 1 !important;
+    max-height: 40px;
+}
+
 // Imports
 
 @import 'main_layout';
@@ -48,6 +53,7 @@ h6 {
 @import 'lists/schedule';
 @import 'lists/summary_tiles';
 @import 'lists/group_class_list';
+@import 'lists/exam_list';
 @import 'vue_loader';
 @import 'popper';
 @import 'input';

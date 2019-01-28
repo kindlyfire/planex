@@ -1,12 +1,12 @@
 <template>
     <div class="pmodal">
         <div class="pmodal-window-container">
-            <div class="pmodal-window" style="width: 500px;">
+            <div class="pmodal-window">
                 <div class="pmodal-header">
-                    <h3 class="mb-0">Examen</h3>
+                    <h3 class="mb-0">Instance d'examen</h3>
 
                     <div class="ml-auto">
-                        <popper-with-button v-if="!loading">
+                        <popper-with-button v-if="!loading && examInstanceId !== -1">
                             <template slot="button-text">+</template>
                             <template slot="popper-content">
                                 <button
@@ -26,8 +26,11 @@
                         v-if="!saving && !loading"
                         class="btn btn-primary cursor-pointer ml-2"
                         @click="save"
-                    >Sauvegarder</button>
-                    <button v-if="saving && !loading" class="btn ml-2">Sauvegarder</button>
+                    >{{ examInstanceId === -1 ? 'Ajouter' : 'Sauvegarder' }}</button>
+                    <button
+                        v-if="saving && !loading"
+                        class="btn ml-2"
+                    >{{ examInstanceId === -1 ? 'Ajouter' : 'Sauvegarder' }}</button>
                 </div>
 
                 <div class="pmodal-content">
@@ -38,20 +41,10 @@
                             <div class="form-group">
                                 <label for="i_exameditor_name" class="mb-0">Nom</label>
                                 <input
-                                    v-model="exam.name"
+                                    v-model="instance.description"
                                     type="text"
                                     class="form-control"
                                     id="i_exameditor_name"
-                                >
-                            </div>
-
-                            <div class="form-group">
-                                <label for="i_exameditor_length" class="mb-0">Longueur</label>
-                                <input
-                                    v-model="exam.length"
-                                    type="text"
-                                    class="form-control"
-                                    id="i_exameditor_length"
                                 >
                             </div>
                         </div>
@@ -69,7 +62,7 @@ import loading from "../../../components/loading.vue";
 import popperWithButton from "../../../components/popper-with-button.vue";
 
 export default {
-    props: ["schedule", "examId"],
+    props: ["schedule", "exam", "examInstanceId"],
 
     components: {
         popperWithButton,
@@ -80,12 +73,18 @@ export default {
         return {
             loading: false,
             saving: false,
-            exam: {}
+
+            instance: {
+                exam_id: null,
+                group_id: null,
+                teacher_id: null,
+                description: ""
+            }
         };
     },
 
     created() {
-        this.loadExam();
+        this.loadResources();
     },
 
     methods: {
@@ -97,30 +96,33 @@ export default {
             // Should confirm obviously !
             // This resource is too much of a hassle to add again
             // @TODO
-
-            this.saving = true;
-            try {
-                await api.delete("/exam/" + this.examId);
-                this.$emit("deleted", this.exam);
-            } catch (e) {}
-            this.saving = false;
+            // this.saving = true;
+            // try {
+            //     // await api.delete("/exam/" + this.examId);
+            //     this.$emit("deleted", this.exam);
+            // } catch (e) {}
+            // this.saving = false;
         },
 
-        async loadExam() {
-            this.loading = true;
-            try {
-                this.exam = await api.get("/exam/" + this.examId);
-            } catch (e) {}
-            this.loading = false;
+        async loadResources() {
+            if (this.examInstanceId !== -1) {
+                this.loading = true;
+                try {
+                    this.instance = await api.get(
+                        "/exam-instance/" + this.examInstanceId
+                    );
+                } catch (e) {}
+                this.loading = false;
+            }
         },
 
         async save() {
-            this.saving = true;
-            try {
-                await api.put("/exam/" + this.examId, {}, this.exam);
-                this.$emit("saved");
-            } catch (e) {}
-            this.saving = false;
+            // this.saving = true;
+            // try {
+            //     await api.put("/exam/" + this.examId, {}, this.exam);
+            //     this.$emit("saved");
+            // } catch (e) {}
+            // this.saving = false;
         }
     }
 };

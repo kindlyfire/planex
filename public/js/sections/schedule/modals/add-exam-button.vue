@@ -57,6 +57,7 @@ export default {
                     {},
                     {
                         name: this.name,
+                        length: 4,
                         schedule_id: this.schedule.id
                     }
                 );

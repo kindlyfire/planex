@@ -85,7 +85,8 @@ module.exports = (config) => {
 
                 if (!res) {
                     ctx.body = {
-                        error: 404
+                        status: 404,
+                        error: 'entre does not exist'
                     }
                     return
                 }
