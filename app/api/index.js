@@ -15,13 +15,11 @@ module.exports = (config) => {
             }
         }
 
-        ctx.status = ctx.body.status
+        ctx.status = ctx.body.status || 200
     })
 
     // Define REST API
     for (let model of Object.values(config.models)) {
-        console.log('Creating API model for ', model.options.name)
-
         // Ex: GET /api/users
         router.get(
             config.prefix + '/' + model.options.name.plural,
@@ -100,9 +98,17 @@ module.exports = (config) => {
         router.get(
             config.prefix + '/' + model.options.name.singular + '/:id',
             async (ctx, next) => {
+                let options = util.parseOptions(
+                    model,
+                    { ...ctx.query, id: ctx.state.resource.id },
+                    config.models
+                )
+
+                let res = await model.findOne(options)
+
                 ctx.body = {
                     status: 200,
-                    data: ctx.state.resource
+                    data: res
                 }
             }
         )

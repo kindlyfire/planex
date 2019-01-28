@@ -51,6 +51,8 @@ $tree-cell-color: rgba($primary-color, 0.5);
 .exams-table .tree-cell {
     width: $tree-cell-width;
     position: relative;
+    align-self: stretch;
+    flex-shrink: 0;
 
     &::before {
         position: absolute;

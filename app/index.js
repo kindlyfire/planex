@@ -14,9 +14,8 @@ module.exports = async (config) => {
 
     for (let dir of autoloadDirectories) {
         let files = await globby(__dirname + '/' + dir + '/**/*.js')
-        console.log(files)
         for (let file of files) {
-            require(file)(s)
+            await require(file)(s)
         }
     }
 

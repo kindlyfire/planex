@@ -46,8 +46,6 @@ module.exports = {
         let ref = { include }
         models = Object.values(models)
 
-        console.log('')
-
         for (let subName of subNames) {
             let newRef = ref.include.find((i) => i.model.name === subName)
 
@@ -66,7 +64,5 @@ module.exports = {
 
             ref = newRef
         }
-
-        console.log(include)
     }
 }

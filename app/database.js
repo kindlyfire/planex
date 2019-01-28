@@ -17,7 +17,9 @@ module.exports = async (s) => {
 
             define: {
                 underscored: true
-            }
+            },
+
+            operatorsAliases: Sequelize.Op
         }
     )
 

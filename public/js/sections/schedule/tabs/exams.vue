@@ -22,37 +22,53 @@
                     <div v-for="(exam, i) in exams" :key="i">
                         <div
                             class="advanced-table-content-line actionable no-select"
-                            @click="examNameClicked(exam)"
+                            @click.exact="examNameClicked(exam)"
                         >
                             <div class="advanced-table-content-cell no-border">{{ exam.name }}</div>
+                            <div
+                                class="advanced-table-content-cell no-border ml-auto"
+                                v-if="exam.id === openedExamId"
+                            >
+                                <button class="btn btn-secondary" @click.prevent="showEditor">Ouvrir</button>
+                            </div>
                         </div>
 
                         <transition name="anim-show">
                             <div v-if="exam.id === openedExamId">
                                 <div
-                                    class="advanced-table-content-line"
-                                    v-for="(classGroup, i) in exam['class-groups']"
+                                    class="advanced-table-content-line align-items-center"
+                                    v-for="(instance, i) in exam['exam-instances']"
                                     :key="i"
                                 >
                                     <div class="advanced-table-content-cell tree-cell no-border"></div>
 
                                     <div
                                         class="advanced-table-content-cell no-border"
-                                    >{{ classGroup.name }}</div>
+                                        style="width: 8%;"
+                                    >{{ instance['class-group'].name }}</div>
+
+                                    <div
+                                        class="advanced-table-content-cell no-border text-muted text-truncate"
+                                        style="width: 50%;"
+                                    >{{ instance.description }}</div>
+
+                                    <div
+                                        class="advanced-table-content-cell no-border"
+                                    >{{ instance.teacher.name }}</div>
 
                                     <div
                                         class="advanced-table-content-cell ml-auto text-right text-color-primary"
                                     >
                                         <span
                                             class="badge badge-secondary ml-1"
-                                            v-for="(cls, i) in classGroup.classes"
+                                            v-for="(cls, i) in instance['class-group'].classes"
                                             :key="i"
                                         >{{ cls.name }}</span>
                                     </div>
                                 </div>
 
                                 <div
-                                    v-if="exam['class-groups'].length === 0"
+                                    v-if="exam['exam-instances'].length === 0"
                                     class="advanced-table-content-line"
                                 >
                                     <div class="advanced-table-content-cell tree-cell no-border"></div>
@@ -67,6 +83,14 @@
                 </div>
             </div>
         </div>
+
+        <exam-editor-modal
+            v-if="this.editorExamId !== null"
+            :schedule="schedule"
+            :examId="editorExamId"
+            @saved="loadExams"
+            @closed="editorExamId = null"
+        ></exam-editor-modal>
     </div>
 </template>
 
@@ -75,19 +99,22 @@ import loading from "../../../components/loading.vue";
 import api from "../../../api";
 
 import addExamButton from "../modals/add-exam-button.vue";
+import examEditorModal from "../modals/exam-editor-modal.vue";
 
 export default {
     props: ["schedule"],
 
     components: {
         loading,
-        addExamButton
+        addExamButton,
+        examEditorModal
     },
 
     data() {
         return {
             loading: false,
             openedExamId: null,
+            editorExamId: null,
             exams: [],
             classGroups: [],
             classes: []
@@ -113,13 +140,33 @@ export default {
             }
         },
 
+        showEditor() {
+            let openedExamId = this.openedExamId;
+
+            this.$nextTick(() => {
+                this.openedExamId = openedExamId;
+            });
+
+            this.editorExamId = this.openedExamId;
+        },
+
+        editorClosed() {
+            this.editorExamId = null;
+        },
+
         // Loading
         async loadExams() {
             try {
                 this.exams = await api.get("/exams", {
                     schedule_id: this.schedule.id,
-                    $include: "class-groups,class-groups.classes"
+                    $include: [
+                        "exam-instances",
+                        "exam-instances.teachers",
+                        "exam-instances.class-groups",
+                        "exam-instances.class-groups.classes"
+                    ].join(",")
                 });
+                console.log(JSON.parse(JSON.stringify(this.exams)));
             } catch (e) {}
         }
     }

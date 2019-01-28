@@ -1,7 +1,9 @@
-module.exports = (s) => {
-    let m = s.models
+module.exports = async (s) => {
+    // Wait a little
+    // Lets all models load
+    await new Promise((resolve) => setTimeout(resolve, 200))
 
-    console.log(Object.keys(m))
+    let m = s.models
 
     m.Class.belongsTo(m.Schedule)
     m.Class.belongsTo(m.ClassGroup, { foreignKey: 'group_id' })
@@ -16,9 +18,12 @@ module.exports = (s) => {
     })
 
     m.Exam.belongsTo(m.Schedule)
-    m.Exam.belongsToMany(m.ClassGroup, {
-        through: 'exams_class_groups',
-        otherKey: 'group_id'
+    m.Exam.hasMany(m.ExamInstance)
+
+    m.ExamInstance.belongsTo(m.Exam)
+    m.ExamInstance.belongsTo(m.Teacher)
+    m.ExamInstance.belongsTo(m.ClassGroup, {
+        foreignKey: 'group_id'
     })
 
     m.Teacher.belongsTo(m.Schedule)

@@ -6,13 +6,14 @@ export default {
     async request(method, url, params = {}, data = {}) {
         try {
             let d
+
             if (method === 'get') {
                 d = (await axios[method](prefix + url, { params })).data.data
             } else {
                 d = (await axios[method](prefix + url, data, { params })).data
                     .data
             }
-            // console.log(d)
+
             return d
         } catch (e) {
             console.error(e)
