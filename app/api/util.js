@@ -28,7 +28,7 @@ module.exports = {
             } else if (k === '$count') {
                 res.attributes = [
                     [
-                        model.sequelize.fn('COUNT', model.sequelize.col('id')),
+                        model.sequelize.fn('COUNT', model.sequelize.col('*')),
                         'count'
                     ]
                 ]
