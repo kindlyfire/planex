@@ -24,10 +24,19 @@ module.exports = async (s) => {
     m.Exam.hasMany(m.ExamInstance)
 
     m.ExamInstance.belongsTo(m.Exam)
-    m.ExamInstance.belongsTo(m.Teacher)
     m.ExamInstance.belongsTo(m.ClassGroup, {
         foreignKey: 'group_id'
     })
+    m.ExamInstance.belongsToMany(m.Teacher, {
+        through: 'exam_instances_teachers',
+        otherKey: 'teacher_id',
+        foreignKey: 'exam_instance_id'
+    })
 
     m.Teacher.belongsTo(m.Schedule)
+    m.Teacher.belongsToMany(m.ExamInstance, {
+        through: 'exam_instances_teachers',
+        otherKey: 'exam_instance_id',
+        foreignKey: 'teacher_id'
+    })
 }
