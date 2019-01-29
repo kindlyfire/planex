@@ -4,3 +4,4 @@
 /public/node_modules/
 /public/.cache/
 /public/dist/
+/config.js
