@@ -7,48 +7,37 @@ module.exports = {
             include: []
         }
 
-        for (let k of keys) {
-            // Special prop
-            if (k[0] === '$') {
-                if (k === '$limit') {
-                    let limit = parseInt(query[k])
-                    res.limit = limit > 1000 ? 1000 : limit
-                } else if (k === '$offset') {
-                    res.offset = parseInt(query[k])
-                } else if (k === '$order') {
-                    // UNSECURE ?
-                    res.order = model.sequelize.literal(query[k])
-                } else if (k === '$include') {
-                    let modelNames = ('' + query[k]).split(',')
+        // Special props first
+        for (let k of keys.filter((k) => k[0] === '$')) {
+            if (k === '$limit') {
+                let limit = parseInt(query[k])
+                res.limit = limit > 1000 ? 1000 : limit
+            } else if (k === '$offset') {
+                res.offset = parseInt(query[k])
+            } else if (k === '$order') {
+                // UNSECURE ?
+                res.order = model.sequelize.literal(query[k])
+            } else if (k === '$include') {
+                let modelNames = ('' + query[k]).split(',')
 
-                    for (let modelName of modelNames) {
-                        let subNames = modelName.split('.')
+                for (let modelName of modelNames) {
+                    let subNames = modelName.split('.')
 
-                        this.deepModelInclude(res.include, subNames, models)
-                    }
-                } else if (k === '$count') {
-                    res.attributes = {
-                        include: [
-                            [
-                                model.sequelize.fn(
-                                    'COUNT',
-                                    model.sequelize.col('id')
-                                ),
-                                'count'
-                            ]
-                        ]
-                    }
+                    this.deepModelInclude(res.include, subNames, models)
                 }
+            } else if (k === '$count') {
+                res.attributes = [
+                    [
+                        model.sequelize.fn('COUNT', model.sequelize.col('id')),
+                        'count'
+                    ]
+                ]
             }
+        }
 
-            // Normal where
-            else {
-                if (!Object.keys(model.rawAttributes).includes(k)) {
-                    throw new Error('Attribute ' + k + ' does not exist.')
-                }
-
-                res.where[k] = query[k]
-            }
+        // WHERE
+        for (let k of keys.filter((k) => k[0] !== '$')) {
+            this.deepWhere(res, ('' + k).split('.'), query[k])
         }
 
         return res
@@ -76,5 +65,24 @@ module.exports = {
 
             ref = newRef
         }
+    },
+
+    // Deep where
+    // Can search through relations
+    // Ex: GET /exam_instances with exams.schedule_id=2
+    //     to get all exam instances who's exam belongs to the schedule with id=2
+    deepWhere(ref, subNames, value) {
+        // Everything except last subName is an association name
+        // We need to get the target model
+        for (let subName of subNames.slice(0, -1)) {
+            ref = (ref.include || []).find((i) => i.model.name === subName)
+
+            if (!ref) {
+                throw new Error('Could not find model with name ' + subName)
+            }
+        }
+
+        ref.where = ref.where || {}
+        ref.where[subNames[subNames.length - 1]] = value
     }
 }
