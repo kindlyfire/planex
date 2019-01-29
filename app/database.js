@@ -19,7 +19,8 @@ module.exports = async (s) => {
                 underscored: true
             },
 
-            operatorsAliases: Sequelize.Op
+            operatorsAliases: Sequelize.Op,
+            logging: false
         }
     )
 

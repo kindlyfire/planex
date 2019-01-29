@@ -4,6 +4,8 @@ const static = require('koa-static')
 const mount = require('koa-mount')
 const views = require('koa-views')
 const body = require('koa-body')
+const chalk = require('chalk')
+const dateFormat = require('dateformat')
 
 let app = new Koa()
 let router = new Router()
@@ -15,6 +17,19 @@ app.use(views(__dirname + '/views'), {
 })
 
 app.use(body())
+
+// Logger
+app.use(async (ctx, next) => {
+    await next()
+
+    console.log(
+        chalk`{yellow [${dateFormat(
+            'yyyy-mm-dd HH:MM:ss'
+        )}]}{blue [${ctx.method.toUpperCase()}]} ${ctx.request.path} {yellow ${
+            ctx.status
+        }}`
+    )
+})
 
 app.use(router.routes())
 app.use(router.allowedMethods())

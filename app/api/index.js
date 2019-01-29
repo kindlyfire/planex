@@ -1,4 +1,5 @@
-let util = require('./util')
+const util = require('./util')
+const chalk = require('chalk')
 
 module.exports = (config) => {
     let router = config.router
@@ -8,7 +9,9 @@ module.exports = (config) => {
         try {
             await next()
         } catch (e) {
-            console.error(e)
+            console.log(chalk`{red [API] Internal Server Error}`)
+            console.log(e)
+
             ctx.body = {
                 status: 500,
                 error: e.message
@@ -20,6 +23,14 @@ module.exports = (config) => {
 
     // Define REST API
     for (let model of Object.values(config.models)) {
+        console.log(
+            chalk`{yellow [API] Defining API for} {white ${
+                model.options.name.plural
+            }} {yellow (${config.prefix}/${model.options.name.plural}, ${
+                config.prefix
+            }/${model.options.name.singular}/:id)}`
+        )
+
         // Ex: GET /api/users
         router.get(
             config.prefix + '/' + model.options.name.plural,
