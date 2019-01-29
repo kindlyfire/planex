@@ -1,6 +1,8 @@
 <template>
-    <popper-with-button ref="popper" @show="opened">
-        <template slot="button-text">Ajouter</template>
+    <popper-with-button ref="popper" @show="opened" :disabled="disabled">
+        <template slot="button-text">
+            <i class="fas fa-plus"></i>&nbsp; Examen
+        </template>
         <template slot="popper-content">
             <div class="p-2">
                 <input
@@ -29,7 +31,7 @@ import api from "../../../api";
 import { setTimeout } from "timers";
 
 export default {
-    props: ["schedule"],
+    props: ["schedule", "disabled"],
 
     components: {
         popperWithButton,

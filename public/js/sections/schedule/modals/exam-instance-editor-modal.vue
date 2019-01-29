@@ -62,7 +62,7 @@ import loading from "../../../components/loading.vue";
 import popperWithButton from "../../../components/popper-with-button.vue";
 
 export default {
-    props: ["schedule", "exam", "examInstanceId"],
+    props: ["schedule", "examInstanceId", "exam", "classGroupId"],
 
     components: {
         popperWithButton,
@@ -109,7 +109,10 @@ export default {
                 this.loading = true;
                 try {
                     this.instance = await api.get(
-                        "/exam-instance/" + this.examInstanceId
+                        "/exam-instance/" + this.examInstanceId,
+                        {
+                            $include: ["exams"].join("")
+                        }
                     );
                 } catch (e) {}
                 this.loading = false;

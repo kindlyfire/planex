@@ -12,7 +12,7 @@ export default {
             } else {
                 d = await axios[method](prefix + url, data, { params })
             }
-            console.log(d.data.data)
+            console.log(JSON.parse(JSON.stringify(d.data.data)))
             return d.data.data
         } catch (e) {
             console.error(e)

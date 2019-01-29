@@ -26,6 +26,18 @@ module.exports = {
 
                         this.deepModelInclude(res.include, subNames, models)
                     }
+                } else if (k === '$count') {
+                    res.attributes = {
+                        include: [
+                            [
+                                model.sequelize.fn(
+                                    'COUNT',
+                                    model.sequelize.col('id')
+                                ),
+                                'count'
+                            ]
+                        ]
+                    }
                 }
             }
 

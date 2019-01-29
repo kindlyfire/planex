@@ -7,6 +7,7 @@
             leave-active-class="fade-leave-active"
             :options="{ placement: 'bottom-end' }"
             :visible-arrow="false"
+            :disabled="disabled"
             ref="popper"
             @show="opened"
         >
@@ -14,7 +15,11 @@
                 <slot name="popper-content"></slot>
             </div>
 
-            <button slot="reference" class="popper-reference">
+            <button
+                slot="reference"
+                class="popper-reference btn btn-secondary"
+                :disabled="disabled"
+            >
                 <slot name="button-text"></slot>
             </button>
         </popper>
@@ -25,6 +30,8 @@
 import popper from "vue-popperjs";
 
 export default {
+    props: ["disabled"],
+
     components: {
         popper
     },

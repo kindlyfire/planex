@@ -13,6 +13,9 @@ module.exports = async (s) => {
         through: 'exams_class_groups',
         foreignKey: 'group_id'
     })
+    m.ClassGroup.hasMany(m.ExamInstance, {
+        foreignKey: 'group_id'
+    })
     m.ClassGroup.hasMany(m.Class, {
         foreignKey: 'group_id'
     })

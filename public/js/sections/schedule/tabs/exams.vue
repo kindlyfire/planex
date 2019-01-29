@@ -10,42 +10,58 @@
                     <div class="p-3 pl-4 pr-4 d-flex align-items-center">
                         <h3
                             class="font-weight-normal mb-0"
-                        >{{ exams.length }} examen{{ exams.length === 1 ? '' : 's' }}</h3>
+                        >{{ examCount }} matière{{ examCount === 1 ? '' : 's' }}</h3>
 
-                        <div class="ml-auto">
-                            <add-exam-button :schedule="schedule" @saved="examAdded"/>
+                        <div class="ml-auto d-flex flex-row">
+                            <select v-model="displayType" class="mr-2 pl-1 pr-4">
+                                <option value="exams">Examens</option>
+                                <option value="class-groups" selected>Classes</option>
+                            </select>
+
+                            <add-exam-button
+                                :schedule="schedule"
+                                :disabled="displayType !== 'exams'"
+                                @saved="examAdded"
+                            />
                         </div>
                     </div>
                 </div>
 
                 <div class="advanced-table-content">
-                    <div v-for="(exam, i) in exams" :key="i">
+                    <div v-for="(entry, i) in tableData" :key="i">
                         <div
                             class="advanced-table-content-line actionable no-select can-be-clicked"
-                            @click="examNameClicked(exam, $event)"
+                            @click="examNameClicked(entry, $event)"
                         >
                             <div
                                 class="advanced-table-content-cell no-border can-be-clicked"
-                            >{{ exam.name }}</div>
+                            >{{ entry.name }}</div>
+
                             <div
                                 class="advanced-table-content-cell no-border ml-auto pr-2"
-                                v-if="exam.id === openedExamId"
+                                v-if="entry.id === openedExamId"
                             >
-                                <button class="btn btn-secondary" @click.prevent="showEditor">
+                                <button
+                                    v-if="displayType === 'exams'"
+                                    class="btn btn-secondary"
+                                    @click.prevent="showEditor"
+                                >
                                     <i class="fas fa-cog"></i>
                                 </button>
                                 <button
                                     class="btn btn-secondary"
                                     @click.prevent="editorExamInstanceId = -1"
-                                >Ajouter</button>
+                                >
+                                    <i class="fas fa-plus"></i> Examen
+                                </button>
                             </div>
                         </div>
 
                         <transition name="anim-show">
-                            <div v-if="exam.id === openedExamId">
+                            <div v-if="entry.id === openedExamId">
                                 <div
                                     class="advanced-table-content-line align-items-center actionable"
-                                    v-for="(instance, i) in exam['exam-instances']"
+                                    v-for="(instance, i) in entry['exam-instances']"
                                     :key="i"
                                     @click="editorExamInstanceId = instance.id"
                                 >
@@ -53,8 +69,8 @@
 
                                     <div
                                         class="advanced-table-content-cell no-border"
-                                        style="width: 8%;"
-                                    >{{ instance['class-group'].name }}</div>
+                                        style="width: 15%;"
+                                    >{{ displayType === 'exams' ? instance['class-group'].name : instance.exam.name }}</div>
 
                                     <div
                                         class="advanced-table-content-cell no-border text-muted text-truncate"
@@ -63,7 +79,7 @@
 
                                     <div
                                         class="advanced-table-content-cell no-border"
-                                    >{{ instance.teacher.name }}</div>
+                                    >{{ instance.teacher ? instance.teacher.name : '?' }}</div>
 
                                     <div
                                         class="advanced-table-content-cell ml-auto text-right text-color-primary"
@@ -77,7 +93,7 @@
                                 </div>
 
                                 <div
-                                    v-if="exam['exam-instances'].length === 0"
+                                    v-if="entry['exam-instances'].length === 0"
                                     class="advanced-table-content-line"
                                 >
                                     <div class="advanced-table-content-cell tree-cell no-border"></div>
@@ -98,7 +114,7 @@
             v-if="editorExamId !== null"
             :schedule="schedule"
             :exam-id="editorExamId"
-            @saved="loadExams"
+            @saved="loadResources"
             @deleted="examDeleted"
             @closed="editorExamId = null"
         ></exam-editor-modal>
@@ -107,9 +123,8 @@
         <exam-instance-editor-modal
             v-if="editorExamInstanceId !== null"
             :schedule="schedule"
-            :exam="exams.find(e => e.id === editorExamInstanceId)"
             :exam-instance-id="editorExamInstanceId"
-            @saved="loadExams"
+            @saved="loadResources"
             @closed="editorExamInstanceId = null"
         ></exam-instance-editor-modal>
     </div>
@@ -136,7 +151,13 @@ export default {
     data() {
         return {
             loading: false,
-            exams: [],
+
+            // Data for exams of class-groups
+            // See displayType
+            tableData: [],
+
+            // Number of exams
+            examCount: 0,
 
             // ID of exam corrently unfolded
             openedExamId: null,
@@ -145,17 +166,29 @@ export default {
             editorExamId: null,
 
             // ID of exam instance open in editor
-            editorExamInstanceId: null
+            editorExamInstanceId: null,
+
+            // Of to display data
+            // * "exams": display exam list, sublist is class groups
+            // * "class-groups": display class groups, sublist is exams
+            displayType: "class-groups"
         };
     },
 
     created() {
-        this.loadExams();
+        this.loadResources();
+    },
+
+    watch: {
+        displayType() {
+            this.openedExamId = null;
+            this.loadResources();
+        }
     },
 
     methods: {
         async examAdded(exam) {
-            await this.loadExams();
+            await this.loadResources();
             this.openedExamId = exam.id;
         },
 
@@ -181,8 +214,8 @@ export default {
             this.editorExamId = null;
         },
 
-        examDeleted(exam) {
-            this.$set(this, "exams", this.exams.filter(e => e.id !== exam.id));
+        async examDeleted(exam) {
+            await this.loadResources();
             this.openedExamId = null;
             this.editorExamId = null;
         },
@@ -193,9 +226,19 @@ export default {
         },
 
         // Loading
-        async loadExams() {
-            try {
-                this.exams = await api.get("/exams", {
+        async loadResources() {
+            // Update exam count in bg
+            api.get("/exams", {
+                schedule_id: this.schedule.id,
+                $count: 1,
+                $limit: 1
+            }).then(data => {
+                this.examCount = data[0].count;
+            });
+
+            // Load good data depending on what is going to be displayed
+            if (this.displayType === "exams") {
+                this.tableData = await api.get("/exams", {
                     schedule_id: this.schedule.id,
                     $include: [
                         "exam-instances",
@@ -204,7 +247,20 @@ export default {
                         "exam-instances.class-groups.classes"
                     ].join(",")
                 });
-            } catch (e) {}
+            } else if (this.displayType === "class-groups") {
+                this.tableData = await api.get("/class-groups", {
+                    schedule_id: this.schedule.id,
+                    $include: [
+                        "exam-instances",
+                        "exam-instances.exams",
+                        "exam-instances.teachers",
+                        "exam-instances.class-groups",
+                        "exam-instances.class-groups.classes"
+                    ].join(",")
+                });
+            } else {
+                throw new Error("Unknown displayType [tabs/exams.vue]");
+            }
         }
     }
 };
