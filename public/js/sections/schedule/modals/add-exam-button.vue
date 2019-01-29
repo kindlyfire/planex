@@ -1,7 +1,7 @@
 <template>
     <popper-with-button ref="popper" @show="opened" :disabled="disabled">
         <template slot="button-text">
-            <i class="fas fa-plus"></i>&nbsp; Examen
+            <i class="fas fa-plus"></i>&nbsp; Matière
         </template>
         <template slot="popper-content">
             <div class="p-2">

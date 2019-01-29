@@ -1,7 +1,26 @@
-input[type='text'] {
+input[type='text']:not(.multiselect__input) {
     border-radius: 0;
     border: 1px solid rgba($primary-color, 0.1);
     padding: 0.375rem 0.75rem;
     display: block;
     font-size: 1rem;
+}
+
+.multiselect__tag,
+.multiselect__option--highlight,
+.multiselect__option--highlight::after {
+    background: $primary-color;
+    color: white;
+}
+
+// .multiselect__tag {
+//     padding: 8px 26px 6px 10px;
+// }
+
+.multiselect__tag-icon::after {
+    color: white;
+}
+
+.multiselect__tag-icon:hover {
+    background-color: rgba(white, 0.2);
 }
