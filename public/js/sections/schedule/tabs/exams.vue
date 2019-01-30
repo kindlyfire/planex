@@ -82,7 +82,12 @@
                                             <span
                                                 v-if="instance.teachers.length === 1"
                                             >{{ instance.teachers[0].name }}</span>
-                                            <span v-else>{{ instance.teachers.length }} professeurs</span>
+                                            <span
+                                                v-else-if="instance.teachers.length === 2"
+                                            >{{ instance.teachers[0].name }}, {{ instance.teachers[1].name }}</span>
+                                            <span
+                                                v-else-if="instance.teachers.length >= 2"
+                                            >{{ instance.teachers.length }} professeurs</span>
                                         </template>
                                     </div>
 
@@ -129,8 +134,8 @@
             v-if="editorExamInstanceId !== null"
             :schedule="schedule"
             :exam-instance-id="editorExamInstanceId"
-            :exam="displayType === 'exams' ? tableData.find(t => t.id === openedResourceId) : -1"
-            :class-group="displayType === 'class-groups' ? tableData.find(t => t.id === openedResourceId) : -1"
+            :exam="displayType === 'exams' ? tableData.find(t => t.id === openedResourceId) : null"
+            :class-group="displayType === 'class-groups' ? tableData.find(t => t.id === openedResourceId) : null"
             :class-group-is-fixed="displayType === 'class-groups'"
             :exam-is-fixed="displayType === 'exams'"
             @saved="loadResources"
