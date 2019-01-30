@@ -50,7 +50,7 @@
                                 </button>
                                 <button
                                     class="btn btn-secondary"
-                                    @click.prevent="editorExamInstanceId = -1"
+                                    @click.prevent="showExamInstanceCreator"
                                 >
                                     <i class="fas fa-plus"></i> Examen
                                 </button>
@@ -138,7 +138,8 @@
             :class-group="displayType === 'class-groups' ? tableData.find(t => t.id === openedResourceId) : null"
             :class-group-is-fixed="displayType === 'class-groups'"
             :exam-is-fixed="displayType === 'exams'"
-            @saved="loadResources"
+            @saved="examInstanceSaved"
+            @deleted="loadResources"
             @closed="editorExamInstanceId = null"
         ></exam-instance-editor-modal>
     </div>
@@ -233,6 +234,7 @@ export default {
 
         async examDeleted(exam) {
             await this.loadResources();
+
             this.openedResourceId = null;
             this.editorResourceId = null;
         },
@@ -240,6 +242,16 @@ export default {
         // Open exam instance creator for currently opened exam
         openExamInstanceEditor() {
             this.editorExamInstanceId = this.openedResourceId;
+        },
+
+        // Create new exam
+        showExamInstanceCreator() {
+            this.editorExamInstanceId = -1;
+        },
+
+        examInstanceSaved(instance) {
+            this.editorExamInstanceId = instance.id;
+            this.loadResources();
         },
 
         // Loading

@@ -177,19 +177,22 @@ export default {
             // Should confirm obviously !
             // This resource is too much of a hassle to add again
             // @TODO
-            // this.saving = true;
-            // try {
-            //     // await api.delete("/exam/" + this.examId);
-            //     this.$emit("deleted", this.exam);
-            // } catch (e) {}
-            // this.saving = false;
+            this.saving = true;
+            try {
+                await api.delete("/exam-instance/" + this.instance.id);
+                this.$emit("deleted", this.instance);
+                this.close();
+            } catch (e) {
+                console.log(e);
+            }
+            this.saving = false;
         },
 
         async loadResources() {
             this.loading = true;
             try {
                 let res = await Promise.all([
-                    this.examInstanceId !== null
+                    this.examInstanceId !== -1
                         ? api.get("/exam-instance/" + this.examInstanceId, {
                               $include: ["exams", "teachers"].join(",")
                           })
@@ -242,23 +245,27 @@ export default {
             this.saving = true;
             try {
                 // Update props on exam
+                this.instance.schedule_id = this.schedule.id;
                 this.instance.exam_id = this.selectedExam.id;
-
-                if (this.classGroupIsFixed) {
-                    this.instance.group_id = this.classGroup.id;
-                } else {
-                    this.instance.group_id = this.selectedClassGroup.id;
-                }
-
-                if (this.examIsFixed) {
-                    this.instance.exam_id = this.exam.id;
-                } else {
-                    this.instance.exam_id = this.selectedExam.id;
-                }
+                this.instance.group_id = this.selectedClassGroup.id;
 
                 // Either update or create instance
                 if (this.examInstanceId === -1) {
                     // Create
+                    let tmpInstance = await api.post(
+                        "/exam-instances",
+                        {},
+                        this.instance
+                    );
+
+                    // Get again, this time with associations
+                    // Because api.post doesn't return any associations
+                    this.instance = await api.get(
+                        "/exam-instance/" + tmpInstance.id,
+                        {
+                            $include: ["exams", "teachers"].join(",")
+                        }
+                    );
                 } else {
                     // Update
                     await api.put(
@@ -294,7 +301,7 @@ export default {
                     })
                 ]);
 
-                this.$emit("saved");
+                this.$emit("saved", this.instance);
             } catch (e) {
                 console.log(e);
             }
