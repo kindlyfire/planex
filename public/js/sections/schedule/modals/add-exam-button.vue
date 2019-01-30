@@ -8,7 +8,7 @@
                 <input
                     type="text"
                     v-model="name"
-                    placeholder="Nom de l'examen"
+                    placeholder="Nom de la matière"
                     ref="input"
                     @keydown.enter="save"
                 >

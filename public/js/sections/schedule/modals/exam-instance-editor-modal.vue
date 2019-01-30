@@ -74,7 +74,7 @@
                                 <v-select
                                     v-model="selectedTeachers"
                                     :options="teachers"
-                                    :allow-empty="false"
+                                    :allow-empty="true"
                                     :multiple="true"
                                     track-by="id"
                                     label="name"
@@ -97,7 +97,11 @@
                         </div>
 
                         <div style="width: 35%">
-                            <p class="p-3">Les classes du group ici</p>
+                            <p
+                                class="p-3"
+                                v-for="(cls, i) of (selectedClassGroup || []).classes"
+                                :key="i"
+                            >{{ cls.name }}</p>
                         </div>
                     </div>
                 </div>
@@ -140,7 +144,9 @@ export default {
                 exam_id: null,
                 group_id: this.classGroupId,
                 teacher_id: null,
-                description: ""
+                description: "",
+                teachers: [],
+                exam: {}
             },
 
             exams: [],
@@ -160,7 +166,6 @@ export default {
 
     created() {
         this.loadResources();
-        console.log("dddddd", JSON.parse(JSON.stringify(this.classGroup)));
     },
 
     methods: {
@@ -181,38 +186,56 @@ export default {
         },
 
         async loadResources() {
-            if (this.examInstanceId !== -1) {
-                this.loading = true;
-                try {
-                    let res = await Promise.all([
-                        api.get("/exam-instance/" + this.examInstanceId, {
-                            $include: ["exams"].join("")
-                        }),
-                        api.get("/exams", {
-                            schedule_id: this.schedule.id
-                        }),
-                        api.get("/teachers", {
-                            schedule_id: this.schedule.id
-                        }),
-                        api.get("/class-groups", {
-                            schedule_id: this.schedule.id
-                        })
-                    ]);
-                    this.instance = res[0];
-                    this.exams = res[1];
-                    this.teachers = res[2];
-                    this.classGroups = res[3];
+            this.loading = true;
+            try {
+                let res = await Promise.all([
+                    this.examInstanceId !== null
+                        ? api.get("/exam-instance/" + this.examInstanceId, {
+                              $include: ["exams", "teachers"].join(",")
+                          })
+                        : this.instance,
+                    api.get("/exams", {
+                        schedule_id: this.schedule.id
+                    }),
+                    api.get("/teachers", {
+                        schedule_id: this.schedule.id
+                    }),
+                    api.get("/class-groups", {
+                        schedule_id: this.schedule.id,
+                        $inlude: "classes"
+                    })
+                ]);
+                this.instance = res[0];
+                this.exams = res[1];
+                this.teachers = res[2];
+                this.classGroups = res[3];
 
+                if (this.exam) {
+                    console.log("From selectedExam");
+                    this.selectedExam = this.exams.find(
+                        e => e.id === this.exam.id
+                    );
+                } else {
                     this.selectedExam = this.exams.find(
                         e => e.id === this.instance.exam_id
                     );
+                }
 
+                if (this.classGroup) {
+                    this.selectedClassGroup = this.classGroups.find(
+                        e => e.id === this.classGroup.id
+                    );
+                } else {
                     this.selectedClassGroup = this.classGroups.find(
                         e => e.id === this.instance.group_id
                     );
-                } catch (e) {}
-                this.loading = false;
-            }
+                }
+
+                this.selectedTeachers = this.teachers.filter(
+                    t => !!this.instance.teachers.find(t2 => t.id === t2.id)
+                );
+            } catch (e) {}
+            this.loading = false;
         },
 
         async save() {
@@ -244,6 +267,32 @@ export default {
                         this.instance
                     );
                 }
+
+                // Update teachers list
+                // Basically, fetch then diff
+                let deletedTeachers = this.instance.teachers.filter(
+                    t => !this.selectedTeachers.find(t2 => t.id === t2.id)
+                );
+                let addedTeachers = this.selectedTeachers.filter(
+                    t => !this.instance.teachers.find(t2 => t.id === t2.id)
+                );
+
+                await Promise.all([
+                    ...deletedTeachers.map(t => {
+                        return api.delete(
+                            `/exam-instance/${this.instance.id}/teachers/${
+                                t.id
+                            }`
+                        );
+                    }),
+                    ...addedTeachers.map(t => {
+                        return api.post(
+                            `/exam-instance/${this.instance.id}/teachers/${
+                                t.id
+                            }`
+                        );
+                    })
+                ]);
 
                 this.$emit("saved");
             } catch (e) {
