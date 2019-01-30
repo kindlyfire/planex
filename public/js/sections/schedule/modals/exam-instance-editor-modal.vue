@@ -76,6 +76,7 @@
                                     :options="teachers"
                                     :allow-empty="true"
                                     :multiple="true"
+                                    :close-on-select="false"
                                     track-by="id"
                                     label="name"
                                     deselect-label
