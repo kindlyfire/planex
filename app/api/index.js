@@ -163,5 +163,108 @@ module.exports = (config) => {
                 }
             }
         )
+
+        // Relations (one level deep)
+        for (let associatedModel of Object.values(model.associations)) {
+            // associatedModel is currently an association, we need the target model
+            associatedModel = associatedModel.target
+
+            router.get(
+                config.prefix +
+                    '/' +
+                    model.options.name.singular +
+                    '/:id/' +
+                    associatedModel.options.name.plural,
+                (ctx, next) => {
+                    // @TODO
+                }
+            )
+
+            router.use(
+                config.prefix +
+                    '/' +
+                    model.options.name.singular +
+                    '/:id/' +
+                    associatedModel.options.name.plural +
+                    '/:targetId',
+                async (ctx, next) => {
+                    let associatedResource = await associatedModel.findOne({
+                        where: {
+                            id: ctx.params.targetId
+                        }
+                    })
+
+                    if (!associatedResource) {
+                        ctx.body = {
+                            status: 404,
+                            error: `Could not find ${
+                                associatedModel.options.name.singular
+                            } with id=${ctx.params.id}`
+                        }
+                        return
+                    }
+
+                    ctx.state.associatedResource = associatedResource
+                    await next()
+                }
+            )
+
+            router.post(
+                config.prefix +
+                    '/' +
+                    model.options.name.singular +
+                    '/:id/' +
+                    associatedModel.options.name.plural +
+                    '/:targetId',
+                async (ctx, next) => {
+                    let { resource, associatedResource } = ctx.state
+
+                    console.log(
+                        Object.getOwnPropertyNames(resource),
+                        Object.getOwnPropertyNames(
+                            Object.getPrototypeOf(resource)
+                        )
+                    )
+
+                    // Add association
+                    let res = await resource[
+                        'add' +
+                            util.capitalize(
+                                associatedModel.options.name.singular
+                            )
+                    ](associatedResource)
+
+                    ctx.body = {
+                        status: 200,
+                        data: {}
+                    }
+                }
+            )
+
+            router.delete(
+                config.prefix +
+                    '/' +
+                    model.options.name.singular +
+                    '/:id/' +
+                    associatedModel.options.name.plural +
+                    '/:targetId',
+                async (ctx, next) => {
+                    let { resource, associatedResource } = ctx.state
+
+                    // Add association
+                    let res = await resource[
+                        'remove' +
+                            util.capitalize(
+                                associatedModel.options.name.singular
+                            )
+                    ](associatedResource)
+
+                    ctx.body = {
+                        status: 200,
+                        data: {}
+                    }
+                }
+            )
+        }
     }
 }

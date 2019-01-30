@@ -84,5 +84,9 @@ module.exports = {
 
         ref.where = ref.where || {}
         ref.where[subNames[subNames.length - 1]] = value
+    },
+
+    capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1)
     }
 }
