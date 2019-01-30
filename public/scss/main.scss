@@ -41,9 +41,8 @@ h6 {
     user-select: none;
 }
 
-.v-select * {
-    line-height: 1 !important;
-    max-height: 40px;
+.badge-primary {
+    background-color: $primary-color;
 }
 
 // Imports

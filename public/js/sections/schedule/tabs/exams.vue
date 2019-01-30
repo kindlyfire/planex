@@ -55,6 +55,11 @@
                                     <i class="fas fa-plus"></i> Examen
                                 </button>
                             </div>
+                            <div v-else class="advanced-table-content-cell no-border ml-auto pr-2">
+                                <span
+                                    class="badge badge-primary"
+                                >{{ entry['exam-instances'].length }}</span>
+                            </div>
                         </div>
 
                         <transition name="anim-show">
@@ -91,9 +96,7 @@
                                         </template>
                                     </div>
 
-                                    <div
-                                        class="advanced-table-content-cell ml-auto text-right text-color-primary"
-                                    >
+                                    <div class="advanced-table-content-cell ml-auto text-right">
                                         <span
                                             class="badge badge-secondary ml-1"
                                             v-for="(cls, i) in instance['class-group'].classes"
