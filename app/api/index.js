@@ -208,13 +208,6 @@ module.exports = (config) => {
                 async (ctx, next) => {
                     let { resource, associatedResource } = ctx.state
 
-                    console.log(
-                        Object.getOwnPropertyNames(resource),
-                        Object.getOwnPropertyNames(
-                            Object.getPrototypeOf(resource)
-                        )
-                    )
-
                     // Add association
                     let res = await resource[
                         'add' +
