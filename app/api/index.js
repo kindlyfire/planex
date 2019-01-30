@@ -169,17 +169,6 @@ module.exports = (config) => {
             // associatedModel is currently an association, we need the target model
             associatedModel = associatedModel.target
 
-            router.get(
-                config.prefix +
-                    '/' +
-                    model.options.name.singular +
-                    '/:id/' +
-                    associatedModel.options.name.plural,
-                (ctx, next) => {
-                    // @TODO
-                }
-            )
-
             router.use(
                 config.prefix +
                     '/' +
