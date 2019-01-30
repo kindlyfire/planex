@@ -6,9 +6,9 @@
             </h2>
 
             <div class="sidebar-link-list" v-if="!loading">
-                <a href @click.prevent="changeTab('')">Résumé</a>
+                <a href @click.prevent="changeTab('')">Résumé (~)</a>
                 <a href @click.prevent="changeTab('solutions')">Solutions</a>
-                <a href @click.prevent="changeTab('exams')">Examens</a>
+                <a href @click.prevent="changeTab('exams')">Examens (fait)</a>
                 <a href @click.prevent="changeTab('teachers')">Profs (fait)</a>
                 <a href @click.prevent="changeTab('classes')">Classes (fait)</a>
                 <a href @click.prevent="changeTab('constraints')">Contraintes</a>
