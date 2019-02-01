@@ -7,7 +7,7 @@
         "start": "node index.js"
     },
     "author": "Tijl Van den Brugghen <me@kindlyfire.me>",
-    "license": "UNLICENSED",
+    "license": "ISC",
     "dependencies": {
         "chalk": "^2.4.2",
         "dateformat": "^3.0.3",
