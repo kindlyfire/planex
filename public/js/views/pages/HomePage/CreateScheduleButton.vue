@@ -1,72 +1,58 @@
 <template>
-    <popper-with-button ref="popper">
+    <PopperButton ref="popper">
         <template slot="button-text">Créer</template>
         <template slot="popper-content">
             <div class="p-2">
                 <input type="text" v-model="name" placeholder="Nom de l'horaire">
                 
                 <button
-                    v-if="!saving"
-                    @click="save"
+                    v-if="!m_saver_saving"
+                    @click="m_saver_save"
                     class="btn btn-primary d-block w-100 mt-2"
                 >Enregistrer</button>
                 
                 <button
-                    v-if="saving"
+                    v-else
                     class="btn btn-secondary d-block w-100 mt-2 d-flex justify-content-center align-items-center"
-                >
-                    <p>
-                        <hollow-dots-spinner
-                            :animation-duration="800"
-                            :dot-size="8"
-                            :dots-num="3"
-                            color="inherit"
-                        ></hollow-dots-spinner>
-                    </p>
-                </button>
+                >Sauvegarde...</button>
             </div>
         </template>
-    </popper-with-button>
+    </PopperButton>
 </template>
 
 <script>
-import { HollowDotsSpinner } from "epic-spinners";
-import popperWithButton from "../../../components/popper-with-button.vue";
-import api from "../../../utils/api";
-import { setTimeout } from "timers";
+import api from "&/utils/api";
+import saver from "&/mixins/saver";
+
+import PopperButton from "&/components/PopperButton";
 
 export default {
+    mixins: [saver],
+
     components: {
-        popperWithButton,
-        HollowDotsSpinner
+        PopperButton
     },
 
     data() {
         return {
-            name: "",
-            saving: false
+            name: ""
         };
     },
 
     methods: {
-        async save() {
+        async m_saver_saver() {
             if (!this.name) {
                 return;
             }
 
-            this.saving = true;
+            await api.post("/schedules", {}, { name: this.name });
 
-            try {
-                await api.post("/schedules", {}, { name: this.name });
+            this.$refs.popper.doClose();
+            this.$emit("saved");
 
-                this.$refs.popper.doClose();
-                this.$emit("saved");
-
-                this.$nextTick(() => {
-                    this.saving = false;
-                    this.name = "";
-                });
-            } catch (e) {}
+            this.$nextTick(() => {
+                this.name = "";
+            });
         }
     }
 };

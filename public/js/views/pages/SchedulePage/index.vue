@@ -27,26 +27,20 @@
         <template slot="header">
             <div class="main-layout-content-center">
                 <span class="text-muted">
-                    <hollow-dots-spinner
-                        v-if="m_loader_loading"
-                        :animation-duration="1000"
-                        :dot-size="8"
-                        :dots-num="3"
-                        color="inherit"
-                    ></hollow-dots-spinner>
-
-                    <span v-if="!m_loader_loading">{{ schedule.name }}</span>
+                    <span v-if="m_loader_loading">
+                        <i>Chargement...</i>
+                    </span>
+                    
+                    <span v-else>{{ schedule.name }}</span>
                 </span>
             </div>
         </template>
 
-        <RouterView v-if="!m_loader_loading" :schedule="schedule"></RouterView>
+        <RouterView v-if="!m_loader_loading" :schedule="schedule"/>
     </ThePanel>
 </template>
 
 <script>
-import { HollowDotsSpinner } from "epic-spinners";
-
 import api from "&/utils/api";
 import loader from "&/mixins/loader";
 
@@ -60,8 +54,6 @@ export default {
     mixins: [loader],
 
     components: {
-        HollowDotsSpinner,
-
         ThePanel
     },
 

@@ -1,7 +1,7 @@
 import SummaryPane from './SummaryPane'
 
 import ExamsPane from '&/sections/schedule/tabs/exams.vue'
-import ClassesPane from '&/sections/schedule/tabs/classes.vue'
+import ClassesPane from './ClassesPane'
 import TeachersPane from '&/sections/schedule/tabs/teachers.vue'
 
 export default [
@@ -11,18 +11,18 @@ export default [
         component: SummaryPane
     },
     {
+        path: 'exams',
+        name: 'Examens',
+        component: ExamsPane
+    },
+    {
         path: 'teachers',
-        name: 'Professeurs',
+        name: 'Profs',
         component: TeachersPane
     },
     {
         path: 'classes',
         name: 'Classes',
         component: ClassesPane
-    },
-    {
-        path: 'exams',
-        name: 'Examens',
-        component: ExamsPane
     }
 ]

@@ -5,6 +5,12 @@ import VueProgress from 'vue-progress-path'
 import App from './views/App'
 import routes from './routes'
 
+// UI Components
+import PrimaryButton from '&/components/ui/PrimaryButton'
+
+Vue.component('PrimaryButton', PrimaryButton)
+
+// Lib registration
 Vue.use(VueProgress, {
     defaultShape: 'line'
 })
