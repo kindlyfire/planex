@@ -2,7 +2,7 @@ import Vue from 'vue/dist/vue.js'
 import VueRouter from 'vue-router'
 import VueProgress from 'vue-progress-path'
 
-import main from './main.vue'
+import App from './views/App'
 import routes from './routes'
 
 Vue.use(VueProgress, {
@@ -18,6 +18,6 @@ new Vue({
     el: '#app',
     router,
     render: function(h) {
-        return h(main)
+        return h(App)
     }
 })

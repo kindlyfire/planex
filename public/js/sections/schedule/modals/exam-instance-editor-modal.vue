@@ -99,7 +99,7 @@
 
                         <div style="width: 35%">
                             <p
-                                class="p-3"
+                                class
                                 v-for="(cls, i) of (selectedClassGroup || []).classes"
                                 :key="i"
                             >{{ cls.name }}</p>
@@ -112,7 +112,7 @@
 </template>
 
 <script>
-import api from "../../../api";
+import api from "../../../utils/api";
 
 import loading from "../../../components/loading.vue";
 import popperWithButton from "../../../components/popper-with-button.vue";
@@ -206,7 +206,7 @@ export default {
                     }),
                     api.get("/class-groups", {
                         schedule_id: this.schedule.id,
-                        $inlude: "classes"
+                        $include: "classes"
                     })
                 ]);
                 this.instance = res[0];

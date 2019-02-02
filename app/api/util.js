@@ -32,6 +32,8 @@ module.exports = {
                         'count'
                     ]
                 ]
+            } else {
+                throw new Error('Unknown option ' + k)
             }
         }
 

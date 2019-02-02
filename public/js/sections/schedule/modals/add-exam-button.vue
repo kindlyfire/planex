@@ -27,7 +27,7 @@
 <script>
 import { HollowDotsSpinner } from "epic-spinners";
 import popperWithButton from "../../../components/popper-with-button.vue";
-import api from "../../../api";
+import api from "../../../utils/api";
 import { setTimeout } from "timers";
 
 export default {

@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import api from "../../../api";
+import api from "../../../utils/api";
 
 import loading from "../../../components/loading.vue";
 import popperWithButton from "../../../components/popper-with-button.vue";

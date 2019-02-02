@@ -38,7 +38,7 @@
 
 <script>
 import panel from "../../panel.vue";
-import api from "../../api";
+import api from "../../utils/api";
 import loading from "../../components/loading.vue";
 import { setTimeout } from "timers";
 import createSchedule from "./create-schedule.vue";

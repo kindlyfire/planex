@@ -55,7 +55,7 @@
 import addGroupButton from "../modals/add-group-button.vue";
 import groupEditorModal from "../modals/group-editor-modal.vue";
 import loading from "../../../components/loading.vue";
-import api from "../../../api";
+import api from "../../../utils/api";
 
 export default {
     props: ["schedule"],

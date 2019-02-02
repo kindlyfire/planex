@@ -150,7 +150,7 @@
 
 <script>
 import loading from "../../../components/loading.vue";
-import api from "../../../api";
+import api from "../../../utils/api";
 
 import addExamButton from "../modals/add-exam-button.vue";
 import examEditorModal from "../modals/exam-editor-modal.vue";
@@ -281,6 +281,7 @@ export default {
             if (this.displayType === "exams") {
                 this.tableData = await api.get("/exams", {
                     schedule_id: this.schedule.id,
+                    $order: "name",
                     $include: [
                         "exam-instances",
                         "exam-instances.exams",
@@ -292,6 +293,7 @@ export default {
             } else if (this.displayType === "class-groups") {
                 this.tableData = await api.get("/class-groups", {
                     schedule_id: this.schedule.id,
+                    $order: "name",
                     $include: [
                         "exam-instances",
                         "exam-instances.exams",

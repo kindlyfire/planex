@@ -21,7 +21,7 @@
         "vue-progress-path": "0.0.2",
         "vue-router": "^3.0.2"
     },
-    "browserslist": [
-        "since 2018-02"
-    ]
+    "alias": {
+        "&": "./js/"
+    }
 }

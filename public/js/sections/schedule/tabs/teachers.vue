@@ -39,7 +39,7 @@
 import advancedTable from "../../../components/advanced-table.vue";
 import loading from "../../../components/loading.vue";
 import teacherEditor from "../modals/teacher-editor.vue";
-import api from "../../../api";
+import api from "../../../utils/api";
 
 export default {
     props: ["schedule"],

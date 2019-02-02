@@ -1,33 +1,15 @@
 import home from './sections/home/home.vue'
 
-import schedule from './sections/schedule/schedule.vue'
-import scheduleSummary from './sections/schedule/tabs/summary.vue'
-import scheduleExams from './sections/schedule/tabs/exams.vue'
-import scheduleTeachers from './sections/schedule/tabs/teachers.vue'
-import scheduleClasses from './sections/schedule/tabs/classes.vue'
+import HomePage from './views/pages/HomePage'
+import SchedulePage, {
+    children as schedulePageChildren
+} from './views/pages/SchedulePage'
 
 export default [
-    { path: '/', component: home },
+    { path: '/', component: HomePage },
     {
         path: '/schedule/:id',
-        component: schedule,
-        children: [
-            {
-                path: '',
-                component: scheduleSummary
-            },
-            {
-                path: 'teachers',
-                component: scheduleTeachers
-            },
-            {
-                path: 'classes',
-                component: scheduleClasses
-            },
-            {
-                path: 'exams',
-                component: scheduleExams
-            }
-        ]
+        component: SchedulePage,
+        children: schedulePageChildren
     }
 ]

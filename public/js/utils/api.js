@@ -17,7 +17,7 @@ export default {
         } catch (e) {
             console.error(e)
             // TODO: Should show error on screen, return empty data
-            throw e
+            return null
         }
     },
 
