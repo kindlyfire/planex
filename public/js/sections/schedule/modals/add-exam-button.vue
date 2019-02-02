@@ -25,62 +25,60 @@
 </template>
 
 <script>
-import { HollowDotsSpinner } from "epic-spinners";
-import popperWithButton from "../../../components/popper-with-button.vue";
-import api from "../../../utils/api";
-import { setTimeout } from "timers";
+import popperWithButton from '../../../components/popper-with-button.vue'
+import api from '../../../utils/api'
+import { setTimeout } from 'timers'
 
 export default {
-    props: ["schedule", "disabled"],
+    props: ['schedule', 'disabled'],
 
     components: {
-        popperWithButton,
-        HollowDotsSpinner
+        popperWithButton
     },
 
     data() {
         return {
-            name: "",
+            name: '',
             saving: false
-        };
+        }
     },
 
     methods: {
         async save() {
             if (!this.name) {
-                return;
+                return
             }
 
-            this.saving = true;
+            this.saving = true
 
             try {
                 let resource = await api.post(
-                    "/exams",
+                    '/exams',
                     {},
                     {
                         name: this.name,
                         length: 4,
                         schedule_id: this.schedule.id
                     }
-                );
+                )
 
-                this.$refs.popper.doClose();
-                this.$emit("saved", resource);
+                this.$refs.popper.doClose()
+                this.$emit('saved', resource)
 
                 this.$nextTick(() => {
-                    this.saving = false;
-                    this.name = "";
-                });
+                    this.saving = false
+                    this.name = ''
+                })
             } catch (e) {}
 
-            this.saving = false;
+            this.saving = false
         },
 
         opened() {
             this.$nextTick(() => {
-                this.$refs.input.focus();
-            });
+                this.$refs.input.focus()
+            })
         }
     }
-};
+}
 </script>

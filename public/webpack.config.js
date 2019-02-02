@@ -3,7 +3,7 @@ const path = require('path')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 module.exports = {
-    context: path.resolve('./js'),
+    context: path.resolve(__dirname, 'js'),
     entry: './main.js',
     output: {
         filename: 'main.js',
@@ -29,7 +29,7 @@ module.exports = {
             {
                 test: /\.js$/,
                 loader: 'babel-loader',
-                include: [path.resolve('js')]
+                include: [path.resolve(__dirname, 'js')]
             },
             {
                 test: /\.(s)?css$/,

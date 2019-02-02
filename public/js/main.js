@@ -5,9 +5,6 @@ import VueProgress from 'vue-progress-path'
 import App from './views/App'
 import routes from './routes'
 
-// CSS
-import '../scss/main.scss'
-
 // UI Components
 import PrimaryButton from '&/components/ui/PrimaryButton'
 

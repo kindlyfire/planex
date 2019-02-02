@@ -4,7 +4,10 @@
     "description": "Exam scheduler",
     "main": "index.js",
     "scripts": {
-        "start": "node index.js"
+        "start": "node index.js",
+        "build": "node-sass public/scss/main.scss -o public/dist/ & webpack --config public/webpack.config.js --mode=production",
+        "dev:scss": "node-sass -wr public/scss/main.scss -o public/dist/",
+        "dev:js": "webpack --watch --config public/webpack.config.js --mode=development"
     },
     "author": "Tijl Van den Brugghen <me@kindlyfire.me>",
     "license": "ISC",
@@ -21,11 +24,32 @@
         "mysql2": "^1.6.4",
         "nodemon": "^1.18.9",
         "pug": "^2.0.3",
-        "randomcolor": "^0.5.3",
         "sequelize": "^4.42.0",
         "temp-write": "^3.4.0"
     },
     "devDependencies": {
-        "typescript": "^3.2.4"
+        "terser": "3.14.1",
+        "@babel/core": "^7.2.2",
+        "@babel/plugin-transform-runtime": "^7.2.0",
+        "@babel/preset-env": "^7.3.1",
+        "@vue/component-compiler-utils": "^2.5.0",
+        "axios": "^0.18.0",
+        "babel-loader": "^8.0.5",
+        "css-loader": "^2.1.0",
+        "node-sass": "^4.11.0",
+        "parcel-bundler": "^1.11.0",
+        "sass-loader": "^7.1.0",
+        "vue": "^2.5.22",
+        "vue-loader": "^15.6.2",
+        "vue-multiselect": "^2.1.3",
+        "vue-popperjs": "^1.6.3",
+        "vue-progress-path": "0.0.2",
+        "vue-router": "^3.0.2",
+        "vue-style-loader": "^4.1.2",
+        "vue-template-compiler": "^2.5.22",
+        "webpack": "^4.29.0",
+        "webpack-cli": "^3.2.1",
+        "webpack-dev-server": "^3.1.14",
+        "style-loader": "^0.23.1"
     }
 }
