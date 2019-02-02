@@ -7,7 +7,7 @@
     >
         <slot></slot>
     </button>
-    <button v-else class="btn" :class="className">
+    <button v-else class="btn" :class="className" disabled>
         <slot></slot>
     </button>
 </template>

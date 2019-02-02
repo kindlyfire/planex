@@ -1,8 +1,8 @@
 import SummaryPane from './SummaryPane'
+import ClassesPane from './ClassesPane'
+import TeachersPane from './TeachersPane'
 
 import ExamsPane from '&/sections/schedule/tabs/exams.vue'
-import ClassesPane from './ClassesPane'
-import TeachersPane from '&/sections/schedule/tabs/teachers.vue'
 
 export default [
     {
