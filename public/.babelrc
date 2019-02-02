@@ -1,12 +1,11 @@
 {
     "plugins": [
         [
-            "transform-runtime",
+            "@babel/plugin-transform-runtime",
             {
-                "polyfill": false,
                 "regenerator": true
             }
         ],
-        "transform-object-rest-spread"
+        "@babel/plugin-proposal-object-rest-spread"
     ]
 }
