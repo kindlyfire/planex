@@ -27,7 +27,7 @@
             >Sauvegarder</PrimaryButton>
         </template>
 
-        <LoadingBar padding="5" v-if="m_loader_loading"/>
+        <LoadingBar padding="5" v-if="m_loader_loading"></LoadingBar>
 
         <div v-else>
             <div class="d-flex flex-row">

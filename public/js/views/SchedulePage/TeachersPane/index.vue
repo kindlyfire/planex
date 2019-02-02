@@ -21,7 +21,7 @@
                 </template>
             </AdvancedTable>
 
-            <LoadingBar v-if="m_loader_loading" padding="5"/>
+            <LoadingBar v-if="m_loader_loading" padding="5"></LoadingBar>
 
             <ModalEditorTeacher
                 v-if="editingTeacherId !== null"

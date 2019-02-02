@@ -1,9 +1,7 @@
-import home from './sections/home/home.vue'
-
-import HomePage from './views/pages/HomePage'
+import HomePage from './views/HomePage'
 import SchedulePage, {
     children as schedulePageChildren
-} from './views/pages/SchedulePage'
+} from './views/SchedulePage'
 
 export default [
     { path: '/', component: HomePage },

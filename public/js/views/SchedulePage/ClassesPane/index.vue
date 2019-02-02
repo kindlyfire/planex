@@ -3,7 +3,7 @@
         <div class="pl-2 pr-2">
             <h2>Classes</h2>
 
-            <LoadingBar v-if="m_loader_loading" padding="5"/>
+            <LoadingBar v-if="m_loader_loading" padding="5"></LoadingBar>
 
             <div v-else class="advanced-table">
                 <div class="advanced-table-header with-bottom-shadow">
@@ -13,7 +13,7 @@
                         >{{ groups.length }} groupe{{ groups.length !== 1 ? 's' : '' }}, {{ classes.length }} classe{{ classes.length !== 1 ? 's' : '' }}</h3>
 
                         <div class="ml-auto">
-                            <ButtonCreateGroup :schedule="schedule" @saved="m_loader_loader"/>
+                            <ButtonCreateGroup :schedule="schedule" @saved="m_loader_loader"></ButtonCreateGroup>
                         </div>
                     </div>
                 </div>
@@ -46,7 +46,7 @@
                 @closed="editingGroupId = null"
                 @saved="m_loader_load"
                 @deleted="m_loader_load"
-            />
+            ></ModalEditorGroup>
         </div>
     </div>
 </template>

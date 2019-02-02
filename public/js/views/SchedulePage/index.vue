@@ -36,19 +36,19 @@
             </div>
         </template>
 
-        <RouterView v-if="!m_loader_loading" :schedule="schedule"/>
+        <RouterView v-if="!m_loader_loading" :schedule="schedule"></RouterView>
     </ThePanel>
 </template>
 
 <script>
-import api from "&/utils/api";
-import loader from "&/mixins/loader";
+import api from '&/utils/api'
+import loader from '&/mixins/loader'
 
-import ThePanel from "&/components/ThePanel";
+import ThePanel from '&/components/ThePanel'
 
 // Import and re-export child panes
-import children from "./children";
-export { children };
+import children from './children'
+export { children }
 
 export default {
     mixins: [loader],
@@ -61,23 +61,21 @@ export default {
         return {
             schedule: {},
             children
-        };
+        }
     },
 
     methods: {
         async m_loader_loader() {
-            this.schedule = await api.get("/schedule/" + this.$route.params.id);
+            this.schedule = await api.get('/schedule/' + this.$route.params.id)
 
             if (!this.schedule) {
-                this.$router.push("/");
+                this.$router.push('/')
             }
         },
 
         changeTab(name) {
-            this.$router.push(
-                "/schedule/" + this.$route.params.id + "/" + name
-            );
+            this.$router.push('/schedule/' + this.$route.params.id + '/' + name)
         }
     }
-};
+}
 </script>
