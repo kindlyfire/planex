@@ -93,11 +93,28 @@
             </div>
 
             <div style="width: 35%">
-                <p
-                    class
-                    v-for="(cls, i) of (selectedClassGroup || []).classes"
-                    :key="i"
-                >{{ cls.name }}</p>
+                <div class="simple-list simple-list-hover">
+                    <div
+                        class="list-item"
+                        style="border-bottom: 1px solid rgba(0, 0, 0, 0.15)"
+                        @click="instance.autoadd_classes = +(!instance.autoadd_classes)"
+                    >
+                        <input type="checkbox" :checked="instance.autoadd_classes === 1"> Toutes les classes
+                    </div>
+                    <div
+                        v-for="(cls, i) of selectedClassGroup.classes"
+                        :key="i"
+                        :class="{'list-item-disabled': instance.autoadd_classes === 1}"
+                        @click="toggleClassSelected(cls)"
+                        class="list-item"
+                    >
+                        <input
+                            :checked="selectedClasses.findIndex((c) => c.id === cls.id) !== -1 || instance.autoadd_classes === 1"
+                            type="checkbox"
+                        >
+                        {{ cls.name }}
+                    </div>
+                </div>
             </div>
         </div>
     </Modal>
@@ -139,6 +156,7 @@ export default {
             instance: {
                 exam_id: null,
                 group_id: this.classGroupId,
+                autoadd_classes: 1,
                 teacher_id: null,
                 description: '',
                 teachers: [],
@@ -150,13 +168,15 @@ export default {
             classGroups: [],
 
             // Selected exam in the exam dropdown
-            selectedExam: null,
+            selectedExam: {},
 
             // Selected teachers in the teachers dropdown
-            selectedTeachers: null,
+            selectedTeachers: [],
 
             // Selected class group in the class groups dropdown
-            selectedClassGroup: null
+            selectedClassGroup: {},
+
+            selectedClasses: []
         }
     },
 
@@ -166,7 +186,7 @@ export default {
         },
 
         async _delete() {
-            // Should confirm obviously !
+            // Should confirm !
             // This resource is too much of a hassle to add again
             // @TODO
             this.saving = true
@@ -180,31 +200,46 @@ export default {
             this.saving = false
         },
 
+        toggleClassSelected(cls) {
+            let length = this.selectedClasses.length
+
+            this.selectedClasses = this.selectedClasses.filter(
+                (c) => c.id !== cls.id
+            )
+
+            if (this.selectedClasses.length === length) {
+                this.selectedClasses.push(cls)
+            }
+        },
+
         async m_loader_loader() {
             let res = await Promise.all([
                 this.examInstanceId !== -1
                     ? api.get('/exam-instance/' + this.examInstanceId, {
-                          $include: ['exams', 'teachers'].join(',')
+                          $include: ['exams', 'teachers', 'classes'].join(',')
                       })
                     : this.instance,
+
                 api.get('/exams', {
                     schedule_id: this.schedule.id
                 }),
+
                 api.get('/teachers', {
                     schedule_id: this.schedule.id
                 }),
+
                 api.get('/class-groups', {
                     schedule_id: this.schedule.id,
                     $include: 'classes'
                 })
             ])
+
             this.instance = res[0]
             this.exams = res[1]
             this.teachers = res[2]
             this.classGroups = res[3]
 
             if (this.exam) {
-                console.log('From selectedExam')
                 this.selectedExam = this.exams.find(
                     (e) => e.id === this.exam.id
                 )
@@ -227,6 +262,7 @@ export default {
             this.selectedTeachers = this.teachers.filter(
                 (t) => !!this.instance.teachers.find((t2) => t.id === t2.id)
             )
+            this.selectedClasses = [...this.instance.classes]
         },
 
         async m_saver_saver() {
@@ -234,6 +270,14 @@ export default {
             this.instance.schedule_id = this.schedule.id
             this.instance.exam_id = this.selectedExam.id
             this.instance.group_id = this.selectedClassGroup.id
+            this.instance.teachers = this.selectedTeachers
+
+            // These will be saved automagically
+            if (this.instance.autoadd_classes) {
+                this.instance.classes = this.selectedClassGroup.classes
+            } else {
+                this.instance.classes = this.selectedClasses
+            }
 
             // Either update or create instance
             if (this.examInstanceId === -1) {
@@ -249,7 +293,7 @@ export default {
                 this.instance = await api.get(
                     '/exam-instance/' + tmpInstance.id,
                     {
-                        $include: ['exams', 'teachers'].join(',')
+                        $include: ['exams', 'teachers', 'classes'].join(',')
                     }
                 )
             } else {
@@ -261,27 +305,27 @@ export default {
                 )
             }
 
-            // Update teachers list
-            // Basically, fetch then diff
-            let deletedTeachers = this.instance.teachers.filter(
-                (t) => !this.selectedTeachers.find((t2) => t.id === t2.id)
-            )
-            let addedTeachers = this.selectedTeachers.filter(
-                (t) => !this.instance.teachers.find((t2) => t.id === t2.id)
-            )
+            // // Update teachers list
+            // // Basically, fetch then diff
+            // let deletedTeachers = this.instance.teachers.filter(
+            //     (t) => !this.selectedTeachers.find((t2) => t.id === t2.id)
+            // )
+            // let addedTeachers = this.selectedTeachers.filter(
+            //     (t) => !this.instance.teachers.find((t2) => t.id === t2.id)
+            // )
 
-            await Promise.all([
-                ...deletedTeachers.map((t) => {
-                    return api.delete(
-                        `/exam-instance/${this.instance.id}/teachers/${t.id}`
-                    )
-                }),
-                ...addedTeachers.map((t) => {
-                    return api.post(
-                        `/exam-instance/${this.instance.id}/teachers/${t.id}`
-                    )
-                })
-            ])
+            // await Promise.all([
+            //     ...deletedTeachers.map((t) => {
+            //         return api.delete(
+            //             `/exam-instance/${this.instance.id}/teachers/${t.id}`
+            //         )
+            //     }),
+            //     ...addedTeachers.map((t) => {
+            //         return api.post(
+            //             `/exam-instance/${this.instance.id}/teachers/${t.id}`
+            //         )
+            //     })
+            // ])
 
             this.$emit('saved', this.instance)
         }

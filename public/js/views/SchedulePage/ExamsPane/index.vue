@@ -98,9 +98,10 @@
 
                                     <div class="advanced-table-content-cell ml-auto text-right">
                                         <span
-                                            class="badge badge-secondary ml-1"
-                                            v-for="(cls, i) in instance['class-group'].classes"
+                                            v-for="(cls, i) in instance.classes"
                                             :key="i"
+                                            :class="[instance.classes.length === instance['class-group'].classes.length ? 'badge-secondary' : 'badge-info']"
+                                            class="badge ml-1"
                                         >{{ cls.name }}</span>
                                     </div>
                                 </div>
@@ -193,7 +194,7 @@ export default {
             // How to display data
             // * "exams": display exam list, sublist is class groups
             // * "class-groups": display class groups, sublist is exams
-            displayType: 'class-groups'
+            displayType: 'exams'
         }
     },
 
@@ -282,6 +283,7 @@ export default {
                     $order: 'name',
                     $include: [
                         'exam-instances',
+                        'exam-instances.classes',
                         'exam-instances.exams',
                         'exam-instances.teachers',
                         'exam-instances.class-groups',
@@ -294,6 +296,7 @@ export default {
                     $order: 'name',
                     $include: [
                         'exam-instances',
+                        'exam-instances.classes',
                         'exam-instances.exams',
                         'exam-instances.teachers',
                         'exam-instances.class-groups',
