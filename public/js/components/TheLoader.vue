@@ -13,7 +13,8 @@ export default {
             stack: 0,
 
             interval: null,
-            timeout: null
+            timeout: null,
+            timeout2: null
         }
     },
 
@@ -36,6 +37,7 @@ export default {
             this.stack += 1
 
             clearTimeout(this.timeout)
+            clearTimeout(this.timeout2)
 
             if (this.stack === 1) {
                 this.width = 0
@@ -55,15 +57,15 @@ export default {
 
                 clearInterval(this.interval)
                 clearTimeout(this.timeout)
-                this.interval = this.timeout = null
+                clearTimeout(this.timeout2)
+                this.interval = this.timeout = this.timeout2 = null
 
                 this.timeout = setTimeout(() => {
                     this.hidden = true
-
-                    setTimeout(() => {
-                        this.width = 0
-                    }, 300)
-                }, 200)
+                }, 400)
+                this.timeout2 = setTimeout(() => {
+                    this.width = 0
+                }, 700)
             }
         },
 
