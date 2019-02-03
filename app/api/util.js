@@ -7,16 +7,34 @@ module.exports = {
             include: []
         }
 
+        let propOrder = ['$include', '$limit', '$offset', '$count', '$order']
+
+        // Error on non-existing keys
+        if (
+            keys.filter((k) => k[0] === '$' && !propOrder.includes(k))
+                .length !== 0
+        ) {
+            throw new Error('Undefined special $prop used')
+        }
+
         // Special props first
-        for (let k of keys.filter((k) => k[0] === '$')) {
+        for (let k of propOrder.filter((p) => keys.includes(p))) {
             if (k === '$limit') {
                 let limit = parseInt(query[k])
                 res.limit = limit > 1000 ? 1000 : limit
             } else if (k === '$offset') {
                 res.offset = parseInt(query[k])
             } else if (k === '$order') {
-                // UNSECURE ?
-                res.order = model.sequelize.literal(query[k])
+                let orderNames = ('' + query[k]).split(',')
+
+                for (let orderName of orderNames) {
+                    let subNames = orderName.split('.')
+                    let order = orderName.split(':')
+
+                    order = order.length > 1 ? order[1] : 'ASC'
+
+                    this.deepModelOrder(res, subNames, order)
+                }
             } else if (k === '$include') {
                 let modelNames = ('' + query[k]).split(',')
 
@@ -32,8 +50,6 @@ module.exports = {
                         'count'
                     ]
                 ]
-            } else {
-                throw new Error('Unknown option ' + k)
             }
         }
 
@@ -86,6 +102,11 @@ module.exports = {
 
         ref.where = ref.where || {}
         ref.where[subNames[subNames.length - 1]] = value
+    },
+
+    deepModelOrder(ref, subNames, order) {
+        ref.order = ref.order || []
+        ref.order.push([...subNames, order])
     },
 
     capitalize(str) {
