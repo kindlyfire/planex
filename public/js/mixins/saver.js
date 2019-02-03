@@ -7,11 +7,11 @@ export default {
 
     methods: {
         async m_saver_save() {
-            this.m_saver_saving = true
+            this.$root.$emit('loader_push')
 
             await this.m_saver_saver()
 
-            this.m_saver_saving = false
+            this.$root.$emit('loader_pop')
         },
 
         async m_saver_saver() {

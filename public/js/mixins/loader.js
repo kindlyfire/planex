@@ -11,11 +11,11 @@ export default {
 
     methods: {
         async m_loader_load() {
-            this.m_loader_loading = true
+            this.$root.$emit('loader_push')
 
             await this.m_loader_loader()
 
-            this.m_loader_loading = false
+            this.$root.$emit('loader_pop')
         },
 
         async m_loader_loader() {
