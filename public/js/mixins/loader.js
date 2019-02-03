@@ -1,7 +1,7 @@
 export default {
     data() {
         return {
-            m_loader_loading: false
+            m_loader_loading: true
         }
     },
 
@@ -12,9 +12,11 @@ export default {
     methods: {
         async m_loader_load() {
             this.$root.$emit('loader_push')
+            this.m_loader_loading = true
 
             await this.m_loader_loader()
 
+            this.m_loader_loading = false
             this.$root.$emit('loader_pop')
         },
 

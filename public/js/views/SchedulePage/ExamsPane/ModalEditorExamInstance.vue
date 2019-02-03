@@ -160,6 +160,7 @@ export default {
                 teacher_id: null,
                 description: '',
                 teachers: [],
+                classes: [],
                 exam: {}
             },
 
@@ -288,44 +289,27 @@ export default {
                     this.instance
                 )
 
-                // Get again, this time with associations
-                // Because api.post doesn't return any associations
-                this.instance = await api.get(
-                    '/exam-instance/' + tmpInstance.id,
-                    {
-                        $include: ['exams', 'teachers', 'classes'].join(',')
-                    }
-                )
-            } else {
-                // Update
-                await api.put(
-                    '/exam-instance/' + this.examInstanceId,
-                    {},
-                    this.instance
-                )
+                this.instance.id = tmpInstance.id
             }
 
-            // // Update teachers list
-            // // Basically, fetch then diff
-            // let deletedTeachers = this.instance.teachers.filter(
-            //     (t) => !this.selectedTeachers.find((t2) => t.id === t2.id)
-            // )
-            // let addedTeachers = this.selectedTeachers.filter(
-            //     (t) => !this.instance.teachers.find((t2) => t.id === t2.id)
-            // )
+            // Update (in order to update relationships)
+            await api.put(
+                '/exam-instance/' + this.instance.id,
+                {},
+                this.instance
+            )
 
-            // await Promise.all([
-            //     ...deletedTeachers.map((t) => {
-            //         return api.delete(
-            //             `/exam-instance/${this.instance.id}/teachers/${t.id}`
-            //         )
-            //     }),
-            //     ...addedTeachers.map((t) => {
-            //         return api.post(
-            //             `/exam-instance/${this.instance.id}/teachers/${t.id}`
-            //         )
-            //     })
-            // ])
+            // Get again, this time with associations
+            // Because api.post doesn't return any associations
+            this.instance = await api.get(
+                '/exam-instance/' + this.instance.id,
+                {
+                    $include: ['exams', 'teachers', 'classes'].join(',')
+                }
+            )
+
+            // Needs update in case the exam was created
+            this.selectedClasses = [...this.instance.classes]
 
             this.$emit('saved', this.instance)
         }

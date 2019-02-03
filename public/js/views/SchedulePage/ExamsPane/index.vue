@@ -81,7 +81,7 @@
 
                                     <div
                                         class="advanced-table-content-cell no-border"
-                                        style="width: 10%;"
+                                        style="width: 25%;"
                                     >{{ displayType === 'exams' ? instance['class-group'].name : instance.exam.name }}</div>
 
                                     <div
@@ -201,7 +201,7 @@ export default {
             // How to display data
             // * "exams": display exam list, sublist is class groups
             // * "class-groups": display class groups, sublist is exams
-            displayType: 'exams'
+            displayType: 'class-groups'
         }
     },
 
@@ -287,7 +287,7 @@ export default {
             if (this.displayType === 'exams') {
                 this.tableData = await api.get('/exams', {
                     schedule_id: this.schedule.id,
-                    $order: 'name',
+                    $order: ['name', 'exam-instances.classes.name'].join(','),
                     $include: [
                         'exam-instances',
                         'exam-instances.classes',
@@ -300,7 +300,7 @@ export default {
             } else if (this.displayType === 'class-groups') {
                 this.tableData = await api.get('/class-groups', {
                     schedule_id: this.schedule.id,
-                    $order: 'name',
+                    $order: ['name', 'exam-instances.classes.name'].join(','),
                     $include: [
                         'exam-instances',
                         'exam-instances.classes',
