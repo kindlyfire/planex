@@ -145,13 +145,40 @@ module.exports = (config) => {
                 let resource = ctx.state.resource
 
                 // Don't allow some attributes
-                allowedAttributes = Object.keys(model.rawAttributes).filter(
-                    (attr) => !['id', 'created_at', 'updated_at'].includes(attr)
+                allowedAttributes = util.getAllowedAttributes(
+                    ctx.request.body,
+                    model
                 )
 
                 for (let attr of allowedAttributes) {
                     if (ctx.request.body[attr] !== undefined) {
                         resource[attr] = ctx.request.body[attr]
+                    }
+                }
+
+                // Set associations
+                for (let associatedModel of Object.values(model.associations)) {
+                    associatedModel = associatedModel.target
+                    let data =
+                        ctx.request.body[associatedModel.options.name.plural]
+
+                    if (data) {
+                        await resource[
+                            'set' +
+                                util.capitalize(
+                                    associatedModel.options.name.plural
+                                )
+                        ](
+                            await Promise.all(
+                                data.map(async (row) => {
+                                    return associatedModel.findOne({
+                                        where: {
+                                            id: row.id
+                                        }
+                                    })
+                                })
+                            )
+                        )
                     }
                 }
 
@@ -164,7 +191,7 @@ module.exports = (config) => {
             }
         )
 
-        // Relations (one level deep)
+        // Associations updating (one level deep)
         for (let associatedModel of Object.values(model.associations)) {
             // associatedModel is currently an association, we need the target model
             associatedModel = associatedModel.target

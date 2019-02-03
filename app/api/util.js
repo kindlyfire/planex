@@ -90,5 +90,29 @@ module.exports = {
 
     capitalize(str) {
         return str.charAt(0).toUpperCase() + str.slice(1)
+    },
+
+    // Returns attributes the user may update
+    getAllowedAttributes(row, model, allowed = []) {
+        let ks = Object.keys(row)
+
+        return Object.keys(model.rawAttributes).filter(
+            (attr) =>
+                !['id', 'created_at', 'updated_at']
+                    .filter((k) => !allowed.includes(k))
+                    .includes(attr) && ks.includes(attr)
+        )
+    },
+
+    // Returns an object with only the data the user can update
+    onlyAllowedAttributes(row, model, allowed = []) {
+        let ks = this.getAllowedAttributes(row, model, allowed)
+        let obj = {}
+
+        for (let k of ks) {
+            obj[k] = row[k]
+        }
+
+        return obj
     }
 }
