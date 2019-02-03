@@ -3,7 +3,7 @@
         <div class="pl-2 pr-2">
             <h2>Examens</h2>
 
-            <loading v-if="loading" padding="5"></loading>
+            <LoadingBar v-if="m_loader_loading" padding="5"></LoadingBar>
 
             <div v-else class="advanced-table exams-table">
                 <div class="advanced-table-header with-bottom-shadow">
@@ -18,11 +18,11 @@
                                 <option value="class-groups" selected>Classes</option>
                             </select>
 
-                            <add-exam-button
+                            <ButtonCreateExam
                                 :schedule="schedule"
                                 :disabled="displayType !== 'exams'"
                                 @saved="examAdded"
-                            />
+                            ></ButtonCreateExam>
                         </div>
                     </div>
                 </div>
@@ -74,12 +74,12 @@
 
                                     <div
                                         class="advanced-table-content-cell no-border"
-                                        style="width: 15%;"
+                                        style="width: 10%;"
                                     >{{ displayType === 'exams' ? instance['class-group'].name : instance.exam.name }}</div>
 
                                     <div
                                         class="advanced-table-content-cell no-border text-muted text-truncate"
-                                        style="width: 40%;"
+                                        style="width: 30%;"
                                     >{{ instance.description }}</div>
 
                                     <div class="advanced-table-content-cell no-border">
@@ -123,17 +123,17 @@
         </div>
 
         <!-- Exam editor modal -->
-        <exam-editor-modal
+        <ModalEditorExam
             v-if="editorResourceId !== null"
             :schedule="schedule"
             :exam-id="editorResourceId"
-            @saved="loadResources"
+            @saved="m_loader_load"
             @deleted="examDeleted"
             @closed="editorResourceId = null"
-        ></exam-editor-modal>
+        ></ModalEditorExam>
 
         <!-- Exam instance editor modal -->
-        <exam-instance-editor-modal
+        <ModalEditorExamInstance
             v-if="editorExamInstanceId !== null"
             :schedule="schedule"
             :exam-instance-id="editorExamInstanceId"
@@ -142,34 +142,35 @@
             :class-group-is-fixed="displayType === 'class-groups'"
             :exam-is-fixed="displayType === 'exams'"
             @saved="examInstanceSaved"
-            @deleted="loadResources"
+            @deleted="m_loader_load"
             @closed="editorExamInstanceId = null"
-        ></exam-instance-editor-modal>
+        ></ModalEditorExamInstance>
     </div>
 </template>
 
 <script>
-import loading from "../../../components/loading.vue";
-import api from "../../../utils/api";
+import api from '&/utils/api'
+import loader from '&/mixins/loader'
 
-import addExamButton from "../modals/add-exam-button.vue";
-import examEditorModal from "../modals/exam-editor-modal.vue";
-import examInstanceEditorModal from "../modals/exam-instance-editor-modal.vue";
+import LoadingBar from '&/components/LoadingBar'
+
+import ButtonCreateExam from './ButtonCreateExam'
+import ModalEditorExam from './ModalEditorExam'
+import ModalEditorExamInstance from './ModalEditorExamInstance'
 
 export default {
-    props: ["schedule"],
+    mixins: [loader],
+    props: ['schedule'],
 
     components: {
-        loading,
-        addExamButton,
-        examEditorModal,
-        examInstanceEditorModal
+        LoadingBar,
+        ButtonCreateExam,
+        ModalEditorExam,
+        ModalEditorExamInstance
     },
 
     data() {
         return {
-            loading: false,
-
             // Data for exams of class-groups
             // See displayType
             tableData: [],
@@ -192,121 +193,118 @@ export default {
             // How to display data
             // * "exams": display exam list, sublist is class groups
             // * "class-groups": display class groups, sublist is exams
-            displayType: "class-groups"
-        };
-    },
-
-    created() {
-        this.loadResources();
+            displayType: 'class-groups'
+        }
     },
 
     watch: {
         displayType() {
-            this.openedResourceId = null;
-            this.loadResources();
+            this.openedResourceId = null
+            this.m_loader_load()
         }
     },
 
     methods: {
         async examAdded(exam) {
-            await this.loadResources();
-            this.openedResourceId = exam.id;
+            await this.m_loader_load()
+            this.openedResourceId = exam.id
         },
 
         examNameClicked(exam, ev) {
-            if (!ev.target.classList.contains("can-be-clicked")) {
-                return false;
+            // Prevents clicking on the buttons to close everything
+            if (!ev.target.classList.contains('can-be-clicked')) {
+                return false
             }
 
             if (this.openedResourceId === exam.id) {
-                this.openedResourceId = null;
+                this.openedResourceId = null
             } else {
-                this.openedResourceId = null;
+                this.openedResourceId = null
 
-                setTimeout(() => (this.openedResourceId = exam.id), 20);
+                setTimeout(() => (this.openedResourceId = exam.id), 20)
             }
         },
 
         showEditor(ev) {
-            this.editorResourceId = this.openedResourceId;
+            this.editorResourceId = this.openedResourceId
         },
 
         editorClosed() {
-            this.editorResourceId = null;
+            this.editorResourceId = null
         },
 
         async examDeleted(exam) {
-            await this.loadResources();
+            await this.m_loader_load()
 
-            this.openedResourceId = null;
-            this.editorResourceId = null;
+            this.openedResourceId = null
+            this.editorResourceId = null
         },
 
         // Open exam instance creator for currently opened exam
         openExamInstanceEditor() {
-            this.editorExamInstanceId = this.openedResourceId;
+            this.editorExamInstanceId = this.openedResourceId
         },
 
         // Create new exam
         showExamInstanceCreator() {
-            this.editorExamInstanceId = -1;
+            this.editorExamInstanceId = -1
         },
 
         examInstanceSaved(instance) {
-            this.editorExamInstanceId = instance.id;
-            this.loadResources();
+            this.editorExamInstanceId = instance.id
+            this.m_loader_load()
         },
 
         // Loading
-        async loadResources() {
+        async m_loader_loader() {
             // Update exam count in bg
-            api.get("/exams", {
+            api.get('/exams', {
                 schedule_id: this.schedule.id,
                 $count: 1,
                 $limit: 1
-            }).then(data => {
-                this.examCount = data[0].count;
-            });
+            }).then((data) => {
+                this.examCount = data[0].count
+            })
 
-            api.get("/exam-instances", {
-                "exams.schedule_id": this.schedule.id,
-                $include: "exams",
+            api.get('/exam-instances', {
+                'exams.schedule_id': this.schedule.id,
+                $include: 'exams',
                 $count: 1,
                 $limit: 1
-            }).then(data => {
-                this.examInstancesCount = data[0].count;
-            });
+            }).then((data) => {
+                this.examInstancesCount = data[0].count
+            })
 
             // Load good data depending on what is going to be displayed
-            if (this.displayType === "exams") {
-                this.tableData = await api.get("/exams", {
+            if (this.displayType === 'exams') {
+                this.tableData = await api.get('/exams', {
                     schedule_id: this.schedule.id,
-                    $order: "name",
+                    $order: 'name',
                     $include: [
-                        "exam-instances",
-                        "exam-instances.exams",
-                        "exam-instances.teachers",
-                        "exam-instances.class-groups",
-                        "exam-instances.class-groups.classes"
-                    ].join(",")
-                });
-            } else if (this.displayType === "class-groups") {
-                this.tableData = await api.get("/class-groups", {
+                        'exam-instances',
+                        'exam-instances.exams',
+                        'exam-instances.teachers',
+                        'exam-instances.class-groups',
+                        'exam-instances.class-groups.classes'
+                    ].join(',')
+                })
+            } else if (this.displayType === 'class-groups') {
+                this.tableData = await api.get('/class-groups', {
                     schedule_id: this.schedule.id,
-                    $order: "name",
+                    $order: 'name',
                     $include: [
-                        "exam-instances",
-                        "exam-instances.exams",
-                        "exam-instances.teachers",
-                        "exam-instances.class-groups",
-                        "exam-instances.class-groups.classes"
-                    ].join(",")
-                });
+                        'exam-instances',
+                        'exam-instances.exams',
+                        'exam-instances.teachers',
+                        'exam-instances.class-groups',
+                        'exam-instances.class-groups.classes'
+                    ].join(',')
+                })
             } else {
-                throw new Error("Unknown displayType [tabs/exams.vue]");
+                throw new Error('Unknown displayType')
             }
         }
     }
-};
+}
 </script>
 
