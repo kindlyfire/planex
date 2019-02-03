@@ -32,12 +32,17 @@ export default {
 
     methods: {
         push() {
-            this.width = 0
             this.hidden = false
             this.stack += 1
 
+            clearTimeout(this.timeout)
+
+            if (this.stack === 1) {
+                this.width = 0
+            }
+
             if (!this.interval) {
-                this.interval = setInterval(() => this.update(), 200)
+                this.interval = setInterval(() => this.update(), 300)
                 this.update()
             }
         },
@@ -50,10 +55,15 @@ export default {
 
                 clearInterval(this.interval)
                 clearTimeout(this.timeout)
+                this.interval = this.timeout = null
 
                 this.timeout = setTimeout(() => {
                     this.hidden = true
-                }, 300)
+
+                    setTimeout(() => {
+                        this.width = 0
+                    }, 300)
+                }, 200)
             }
         },
 

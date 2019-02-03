@@ -3,9 +3,7 @@
         <div class="pl-2 pr-2">
             <h2>Examens</h2>
 
-            <LoadingBar v-if="m_loader_loading" padding="5"></LoadingBar>
-
-            <div v-else class="advanced-table exams-table">
+            <div class="advanced-table exams-table">
                 <div class="advanced-table-header with-bottom-shadow">
                     <div class="p-3 pl-4 pr-4 d-flex align-items-center">
                         <h3
@@ -28,6 +26,15 @@
                 </div>
 
                 <div class="advanced-table-content">
+                    <div
+                        v-if="m_loader_loading && tableData.length === 0"
+                        class="advanced-table-content-line"
+                    >
+                        <div class="advanced-table-content-cell no-border">
+                            <i>Chargement...</i>
+                        </div>
+                    </div>
+
                     <div v-for="(entry, i) in tableData" :key="i">
                         <div
                             class="advanced-table-content-line actionable no-select can-be-clicked"

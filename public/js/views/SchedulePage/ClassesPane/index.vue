@@ -3,9 +3,7 @@
         <div class="pl-2 pr-2">
             <h2>Classes</h2>
 
-            <LoadingBar v-if="m_loader_loading" padding="5"></LoadingBar>
-
-            <div v-else class="advanced-table">
+            <div class="advanced-table">
                 <div class="advanced-table-header with-bottom-shadow">
                     <div class="p-3 pl-4 pr-4 d-flex align-items-center">
                         <h3
@@ -36,6 +34,14 @@
                             >{{ cls.name }}</span>
                         </div>
                     </div>
+                    <div
+                        v-if="m_loader_loading && groups.length === 0"
+                        class="advanced-table-content-line"
+                    >
+                        <div class="advanced-table-content-cell no-border">
+                            <i>Chargement...</i>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -56,8 +62,6 @@ import api from '&/utils/api'
 import loader from '&/mixins/loader'
 import saver from '&/mixins/saver'
 
-import LoadingBar from '&/components/LoadingBar'
-
 import ButtonCreateGroup from './ButtonCreateGroup'
 import ModalEditorGroup from './ModalEditorGroup'
 
@@ -66,7 +70,6 @@ export default {
     props: ['schedule'],
 
     components: {
-        LoadingBar,
         ButtonCreateGroup,
         ModalEditorGroup
     },

@@ -24,7 +24,7 @@ $sidebar-width: 300px;
     .main-layout-content-inner {
         padding-left: $sidebar-width;
         height: 100%;
-        overflow-y: auto;
+        overflow-y: scroll;
     }
 }
 
