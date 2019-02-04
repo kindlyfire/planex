@@ -7,8 +7,10 @@ import routes from './routes'
 
 // UI Components
 import PrimaryButton from '&/components/ui/PrimaryButton'
+import AppInput from '&/components/ui/AppInput'
 
 Vue.component('PrimaryButton', PrimaryButton)
+Vue.component('AppInput', AppInput)
 
 // Lib registration
 Vue.use(VueProgress, {
@@ -23,6 +25,9 @@ const router = new VueRouter({
 new Vue({
     el: '#app',
     router,
+    data: {
+        inc: 1
+    },
     render: function(h) {
         return h(App)
     }
