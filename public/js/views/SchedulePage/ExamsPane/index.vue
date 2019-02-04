@@ -95,10 +95,7 @@
                                                 v-if="instance.teachers.length === 1"
                                             >{{ instance.teachers[0].name }}</span>
                                             <span
-                                                v-else-if="instance.teachers.length === 2"
-                                            >{{ instance.teachers[0].name }}, {{ instance.teachers[1].name }}</span>
-                                            <span
-                                                v-else-if="instance.teachers.length >= 2"
+                                                v-else-if="instance.teachers.length >= 1"
                                             >{{ instance.teachers.length }} professeurs</span>
                                         </template>
                                     </div>
