@@ -2,7 +2,7 @@ const path = require('path')
 
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
-module.exports = {
+let config = {
     context: path.resolve(__dirname, 'js'),
     entry: './main.js',
     output: {
@@ -10,7 +10,7 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
         publicPath: '/public/'
     },
-    devtool: 'eval-source-map',
+    devtool: '',
     resolve: {
         extensions: ['*', '.js', '.vue', '.json'],
         alias: {
@@ -47,4 +47,12 @@ module.exports = {
         ]
     },
     plugins: [new VueLoaderPlugin()]
+}
+
+module.exports = (env, argv) => {
+    if (argv.mode === 'development') {
+        config.devtool = 'eval-source-map'
+    }
+
+    return config
 }
