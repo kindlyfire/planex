@@ -4,14 +4,18 @@
             <h2 class="d-flex flex-row">
                 <div>Solutions</div>
                 <div class="ml-auto">
-                    <button class="btn btn-secondary" @click="showCreator = true">Créer</button>
+                    <button
+                        class="btn btn-secondary"
+                        @click="showCreator = true"
+                        :disabled="lastSolution && lastSolution.status === 'running'"
+                    >Créer</button>
                 </div>
             </h2>
 
-            <div v-if="lastSolution" class="last-solution">
+            <div v-if="lastSolution" class="last-solution p-3 pl-4 pr-4">
                 <h3 class="font-weight-normal mb-0">Last solution</h3>
             </div>
-            <div v-else class="last-solution">
+            <div v-else class="last-solution p-3 pl-4 pr-4">
                 <h3 class="font-weight-normal">Pas de solutions</h3>
                 <p
                     class="mb-0"
@@ -19,7 +23,7 @@
             </div>
         </div>
 
-        <ModalCreateSolution v-if="showCreator" :schedule="schedule"></ModalCreateSolution>
+        <ModalCreateSolution v-if="showCreator" :schedule="schedule" @closed="showCreator = false"></ModalCreateSolution>
     </div>
 </template>
 
@@ -68,7 +72,6 @@ export default {
     /* border: 1px solid rgba(black, 0.15); */
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
-    padding: 10px 15px;
     border-radius: 5px;
 }
 
