@@ -48,6 +48,9 @@ export default {
                 api.post('/actions/start_solver', {
                     schedule_id: this.schedule.id
                 }),
+
+                // Make request at least 1s long
+                // Makes it feel better ?
                 new Promise((resolve) => setTimeout(resolve, 1000))
             ])
 

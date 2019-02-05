@@ -90,6 +90,7 @@ export default {
 
             // Global Vuex state should, one day, make this not needed
             this.schedule.name = this.rSchedule.name
+            this.schedule.days = this.rSchedule.days
 
             this.changed = false
         }

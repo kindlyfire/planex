@@ -60,10 +60,18 @@
                             class="form-control"
                             id="i_teachereditor_size"
                         >
-                        <small v-if="teacher.size > 1" class="form-text text-muted">
-                            <a>Éditer les contraintes de capacité</a>
-                        </small>
                     </div>
+
+                    <p class="mb-0">
+                        <a
+                            href
+                            @click.prevent="showAvailabilityEditor = true"
+                        >Éditer les disponibilités</a>
+                    </p>
+
+                    <p class="mb-0">
+                        <a href @click.prevent="() => {}">Éditer les contraintes de capacité</a>
+                    </p>
                 </div>
                 <div
                     style="width: 40%;"
@@ -71,6 +79,14 @@
                 >Ce professeur ne donne actuellement pas d'examens</div>
             </div>
         </div>
+
+        <ModalEditorAvailability
+            v-if="showAvailabilityEditor"
+            :schedule="schedule"
+            :columns="availabilityData"
+            @closed="showAvailabilityEditor = false"
+            @input="availabilitySaved"
+        ></ModalEditorAvailability>
     </Modal>
 </template>
 
@@ -82,6 +98,7 @@ import saver from '&/mixins/saver'
 import Modal from '&/components/Modal'
 import LoadingBar from '&/components/LoadingBar'
 import PopperButton from '&/components/PopperButton'
+import ModalEditorAvailability from '&/components/ModalEditorAvailability'
 
 export default {
     mixins: [loader, saver],
@@ -90,7 +107,8 @@ export default {
     components: {
         Modal,
         LoadingBar,
-        PopperButton
+        PopperButton,
+        ModalEditorAvailability
     },
 
     data() {
@@ -100,8 +118,17 @@ export default {
                 name: '',
                 email: '',
                 size: 1,
-                schedule_id: this.schedule.id
-            }
+                schedule_id: this.schedule.id,
+                availability_json: '[]'
+            },
+
+            showAvailabilityEditor: false
+        }
+    },
+
+    computed: {
+        availabilityData() {
+            return JSON.parse(this.teacher.availability_json)
         }
     },
 
@@ -109,6 +136,10 @@ export default {
         close() {
             // Parent removes this component to close it
             this.$emit('closed')
+        },
+
+        availabilitySaved(v) {
+            this.teacher.availability_json = JSON.stringify(v)
         },
 
         async m_saver_saver() {
