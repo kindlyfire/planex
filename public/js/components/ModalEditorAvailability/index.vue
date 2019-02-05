@@ -1,5 +1,5 @@
 <template>
-    <Modal>
+    <Modal :width="850">
         <template slot="header">
             <h3 class="mb-0">Disponibilité</h3>
 
@@ -38,7 +38,7 @@
             <div class="row mt-3">
                 <div class="col-lg-6">
                     <div class="d-flex flex-row align-items-center">
-                        <div :style="{width: (95 / rColumns.length) + '%'}" class="editor-column">
+                        <div style="width: 35px;" class="editor-column">
                             <div class="column-inner">
                                 <div class="column-entry"></div>
                             </div>
@@ -49,12 +49,12 @@
 
                 <div class="col-lg-6">
                     <div class="d-flex flex-row align-items-center">
-                        <div :style="{width: (95 / rColumns.length) + '%'}" class="editor-column">
+                        <div style="width: 35px;" class="editor-column">
                             <div class="column-inner">
                                 <div class="column-entry entry-blocked"></div>
                             </div>
                         </div>
-                        <div class="ml-2">Occupé</div>
+                        <div class="ml-2">Non disponible</div>
                     </div>
                 </div>
             </div>

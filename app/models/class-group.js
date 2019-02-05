@@ -1,13 +1,21 @@
 const Sequelize = require('sequelize')
 
 module.exports = (s) => {
-    s.models.ClassGroup = s.db.define(
-        'class-groups',
-        {
-            name: Sequelize.STRING
-        },
-        {
-            tableName: 'class_groups'
-        }
-    )
+	s.models.ClassGroup = s.db.define(
+		'class-groups',
+		{
+			name: Sequelize.STRING,
+
+			// An array of days each containing an array of periods of unavailability
+			// WARN: Can not be consistent with schedule.days. Do not trust length
+			availability_json: {
+				type: Sequelize.STRING,
+				allowNull: false,
+				defaultValue: '[]'
+			}
+		},
+		{
+			tableName: 'class_groups'
+		}
+	)
 }

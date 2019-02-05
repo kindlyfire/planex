@@ -1,109 +1,109 @@
 .advanced-table {
-    background-color: white;
-    border-radius: 0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    border: 0;
-    overflow: hidden;
+	background-color: white;
+	border-radius: 0;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+	border: 0;
+	overflow: hidden;
 
-    border-radius: 5px;
+	border-radius: 5px;
 }
 
 .advanced-table-header {
-    &.with-bottom-shadow {
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
+	&.with-bottom-shadow {
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+	}
 }
 
 .advanced-table-columns {
-    background-color: rgba(0, 0, 0, 0.15);
+	background-color: rgba(0, 0, 0, 0.15);
 
-    display: flex;
-    flex-direction: row;
+	display: flex;
+	flex-direction: row;
 }
 
 .advanced-table-column,
 .advanced-table-content-cell {
-    padding: 10px 15px;
+	padding: 10px 15px;
 }
 
 .advanced-table-content-cell:not(:last-child):not(.no-border) {
-    border-right: 1px solid rgba(0, 0, 0, 0.15);
+	border-right: 1px solid rgba(0, 0, 0, 0.15);
 }
 
 .advanced-table-content-line {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
 
-    &.with-border-between:not(:last-child) {
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    }
+	&.with-border-between:not(:last-child) {
+		border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+	}
 }
 
 .advanced-table-content-line.actionable {
-    cursor: pointer;
+	cursor: pointer;
 
-    &:hover {
-        background-color: rgba(0, 0, 0, 0.05);
-    }
+	&:hover {
+		background-color: rgba(0, 0, 0, 0.05);
+	}
 }
 
 $tree-cell-width: 80px;
 $tree-cell-color: rgba($primary-color, 0.5);
 
 .exams-table .tree-cell {
-    width: $tree-cell-width;
-    position: relative;
-    align-self: stretch;
-    flex-shrink: 0;
+	width: $tree-cell-width;
+	position: relative;
+	align-self: stretch;
+	flex-shrink: 0;
 
-    &::before {
-        position: absolute;
-        right: 0;
-        top: 0;
-        height: 50%;
-        width: $tree-cell-width - 30px;
+	&::before {
+		position: absolute;
+		right: 0;
+		top: 0;
+		height: 50%;
+		width: $tree-cell-width - 30px;
 
-        content: '';
-        display: block;
+		content: '';
+		display: block;
 
-        border-bottom: 2px solid $tree-cell-color;
-        border-left: 2px solid $tree-cell-color;
-    }
+		border-bottom: 2px solid $tree-cell-color;
+		border-left: 2px solid $tree-cell-color;
+	}
 
-    &::after {
-        position: absolute;
-        right: 0;
-        bottom: 0;
-        height: 50%;
-        width: $tree-cell-width - 30px;
+	&::after {
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		height: 50%;
+		width: $tree-cell-width - 30px;
 
-        content: '';
-        display: block;
+		content: '';
+		display: block;
 
-        border-left: 2px solid $tree-cell-color;
-    }
+		border-left: 2px solid $tree-cell-color;
+	}
 }
 
 .exams-table .advanced-table-content-line:last-child .tree-cell::after {
-    display: none;
+	display: none;
 }
 
 .anim-show-enter-active {
-    animation: anim-show 0.2s forwards;
+	animation: anim-show 0.2s forwards;
 }
 
 @keyframes anim-show {
-    0% {
-        opacity: 0;
-        transform: translateX(-10px) translateY(-10px);
-    }
+	0% {
+		opacity: 0;
+		transform: translateX(-10px) translateY(-10px);
+	}
 
-    50% {
-        transform: translateX(0) translateY(0);
-    }
+	50% {
+		transform: translateX(0) translateY(0);
+	}
 
-    100% {
-        opacity: 1;
-    }
+	100% {
+		opacity: 1;
+	}
 }

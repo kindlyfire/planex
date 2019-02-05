@@ -2,7 +2,7 @@
 	position: absolute;
 	z-index: 1050;
 	outline: none;
-	overflow: hidden;
+	overflow: auto;
 
 	top: 0;
 	left: 0;
@@ -14,7 +14,8 @@
 
 .pmodal-window-container {
 	width: 100%;
-	height: 100%;
+	height: auto;
+	min-height: 100vh;
 
 	display: flex;
 	justify-content: center;
@@ -26,7 +27,11 @@
 	border-radius: 5px;
 	background-color: white;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+	// Also overriden in style by Modal component
 	width: 800px;
+
+	margin: 20px 10px;
 
 	transition: height 0.2s;
 }

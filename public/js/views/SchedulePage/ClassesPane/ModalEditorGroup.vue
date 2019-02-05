@@ -41,6 +41,13 @@
                             id="i_groupeditor_name"
                         >
                     </div>
+
+                    <p class="mb-0">
+                        <a
+                            href
+                            @click.prevent="showAvailabilityEditor = true"
+                        >Éditer les disponibilités</a>
+                    </p>
                 </div>
                 <div style="width: 40%" class="text-muted comp-group-class-list">
                     <div class="gcl-list-container">
@@ -69,6 +76,14 @@
                 </div>
             </div>
         </div>
+
+        <ModalEditorAvailability
+            v-if="showAvailabilityEditor"
+            :schedule="schedule"
+            :columns="availabilityData"
+            @closed="showAvailabilityEditor = false"
+            @input="availabilitySaved"
+        ></ModalEditorAvailability>
     </Modal>
 </template>
 
@@ -80,6 +95,7 @@ import saver from '&/mixins/saver'
 import Modal from '&/components/Modal'
 import LoadingBar from '&/components/LoadingBar'
 import PopperButton from '&/components/PopperButton'
+import ModalEditorAvailability from '&/components/ModalEditorAvailability'
 
 export default {
     mixins: [loader, saver],
@@ -89,23 +105,36 @@ export default {
     components: {
         Modal,
         LoadingBar,
-        PopperButton
+        PopperButton,
+        ModalEditorAvailability
     },
 
     data() {
         return {
             group: {
-                name: null
+                name: null,
+                availability_json: '[]'
             },
             classes: [],
             addedClasses: [],
-            addClassName: null
+            addClassName: null,
+            showAvailabilityEditor: false
+        }
+    },
+
+    computed: {
+        availabilityData() {
+            return JSON.parse(this.group.availability_json)
         }
     },
 
     methods: {
         close() {
             this.$emit('closed')
+        },
+
+        availabilitySaved(v) {
+            this.group.availability_json = JSON.stringify(v)
         },
 
         async m_loader_loader() {
