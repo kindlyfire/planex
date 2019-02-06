@@ -1,16 +1,16 @@
-input[type='text']:not(.multiselect__input):not(.form-control) {
-    border-radius: 0;
-    border: 1px solid rgba($primary-color, 0.1);
-    padding: 0.375rem 0.75rem;
-    display: block;
-    font-size: 1rem;
-}
+// input[type='text']:not(.multiselect__input):not(.form-control) {
+//     border-radius: 0;
+//     border: 1px solid rgba($primary-color, 0.1);
+//     padding: 0.375rem 0.75rem;
+//     display: block;
+//     font-size: 1rem;
+// }
 
 .multiselect__tag,
 .multiselect__option--highlight,
 .multiselect__option--highlight::after {
-    background: $primary-color;
-    color: white;
+	background: $primary-color;
+	color: white;
 }
 
 // .multiselect__tag {
@@ -18,9 +18,9 @@ input[type='text']:not(.multiselect__input):not(.form-control) {
 // }
 
 .multiselect__tag-icon::after {
-    color: white;
+	color: white;
 }
 
 .multiselect__tag-icon:hover {
-    background-color: rgba(white, 0.2);
+	background-color: rgba(white, 0.2);
 }

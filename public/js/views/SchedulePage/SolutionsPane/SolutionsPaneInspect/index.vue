@@ -1,5 +1,5 @@
 <template>
-    <div class="main-layout-content-center">
+    <div class>
         <div class="pl-2 pr-2">
             <div class="d-flex flex-row align-items-center">
                 <div>
@@ -20,10 +20,23 @@
 
             <div class="p-2 pl-3 pr-3 c-card">
                 <div class="schedule-display-container" v-if="selectedData">
+                    <!-- Information columns (days) -->
+                    <div class="column" style="width: 10%">
+                        <div class="text-center">&nbsp;</div>
+                        <div class="column-inner">
+                            <div
+                                v-for="i in schedule.days"
+                                :key="i"
+                                class="line double-line"
+                            >{{ i }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Schedule columns -->
                     <div
                         v-for="(cls, i) in selectedData.classes"
                         :key="i"
-                        :style="{ 'width': (95 / (selectedData.classes.length)) + '%' }"
+                        :style="{ 'width': (85 / (selectedData.classes.length)) + '%' }"
                         class="column"
                     >
                         <div class="text-center">{{ cls.class.name }}</div>
@@ -36,8 +49,13 @@
                                         class="line"
                                     >
                                         <template v-if="day[(k - 1) * 2].exam">
-                                            <p class="m-0">{{ day[(k - 1) * 2].exam.name }}</p>
-                                            <small>{{ day[(k - 1) * 2].teachers.map(t => t.name).join(', ') }}</small>
+                                            <p class="m-0 nowrap">{{ day[(k - 1) * 2].exam.name }}</p>
+                                            <small class="nowrap">
+                                                <abbr
+                                                    :title="day[(k - 1) * 2].teachers.map(t => t.name).join(', ')"
+                                                    class="hidden-abbr"
+                                                >{{ day[(k - 1) * 2].teachers.map(t => t.name).join(', ') }}</abbr>
+                                            </small>
                                         </template>
                                     </div>
                                 </template>
@@ -137,7 +155,7 @@ export default {
 .schedule-display-container {
     display: flex;
     align-items: stretch;
-    justify-content: space-between;
+    justify-content: flex-start;
 }
 
 .c-card {
@@ -150,8 +168,10 @@ export default {
 
 .column {
     width: 100%;
+    max-width: 200px;
 
     flex: 0 0 auto;
+    margin-right: 10px;
 }
 
 .column-inner {
@@ -169,6 +189,10 @@ export default {
     align-items: center;
 
     padding: 0 10px;
+
+    &.double-line {
+        height: 100px;
+    }
 
     &:not(:first-child) {
         border-top: 1px solid rgba(black, 0.1);
@@ -191,5 +215,17 @@ export default {
     &.day-separator {
         border-top: 1px solid rgba(black, 0.3);
     }
+}
+
+.nowrap {
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.hidden-abbr {
+    text-decoration: none;
+    border-bottom: 0;
 }
 </style>

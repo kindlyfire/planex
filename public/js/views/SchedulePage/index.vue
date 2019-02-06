@@ -1,9 +1,7 @@
 <template>
     <ThePanel>
         <template slot="sidebar">
-            <h2>
-                <wbr>
-            </h2>
+            <h2 class="no-select">&nbsp;</h2>
 
             <div class="sidebar-link-list" v-if="!m_loader_loading">
                 <a

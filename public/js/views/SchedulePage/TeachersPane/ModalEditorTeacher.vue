@@ -153,7 +153,7 @@ export default {
                 )
             }
 
-            this.$emit('saved')
+            this.$emit('saved', this.teacher)
         },
 
         async m_loader_loader() {
