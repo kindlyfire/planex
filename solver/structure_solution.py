@@ -1,6 +1,7 @@
 
 import math
 
+
 def structure_solution(solution):
     res = {
         # List of classes with their exams
@@ -14,11 +15,12 @@ def structure_solution(solution):
     }
 
     for block in solution:
+        print(block)
         # check if is class
-        if block[1][0].isdigit():
+        if block[1].startswith('class_'):
             if not block[1] in res['classes']:
                 res['classes'][block[1]] = {}
-            
+
             day = math.floor(block[2] / 4)
             if not day in res['classes'][block[1]]:
                 res['classes'][block[1]][day] = []
@@ -33,13 +35,13 @@ def structure_solution(solution):
 
             if day + 1 > res['days']:
                 res['days'] = day + 1
-        
+
         else:
             if not block[0] in res['profs']:
                 res['profs'][block[0]] = []
-            
+
             res['profs'][block[0]].append(block[1])
-    
+
     # add profs to each class
     for cls in res['classes'].values():
         for day in cls.values():

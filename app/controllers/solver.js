@@ -1,11 +1,9 @@
 const dateFormat = require('dateformat')
 
-const { solve } = require('../tasks/solve')
+const solve = require('../tasks/solve')
 
 module.exports = (s) => {
 	const { Schedule, Solution } = s.models
-
-	const solve = async (schedule) => {}
 
 	s.router.post('/api/actions/start_solver', async (ctx, next) => {
 		let scheduleId = ctx.query.schedule_id
@@ -38,9 +36,9 @@ module.exports = (s) => {
 				dateFormat(new Date(), "yyyy-mm-dd' à 'HH:MM:ss")
 		})
 
-		ctx.body = { data: sol }
-
 		// Call solver
 		solve(s, schedule, sol)
+
+		ctx.body = { data: sol }
 	})
 }
