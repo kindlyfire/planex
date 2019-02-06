@@ -32,12 +32,13 @@
                                 <template v-for="k in 2">
                                     <div
                                         :key="`${j}_${k}`"
-                                        :class="{ 'line-occupied': day[(k - 1) * 2].exam }"
+                                        :class="{ 'line-occupied': day[(k - 1) * 2].exam, 'day-separator': j > 0 && k === 1 }"
                                         class="line"
                                     >
-                                        <template
-                                            v-if="day[(k - 1) * 2].exam"
-                                        >{{ day[(k - 1) * 2].exam.name }}</template>
+                                        <template v-if="day[(k - 1) * 2].exam">
+                                            <p class="m-0">{{ day[(k - 1) * 2].exam.name }}</p>
+                                            <small>{{ day[(k - 1) * 2].teachers.map(t => t.name).join(', ') }}</small>
+                                        </template>
                                     </div>
                                 </template>
                             </template>
@@ -154,21 +155,23 @@ export default {
 }
 
 .column-inner {
-    border: 1px solid rgba(black, 0.15);
+    border: 1px solid rgba(black, 0.1);
     border-radius: 5px;
 
-    background-color: rgba(black, 0.15);
+    background-color: rgba(black, 0.05);
 }
 
 .line {
-    height: 40px;
+    height: 50px;
+    flex-direction: column;
     display: flex;
+    justify-content: center;
     align-items: center;
 
     padding: 0 10px;
 
-    &:not(:last-child) {
-        border-bottom: 1px solid rgba(black, 0.15);
+    &:not(:first-child) {
+        border-top: 1px solid rgba(black, 0.1);
     }
 
     &:first-child {
@@ -183,6 +186,10 @@ export default {
 
     &.line-occupied {
         background-color: rgba(black, 0);
+    }
+
+    &.day-separator {
+        border-top: 1px solid rgba(black, 0.3);
     }
 }
 </style>

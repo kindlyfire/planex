@@ -26,7 +26,7 @@
                 :teacher-id="editingTeacherId"
                 :schedule="schedule"
                 @closed="editingTeacherId = null"
-                @saved="m_loader_load"
+                @saved="(t) => { editingTeacherId = t.id; m_loader_load() }"
                 @deleted="m_loader_load"
             ></ModalEditorTeacher>
         </div>
