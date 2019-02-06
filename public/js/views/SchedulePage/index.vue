@@ -11,7 +11,7 @@
                     :key="i"
                     @click.prevent="changeTab(child.path)"
                     href
-                >{{ child.name }}</a>
+                >{{ child.displayName }}</a>
 
                 <!-- <a href @click.prevent="changeTab('')">Résumé (~)</a>
                 <a href @click.prevent="changeTab('solutions')">Solutions</a>
@@ -30,7 +30,7 @@
                     <span v-if="m_loader_loading">
                         <i>Chargement...</i>
                     </span>
-                    
+
                     <span v-else>{{ schedule.name }}</span>
                 </span>
             </div>

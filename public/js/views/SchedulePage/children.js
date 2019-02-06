@@ -1,39 +1,53 @@
 import SummaryPane from './SummaryPane'
-import SolutionsPane from './SolutionsPane'
 import ClassesPane from './ClassesPane'
 import TeachersPane from './TeachersPane'
 import ExamsPane from './ExamsPane'
 import SettingsPane from './SettingsPage'
 
+import SolutionsPane from './SolutionsPane'
+import SolutionsPaneList from './SolutionsPane/SolutionsPaneList'
+import SolutionsPaneInspect from './SolutionsPane/SolutionsPaneInspect'
+
 export default [
-    {
-        path: '',
-        name: 'Résumé',
-        component: SummaryPane
-    },
-    {
-        path: 'solutions',
-        name: 'Solutions',
-        component: SolutionsPane
-    },
-    {
-        path: 'exams',
-        name: 'Examens',
-        component: ExamsPane
-    },
-    {
-        path: 'teachers',
-        name: 'Profs',
-        component: TeachersPane
-    },
-    {
-        path: 'classes',
-        name: 'Classes',
-        component: ClassesPane
-    },
-    {
-        path: 'settings',
-        name: 'Paramètres',
-        component: SettingsPane
-    }
+	{
+		path: '',
+		displayName: 'Résumé',
+		component: SummaryPane
+	},
+	{
+		path: 'solutions',
+		displayName: 'Solutions',
+		component: SolutionsPane,
+
+		children: [
+			{
+				path: '',
+				component: SolutionsPaneList
+			},
+			{
+				path: ':solutionId',
+				component: SolutionsPaneInspect
+			}
+		]
+	},
+	{
+		path: 'exams',
+		displayName: 'Examens',
+		component: ExamsPane
+	},
+	{
+		path: 'teachers',
+		displayName: 'Profs',
+		component: TeachersPane
+	},
+	{
+		path: 'classes',
+		displayName: 'Classes',
+		component: ClassesPane
+	},
+	{
+		path: 'settings',
+		displayName: 'Paramètres',
+		component: SettingsPane
+	}
 ]
