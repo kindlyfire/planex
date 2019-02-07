@@ -1,11 +1,12 @@
 <template>
-    <div class="form-group mb-0">
+    <div class="form-group mb-0 w-100">
         <label v-if="label" :for="'id_inc_' + inc" class="mb-1">{{ label }}</label>
         <input
             v-model="rValue"
             :type="type"
             :class="classes"
             :disabled="disabled"
+            :placeholder="placeholder"
             class="form-control"
         >
     </div>
@@ -18,7 +19,11 @@ export default {
         type: String,
         disabled: Boolean,
         classes: String,
-        label: String
+        label: String,
+        placeholder: {
+            type: String,
+            default: ''
+        }
     },
 
     data() {

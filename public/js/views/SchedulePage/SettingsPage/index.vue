@@ -26,6 +26,29 @@
                     type="number"
                 ></AppInput>
             </div>
+
+            <h2 class="mt-4">Actions</h2>
+
+            <div class="mcard mt-2">
+                <div class="d-flex flex-row align-items-end">
+                    <div class="mr-2 w-100">
+                        <AppInput
+                            v-model="duplicateScheduleName"
+                            label="Dupliquer l'horaire"
+                            type="text"
+                            placeholder="Nom du nouvel horaire"
+                        ></AppInput>
+                    </div>
+
+                    <AppButton>Dupliquer</AppButton>
+                </div>
+
+                <hr>
+
+                <div class="mb-1">Effacer l'horaire</div>
+
+                <AppButton type="danger" @click="deleteSchedule">Effacer</AppButton>
+            </div>
         </div>
     </div>
 </template>
@@ -57,6 +80,9 @@ export default {
             rSchedule: {},
             selectedDay: days.find((d) => d.value === this.schedule.start_day),
             changed: false,
+
+            // Schedule name if we want to duplicate
+            duplicateScheduleName: '',
 
             days
         }
@@ -93,6 +119,14 @@ export default {
             this.schedule.days = this.rSchedule.days
 
             this.changed = false
+        },
+
+        async deleteSchedule() {
+            this.$root.$emit('loader_push')
+            await api.delete('/schedule/' + this.schedule.id)
+            this.$root.$emit('loader_pop')
+
+            this.$router.push('/')
         }
     }
 }

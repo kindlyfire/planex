@@ -8,27 +8,29 @@ import routes from './routes'
 // UI Components
 import PrimaryButton from '&/components/ui/PrimaryButton'
 import AppInput from '&/components/ui/AppInput'
+import AppButton from '&/components/ui/AppButton'
 
 Vue.component('PrimaryButton', PrimaryButton)
 Vue.component('AppInput', AppInput)
+Vue.component('AppButton', AppButton)
 
 // Lib registration
 Vue.use(VueProgress, {
-    defaultShape: 'line'
+	defaultShape: 'line'
 })
 
 Vue.use(VueRouter)
 const router = new VueRouter({
-    routes
+	routes
 })
 
 new Vue({
-    el: '#app',
-    router,
-    data: {
-        inc: 1
-    },
-    render: function(h) {
-        return h(App)
-    }
+	el: '#app',
+	router,
+	data: {
+		inc: 1
+	},
+	render: function(h) {
+		return h(App)
+	}
 })
