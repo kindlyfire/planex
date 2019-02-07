@@ -50,7 +50,7 @@
                 :group-id="editingGroupId"
                 :schedule="schedule"
                 @closed="editingGroupId = null"
-                @saved="m_loader_load"
+                @saved="(group) => { editingGroupId = group.id; m_loader_load() }"
                 @deleted="m_loader_load"
             ></ModalEditorGroup>
         </div>

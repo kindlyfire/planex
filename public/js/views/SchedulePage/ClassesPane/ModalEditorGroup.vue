@@ -184,6 +184,8 @@ export default {
                 ...resources.slice(deletedClasses.length, -1)
             ])
             this.$set(this, 'addedClasses', [])
+
+            this.$emit('saved', this.group)
         },
 
         // Pressing "Effacer" inside popper submenu

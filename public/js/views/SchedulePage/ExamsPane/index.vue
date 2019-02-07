@@ -37,7 +37,8 @@
 
                     <div v-for="(entry, i) in tableData" :key="i">
                         <div
-                            class="advanced-table-content-line actionable no-select can-be-clicked"
+                            class="advanced-table-content-line actionable no-select can-be-clicked d-flex align-items-center"
+                            style="height: 50px;"
                             @click="examNameClicked(entry, $event)"
                         >
                             <div
@@ -50,13 +51,13 @@
                             >
                                 <button
                                     v-if="displayType === 'exams'"
-                                    class="btn btn-secondary"
+                                    class="btn btn-secondary btn-sm"
                                     @click.prevent="showEditor"
                                 >
                                     <i class="fas fa-cog"></i>
                                 </button>
                                 <button
-                                    class="btn btn-secondary"
+                                    class="btn btn-secondary btn-sm"
                                     @click.prevent="showExamInstanceCreator"
                                 >
                                     <i class="fas fa-plus"></i> Examen

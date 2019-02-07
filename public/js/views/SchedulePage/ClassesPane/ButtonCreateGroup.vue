@@ -8,9 +8,10 @@
                     v-model="name"
                     placeholder="Nom du groupe"
                     ref="input"
+                    class="form-control"
                     @keydown.enter="m_saver_save"
                 >
-                
+
                 <button
                     v-if="!m_saver_saving"
                     @click="m_saver_save"
