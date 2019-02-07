@@ -68,17 +68,13 @@
                             @click.prevent="showAvailabilityEditor = true"
                         >Éditer les disponibilités</a>
                     </p>
-
-                    <p class="mb-0">
-                        <a href @click.prevent="() => {}">Éditer les contraintes de capacité</a>
-                    </p>
                 </div>
-                <div style="width: 40%;" class="text-muted">
+                <div style="width: 40%;">
                     <template v-if="teacher['exam-instances'].length === 0">
                         <div class="p-3">Ce professeur ne donne actuellement pas d'examens</div>
                     </template>
                     <template v-else>
-                        <p class="m-2 mb-0">Examens:</p>
+                        <p class="m-2 mb-0 text-center text-muted">Examens</p>
                         <div class="simple-list simple-list-hover">
                             <div
                                 v-for="(inst, i) in teacher['exam-instances']"
@@ -137,7 +133,8 @@ export default {
                 email: '',
                 size: 1,
                 schedule_id: this.schedule.id,
-                availability_json: '[]'
+                availability_json: '[]',
+                'exam-instances': []
             },
 
             showAvailabilityEditor: false
@@ -161,15 +158,25 @@ export default {
         },
 
         async m_saver_saver() {
+            let t
+
             if (this.teacherId === -1) {
-                this.teacher = await api.post('/teachers', {}, this.teacher)
+                t = await api.post('/teachers', {}, this.teacher)
             } else {
-                this.teacher = await api.put(
+                t = await api.put(
                     '/teacher/' + this.teacher.id,
                     {},
                     this.teacher
                 )
             }
+
+            this.teacher = await api.get('/teacher/' + t.id, {
+                $include: [
+                    'exam-instances',
+                    'exam-instances.exams',
+                    'exam-instances.class-groups'
+                ].join(',')
+            })
 
             this.$emit('saved', this.teacher)
         },
