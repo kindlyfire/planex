@@ -73,10 +73,28 @@
                         <a href @click.prevent="() => {}">Éditer les contraintes de capacité</a>
                     </p>
                 </div>
-                <div
-                    style="width: 40%;"
-                    class="p-3 text-muted"
-                >Ce professeur ne donne actuellement pas d'examens</div>
+                <div style="width: 40%;" class="text-muted">
+                    <template v-if="teacher['exam-instances'].length === 0">
+                        <div class="p-3">Ce professeur ne donne actuellement pas d'examens</div>
+                    </template>
+                    <template v-else>
+                        <p class="m-2 mb-0">Examens:</p>
+                        <div class="simple-list simple-list-hover">
+                            <div
+                                v-for="(inst, i) in teacher['exam-instances']"
+                                :key="i"
+                                class="list-item d-flex align-items-center"
+                            >
+                                <div>{{ inst.exam.name }}</div>
+                                <div class="ml-auto" v-if="inst['class-group']">
+                                    <span
+                                        class="badge badge-secondary"
+                                    >{{ inst['class-group'].name }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
             </div>
         </div>
 
@@ -161,7 +179,13 @@ export default {
                 return
             }
 
-            this.teacher = await api.get('/teacher/' + this.teacherId)
+            this.teacher = await api.get('/teacher/' + this.teacherId, {
+                $include: [
+                    'exam-instances',
+                    'exam-instances.exams',
+                    'exam-instances.class-groups'
+                ].join(',')
+            })
         },
 
         async _delete() {
