@@ -25,7 +25,7 @@
                         <div class="text-center">&nbsp;</div>
                         <div class="column-inner">
                             <div
-                                v-for="i in schedule.days"
+                                v-for="i in solution.days"
                                 :key="i"
                                 class="line double-line"
                             >{{ i }}</div>
@@ -87,7 +87,7 @@ export default {
 
     data() {
         return {
-            solution: { name: '', solution_data: '' },
+            solution: { name: '', solution_data: '', days: 0 },
             selectedResource: null
         }
     },

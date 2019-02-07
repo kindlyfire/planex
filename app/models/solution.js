@@ -6,6 +6,10 @@ module.exports = (s) => {
 		status: Sequelize.STRING,
 		starred: Sequelize.INTEGER,
 		solution_data: Sequelize.STRING,
-		solver_output: Sequelize.STRING
+		solver_output: Sequelize.STRING,
+
+		// Number of days in the schedule
+		// Needed to make the solution self-sufficient
+		days: Sequelize.INTEGER
 	})
 }

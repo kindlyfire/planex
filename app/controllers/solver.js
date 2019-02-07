@@ -41,7 +41,8 @@ module.exports = (s) => {
 			status: 'running',
 			name:
 				'Solution du ' +
-				dateFormat(new Date(), "yyyy-mm-dd' à 'HH:MM:ss")
+				dateFormat(new Date(), "yyyy-mm-dd' à 'HH:MM:ss"),
+			days: schedule.days
 		})
 
 		// Call solver
