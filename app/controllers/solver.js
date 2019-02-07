@@ -28,6 +28,14 @@ module.exports = (s) => {
 			return
 		}
 
+		// Delete old not-starred solutions
+		await Solution.destroy({
+			where: {
+				starred: 0
+			}
+		})
+
+		// Create new solution
 		let sol = await Solution.create({
 			schedule_id: schedule.id,
 			status: 'running',

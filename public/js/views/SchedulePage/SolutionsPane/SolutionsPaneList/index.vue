@@ -107,7 +107,15 @@ export default {
             // Toggle between 0 and 1
             solution.starred = Math.abs(solution.starred - 1)
 
-            await api.put('/solution/' + solution.id, {}, solution)
+            if (
+                solution.id !== this.lastSolution.id &&
+                solution.starred === 0
+            ) {
+                await api.delete('/solution/' + solution.id)
+                this.m_loader_load()
+            } else {
+                await api.put('/solution/' + solution.id, {}, solution)
+            }
 
             this.$root.$emit('loader_pop')
         },
