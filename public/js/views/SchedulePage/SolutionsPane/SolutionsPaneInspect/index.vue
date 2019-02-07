@@ -45,7 +45,7 @@
                                 <template v-for="k in 2">
                                     <div
                                         :key="`${j}_${k}`"
-                                        :class="{ 'line-occupied': day[(k - 1) * 2].exam, 'day-separator': j > 0 && k === 1 }"
+                                        :class="{ 'line-occupied': day[(k - 1) * 2].exam, 'day-separator': j > 0 && k === 1, 'line-blocked': day[(k - 1) * 2].blocked }"
                                         class="line"
                                     >
                                         <template v-if="day[(k - 1) * 2].exam">
@@ -175,7 +175,6 @@ export default {
 }
 
 .column-inner {
-    border: 1px solid rgba(black, 0.1);
     border-radius: 5px;
 
     background-color: rgba(black, 0.05);
@@ -187,6 +186,9 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+
+    border-left: 1px solid rgba(black, 0.1);
+    border-right: 1px solid rgba(black, 0.1);
 
     padding: 0 10px;
 
@@ -201,11 +203,13 @@ export default {
     &:first-child {
         border-top-left-radius: 5px;
         border-top-right-radius: 5px;
+        border-top: 1px solid rgba(black, 0.1);
     }
 
     &:last-child {
         border-bottom-left-radius: 5px;
         border-bottom-right-radius: 5px;
+        border-bottom: 1px solid rgba(black, 0.1);
     }
 
     &.line-occupied {
@@ -214,6 +218,10 @@ export default {
 
     &.day-separator {
         border-top: 1px solid rgba(black, 0.3);
+    }
+
+    &.line-blocked {
+        background-color: rgba(black, 0.7);
     }
 }
 

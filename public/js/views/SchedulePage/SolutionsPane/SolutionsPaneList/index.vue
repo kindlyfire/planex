@@ -7,7 +7,7 @@
                     <button
                         class="btn btn-secondary"
                         @click="showCreator = true"
-                        :disabled="lastSolution && lastSolution.status === 'running'"
+                        :disabled="lastSolution && lastSolution.status === 'running' && false"
                     >Créer</button>
                 </div>
             </h2>
