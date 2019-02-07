@@ -10,6 +10,7 @@
                     <VSelect
                         v-model="selectedResource"
                         :options="resources"
+                        :allow-empty="false"
                         track-by="trackBy"
                         label="name"
                         group-values="classes"
@@ -26,8 +27,9 @@
                         <div class="column-inner">
                             <div
                                 v-for="i in solution.days"
+                                :class="{'double-line': !singleLines.includes(i)}"
                                 :key="i"
-                                class="line double-line"
+                                class="line day-separator"
                             >{{ i }}</div>
                         </div>
                     </div>
@@ -42,10 +44,10 @@
                         <div class="text-center">{{ cls.class.name }}</div>
                         <div class="column-inner">
                             <template v-for="(day, j) in cls.schedule">
-                                <template v-for="k in 2">
+                                <template v-for="k in (deepeq(day[0], day[2]) ? 1 : 2)">
                                     <div
                                         :key="`${j}_${k}`"
-                                        :class="{ 'line-occupied': day[(k - 1) * 2].exam, 'day-separator': j > 0 && k === 1, 'line-blocked': day[(k - 1) * 2].blocked }"
+                                        :class="{ 'line-occupied': day[(k - 1) * 2].exam, 'day-separator': j > 0 && k === 1, 'line-blocked': day[(k - 1) * 2].blocked, 'double-line': deepeq(day[0], day[2]) && !singleLines.includes(j + 1) }"
                                         class="line"
                                     >
                                         <template v-if="day[(k - 1) * 2].exam">
@@ -129,13 +131,47 @@ export default {
                     ? this.solutionData.classGroups[this.selectedResource.i]
                     : null
 
-            console.log(JSON.parse(JSON.stringify(res)))
+            // console.log(JSON.parse(JSON.stringify(res)))
 
             return res
+        },
+
+        // Days that never have two different values
+        singleLines() {
+            if (!this.selectedResource) {
+                return []
+            }
+
+            let singleLines = []
+
+            for (let i = 0; i < this.solution.days; i += 1) {
+                let alleq = true
+                let ref = this.selectedData.classes[0]
+
+                for (let cls of this.selectedData.classes.slice(1)) {
+                    if (
+                        !this.deepeq(cls.schedule[i], ref.schedule[i]) ||
+                        !this.deepeq(cls.schedule[i][0], cls.schedule[i][2])
+                    ) {
+                        alleq = false
+                        break
+                    }
+                }
+
+                if (alleq) {
+                    singleLines.push(i + 1)
+                }
+            }
+
+            return singleLines
         }
     },
 
     methods: {
+        deepeq(a, b) {
+            return JSON.stringify(a) === JSON.stringify(b)
+        },
+
         async m_loader_loader() {
             this.solution = await api.get(
                 '/solution/' + this.$route.params.solutionId
@@ -197,7 +233,7 @@ export default {
     }
 
     &:not(:first-child) {
-        border-top: 1px solid rgba(black, 0.1);
+        border-top: 1px solid rgba(black, 0.2);
     }
 
     &:first-child {
@@ -216,8 +252,8 @@ export default {
         background-color: rgba(black, 0);
     }
 
-    &.day-separator {
-        border-top: 1px solid rgba(black, 0.3);
+    &:not(:first-child).day-separator {
+        border-top: 1px solid rgba(black, 0.5);
     }
 
     &.line-blocked {

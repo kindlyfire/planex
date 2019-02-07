@@ -19,7 +19,7 @@
             </div>
 
             <button class="btn ml-2 cursor-pointer" @click="close">Fermer</button>
-            
+
             <button
                 v-if="!m_saver_saving && !m_loader_loading"
                 class="btn btn-primary cursor-pointer ml-2"
@@ -102,7 +102,7 @@
                         <input type="checkbox" :checked="instance.autoadd_classes === 1"> Toutes les classes
                     </div>
                     <div
-                        v-for="(cls, i) of selectedClassGroup.classes"
+                        v-for="(cls, i) of (selectedClassGroup || {}).classes"
                         :key="i"
                         :class="{'list-item-disabled': instance.autoadd_classes === 1}"
                         @click="toggleClassSelected(cls)"

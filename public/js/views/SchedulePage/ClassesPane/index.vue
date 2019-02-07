@@ -104,7 +104,8 @@ export default {
             //        We wouldn't need the computed groupClasses anymore
             let res = await Promise.all([
                 await api.get('/class-groups', {
-                    schedule_id: this.schedule.id
+                    schedule_id: this.schedule.id,
+                    $order: 'name'
                 }),
                 await api.get('/classes', {
                     schedule_id: this.schedule.id,

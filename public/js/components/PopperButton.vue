@@ -15,11 +15,7 @@
                 <slot name="popper-content"></slot>
             </div>
 
-            <button
-                slot="reference"
-                class="popper-reference btn btn-secondary"
-                :disabled="disabled"
-            >
+            <button slot="reference" class="btn btn-secondary" :disabled="disabled">
                 <slot name="button-text"></slot>
             </button>
         </VPopper>
@@ -27,14 +23,14 @@
 </template>
 
 <script>
-import VPopper from "vue-popperjs";
+import VPopper from 'vue-popperjs'
 
 export default {
     props: {
         disabled: Boolean,
         placement: {
             type: String,
-            default: "bottom-end"
+            default: 'bottom-end'
         }
     },
 
@@ -44,8 +40,8 @@ export default {
 
     methods: {
         doClose() {
-            this.$refs.popper.doClose();
+            this.$refs.popper.doClose()
         }
     }
-};
+}
 </script>

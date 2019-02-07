@@ -84,7 +84,8 @@ export default {
 
         async m_loader_loader() {
             this.teachers = await api.get('/teachers', {
-                schedule_id: this.schedule.id
+                schedule_id: this.schedule.id,
+                $order: 'name'
             })
         },
 

@@ -11,7 +11,7 @@
                         >{{ examCount }} matière{{ examCount === 1 ? '' : 's' }}, {{ examInstancesCount }} examen{{ examInstancesCount === 1 ? '' : 's' }}</h3>
 
                         <div class="ml-auto d-flex flex-row">
-                            <select v-model="displayType" class="mr-2 pl-1 pr-4">
+                            <select v-model="displayType" class="mr-2 pl-1 pr-4 form-control">
                                 <option value="exams">Matières</option>
                                 <option value="class-groups" selected>Classes</option>
                             </select>
@@ -43,7 +43,13 @@
                         >
                             <div
                                 class="advanced-table-content-cell no-border can-be-clicked"
+                                style="width: 75%"
                             >{{ entry.name }}</div>
+
+                            <div
+                                v-if="displayType === 'exams' && !m_loader_loading"
+                                class="advanced-table-content-cell no-border can-be-clicked"
+                            >{{ entry.length }}h</div>
 
                             <div
                                 class="advanced-table-content-cell no-border ml-auto pr-2"
