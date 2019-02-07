@@ -164,7 +164,6 @@ export default {
 }
 
 .column-inner {
-    border: 1px solid rgba(black, 0.15);
     border-radius: 5px;
 
     background-color: rgba(black, 0.3);
@@ -172,6 +171,18 @@ export default {
 
 .column-entry {
     height: 35px;
+
+    &:first-child {
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        border-top: 1px solid rgba(black, 0.1);
+    }
+
+    &:last-child {
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+        border-bottom: 1px solid rgba(black, 0.1);
+    }
 
     &:not(:last-child) {
         border-bottom: 1px solid rgba(black, 0.15);
