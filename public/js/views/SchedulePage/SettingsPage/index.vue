@@ -40,7 +40,7 @@
                         ></AppInput>
                     </div>
 
-                    <AppButton>Dupliquer</AppButton>
+                    <AppButton @click="duplicateSchedule">Dupliquer</AppButton>
                 </div>
 
                 <hr>
@@ -127,6 +127,17 @@ export default {
             this.$root.$emit('loader_pop')
 
             this.$router.push('/')
+        },
+
+        async duplicateSchedule() {
+            this.$root.$emit('loader_push')
+            let s = await api.post(
+                '/actions/duplicate-schedule/' + this.schedule.id,
+                { name: this.duplicateScheduleName }
+            )
+            this.$root.$emit('loader_pop')
+
+            this.$router.push('/schedule/' + s.id)
         }
     }
 }

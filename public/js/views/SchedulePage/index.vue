@@ -74,6 +74,12 @@ export default {
         changeTab(name) {
             this.$router.push('/schedule/' + this.$route.params.id + '/' + name)
         }
+    },
+
+    async beforeRouteUpdate(to, from, next) {
+        this.schedule = await api.get('/schedule/' + to.params.id)
+
+        next()
     }
 }
 </script>
