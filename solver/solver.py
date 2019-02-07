@@ -18,6 +18,9 @@ def solve(solver_data):
     tasks_mapi = {}
     tasks_ai = 0
 
+    # blocks ai
+    blocks_ai = 0
+
     #
     # enter resources
 
@@ -63,6 +66,19 @@ def solve(solver_data):
             tasks[tname] += resources[resources_mapi[res_name]]
 
     #
+    # enter blocks
+
+    for block in solver_data['blocks']:
+        bname = 'b' + str(blocks_ai)
+
+        task = scenario.Task(
+            bname, length=block["length"], periods=[block["start"]])
+
+        task += resources[resources_mapi[block["resource"]]]
+
+        blocks_ai += 1
+
+    #
     # solve
 
     if solvers.mip.solve(scenario, msg=1, time_limit=180):
@@ -70,9 +86,11 @@ def solve(solver_data):
             resources_ai / 3, resources_ai / 2))
 
         solution = scenario.solution()
-        real_solution = [list(l) for l in solution]
+        real_solution = [[str(l[0]), str(l[1]), l[2], l[3]] for l in solution]
 
         for item in real_solution:
+            if item[0][0] == 'b':
+                continue
             item[0] = tasks_map[str(item[0])]
             item[1] = resources_map[str(item[1])]
 

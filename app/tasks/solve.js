@@ -11,7 +11,8 @@ module.exports = async (s, schedule, sol) => {
 		let solverData = {
 			horizon: schedule.days * 4,
 			resources: [],
-			tasks: []
+			tasks: [],
+			blocks: []
 		}
 
 		//
@@ -25,6 +26,25 @@ module.exports = async (s, schedule, sol) => {
 
 		for (let t of teachers) {
 			solverData.resources.push(['teacher_' + t.id, t.size])
+
+			// Add blocks
+			try {
+				let blocksByDay = JSON.parse(t.availability_json)
+
+				for (const [i, day] of blocksByDay.entries()) {
+					for (let block of day) {
+						// @TODO: Continuity dedupe
+						//        (a 4-hour long block could be one block of length 4 instead of 4 blocks of length 1)
+						solverData.blocks.push({
+							resource: 'teacher_' + t.id,
+							start: 4 * parseInt(i) + block,
+							length: 1
+						})
+					}
+				}
+			} catch (e) {
+				console.error(e)
+			}
 		}
 
 		// Classes and class groups
@@ -36,6 +56,27 @@ module.exports = async (s, schedule, sol) => {
 		for (let cg of classGroups) {
 			for (let cls of cg.classes) {
 				solverData.resources.push(['class_' + cls.id, 1])
+
+				// Add blocks
+				try {
+					let blocksByDay = JSON.parse(cg.availability_json)
+
+					console.log(blocksByDay)
+
+					for (const [i, day] of blocksByDay.entries()) {
+						for (let block of day) {
+							// @TODO: Continuity dedupe
+							//        (a 4-hour long block could be one block of length 4 instead of 4 blocks of length 1)
+							solverData.blocks.push({
+								resource: 'class_' + cls.id,
+								start: 4 * parseInt(i) + block,
+								length: 1
+							})
+						}
+					}
+				} catch (e) {
+					console.error(e)
+				}
 			}
 		}
 
@@ -200,6 +241,21 @@ module.exports = async (s, schedule, sol) => {
 							}
 						}
 					}
+				}
+
+				// Blocked periods
+				try {
+					let blockedByDay = JSON.parse(group.availability_json)
+
+					for (const [i, day] of blockedByDay.entries()) {
+						for (let p of day) {
+							storedClass.schedule[parseInt(i)][p - 1] = {
+								blocked: true
+							}
+						}
+					}
+				} catch (e) {
+					console.error(e)
 				}
 			}
 

@@ -36,7 +36,7 @@ def structure_solution(solution):
             if day + 1 > res['days']:
                 res['days'] = day + 1
 
-        else:
+        elif block[1].startswith('teacher_'):
             if not block[0] in res['profs']:
                 res['profs'][block[0]] = []
 
