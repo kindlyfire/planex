@@ -79,10 +79,9 @@ export default {
     components: { VSelect, ScheduleRenderAndAvailability },
 
     data() {
-        let rc = JSON.parse(JSON.stringify(this.constraint))
+        let rc = this.constraint
 
         return {
-            rConstraint: rc,
             exams: [],
             selectedExam:
                 rc['exam-instances'].length > 0
@@ -95,14 +94,14 @@ export default {
 
     watch: {
         constraint(v) {
-            let rc = JSON.parse(JSON.stringify(v))
+            let rc = this.constraint
 
-            this.rConstraint = rc
+            this.selectedExam =
+                rc['exam-instances'].length > 0
+                    ? rc['exam-instances'][0].exam
+                    : null
             this.selectedExamInstance =
                 rc['exam-instances'].length > 0 ? rc['exam-instances'][0] : null
-            this.selectedExam = this.selectedExamInstance
-                ? this.selectedExamInstance.exam
-                : null
         },
 
         selectedExam: {
@@ -113,15 +112,10 @@ export default {
 
         selectedExamInstance: {
             handler(v) {
-                this.rConstraint['exam-instances'] = v ? [v] : []
-                this.rConstraint.data_json = JSON.stringify({
+                this.constraint['exam-instances'] = v ? [v] : []
+                this.constraint.data_json = JSON.stringify({
                     startTime: []
                 })
-
-                this.$emit(
-                    'changed',
-                    JSON.parse(JSON.stringify(this.rConstraint))
-                )
             }
         }
     },
@@ -138,7 +132,7 @@ export default {
         },
 
         constraintData() {
-            return JSON.parse(this.rConstraint.data_json || '{}')
+            return JSON.parse(this.constraint.data_json || '{}')
         },
 
         selectedStartTime() {
@@ -148,10 +142,9 @@ export default {
 
     methods: {
         setStartTime(st) {
-            this.rConstraint.data_json = JSON.stringify({
+            this.constraint.data_json = JSON.stringify({
                 startTime: st
             })
-            this.$emit('changed', JSON.parse(JSON.stringify(this.rConstraint)))
         },
 
         async m_loader_load() {

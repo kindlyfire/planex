@@ -34,7 +34,6 @@
             :is="activeComponent"
             :constraint="constraint"
             :schedule="schedule"
-            @changed="constraintUpdated"
         ></component>
     </AppModal>
 </template>
@@ -82,14 +81,18 @@ export default {
         }
     },
 
+    watch: {
+        constraint: {
+            deep: true,
+            handler(v) {
+                console.log('Constraint update', JSON.parse(JSON.stringify(v)))
+            }
+        }
+    },
+
     methods: {
         close() {
             this.$emit('closed')
-        },
-
-        constraintUpdated(c) {
-            console.log('c update', JSON.parse(JSON.stringify(c)))
-            this.constraint = JSON.parse(JSON.stringify(c))
         },
 
         async _delete() {
@@ -109,7 +112,11 @@ export default {
                         'teachers',
                         'exam-instances',
                         'exam-instances.exams',
-                        'exam-instances.class-groups'
+                        'exam-instances.class-groups',
+
+                        // That's just plain bad design and sub-zero optimisation
+                        'exam-instances.exams.exam-instances',
+                        'exam-instances.exams.exam-instances.class-groups'
                     ].join(',')
                 }
             )

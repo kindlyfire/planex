@@ -142,10 +142,17 @@ export default {
                 return
             }
 
-            this.selectedStartTime = [
-                i,
-                Math.floor(j / this.exam.length) * this.exam.length
-            ]
+            j = Math.floor(j / this.exam.length) * this.exam.length
+
+            // Check all would-be active cells that they're not blocked
+            for (let k = 0; k < this.exam.length; k += 1) {
+                console.log(i, j, k)
+                if (this.rColumns[i].includes(j + k)) {
+                    return
+                }
+            }
+
+            this.selectedStartTime = [i, j]
 
             this.$emit('start-time', this.selectedStartTime)
 
