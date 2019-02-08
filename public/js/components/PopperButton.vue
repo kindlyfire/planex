@@ -6,13 +6,14 @@
             enter-active-class="fade-enter-active"
             leave-active-class="fade-leave-active"
             :options="{ placement: placement }"
-            :visible-arrow="false"
+            :visible-arrow="true"
             :disabled="disabled"
             ref="popper"
             @show="$emit('show')"
         >
             <div class="popper">
                 <slot name="popper-content"></slot>
+                <slot></slot>
             </div>
 
             <button slot="reference" class="btn btn-secondary" :disabled="disabled">

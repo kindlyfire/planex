@@ -2,7 +2,7 @@
     <button
         v-if="!disabled"
         class="btn cursor-pointer"
-        :class="{ ...className, ['btn-' + type]: true }"
+        :class="[className, 'btn-' + type]"
         @click="$emit('click')"
     >
         <slot></slot>

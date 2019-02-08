@@ -15,7 +15,6 @@ def structure_solution(solution):
     }
 
     for block in solution:
-        print(block)
         # check if is class
         if block[1].startswith('class_'):
             if not block[1] in res['classes']:

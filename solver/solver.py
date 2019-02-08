@@ -82,8 +82,8 @@ def solve(solver_data):
     # solve
 
     if solvers.mip.solve(scenario, msg=1, time_limit=180):
-        plotters.matplotlib.plot(scenario, img_filename='out.png', fig_size=(
-            resources_ai / 3, resources_ai / 2))
+        # plotters.matplotlib.plot(scenario, img_filename='out.png', fig_size=(
+        #     resources_ai / 3, resources_ai / 2))
 
         solution = scenario.solution()
         real_solution = [[str(l[0]), str(l[1]), l[2], l[3]] for l in solution]

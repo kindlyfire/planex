@@ -3,6 +3,7 @@ import ClassesPane from './ClassesPane'
 import TeachersPane from './TeachersPane'
 import ExamsPane from './ExamsPane'
 import SettingsPane from './SettingsPage'
+import ConstraintsPane from './ConstraintsPage'
 
 import SolutionsPane from './SolutionsPane'
 import SolutionsPaneList from './SolutionsPane/SolutionsPaneList'
@@ -44,6 +45,11 @@ export default [
 		path: 'classes',
 		displayName: 'Classes',
 		component: ClassesPane
+	},
+	{
+		path: 'constraints',
+		displayName: 'Contraintes',
+		component: ConstraintsPane
 	},
 	{
 		path: 'settings',

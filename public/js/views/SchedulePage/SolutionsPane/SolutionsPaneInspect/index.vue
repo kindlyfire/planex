@@ -131,8 +131,6 @@ export default {
                     ? this.solutionData.classGroups[this.selectedResource.i]
                     : null
 
-            // console.log(JSON.parse(JSON.stringify(res)))
-
             return res
         },
 
