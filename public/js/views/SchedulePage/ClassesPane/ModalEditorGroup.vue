@@ -179,6 +179,24 @@ export default {
                 api.put('/class-group/' + this.groupId, {}, this.group)
             ])
 
+            // Automatically add added classes to exam instances if autoadd_classes = 1
+            let examInstances = await api.get('/exam-instances', {
+                'exams.schedule_id': this.schedule.id,
+                group_id: this.group.id,
+                autoadd_classes: 1,
+                $include: ['exams', 'classes'].join(',')
+            })
+
+            await Promise.all(
+                examInstances.map((ei) => {
+                    ei.classes = [
+                        ...ei.classes,
+                        ...resources.slice(deletedClasses.length, -1)
+                    ]
+                    return api.put('/exam-instance/' + ei.id, {}, ei)
+                })
+            )
+
             this.$set(this, 'classes', [
                 ...this.classes,
                 ...resources.slice(deletedClasses.length, -1)
