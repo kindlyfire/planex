@@ -92,7 +92,8 @@ module.exports = async (s, schedule, sol) => {
 					include: [
 						s.models.ClassGroup,
 						s.models.Class,
-						s.models.Teacher
+						s.models.Teacher,
+						s.models.Constraint
 					]
 				}
 			]
@@ -100,6 +101,17 @@ module.exports = async (s, schedule, sol) => {
 
 		for (let exam of exams) {
 			for (let inst of exam['exam-instances']) {
+				let positionConstraint = inst.constraints.find(
+					(c) => c.type === 'position'
+				)
+
+				let forcedPeriod = -1
+
+				if (positionConstraint) {
+					let d = JSON.parse(positionConstraint.data_json)
+					forcedPeriod = d.startTime[0] * 4 + d.startTime[1]
+				}
+
 				solverData.tasks.push({
 					label: 'exam_instance_' + inst.id,
 					length: exam.length,
@@ -111,7 +123,8 @@ module.exports = async (s, schedule, sol) => {
 						...inst.classes.map((c) => {
 							return 'class_' + c.id
 						})
-					]
+					],
+					period: forcedPeriod
 				})
 			}
 		}

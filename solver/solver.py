@@ -54,12 +54,15 @@ def solve(solver_data):
         tasks_mapi[task['label']] = tname
         tasks_ai += 1
 
-        if task['length'] == 4:
-            tasks[tname].periods = [i for i in range(
-                0, solver_data['horizon']) if i % 4 == 0]
+        if 'period' in task and task['period'] != -1:
+            tasks[tname].periods = [task['period']]
         else:
-            tasks[tname].periods = [i for i in range(
-                0, solver_data['horizon']) if i % 2 == 0]
+            if task['length'] == 4:
+                tasks[tname].periods = [i for i in range(
+                    0, solver_data['horizon']) if i % 4 == 0]
+            else:
+                tasks[tname].periods = [i for i in range(
+                    0, solver_data['horizon']) if i % 2 == 0]
 
         # add resources to task
         for res_name in task['resources']:
