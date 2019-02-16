@@ -83,6 +83,7 @@ export default {
     methods: {
         async m_loader_loader() {
             this.constraints = await api.get('/constraints', {
+                schedule_id: this.schedule.id,
                 $include: ['teachers', 'exam-instances'].join(','),
                 $order: 'type'
             })
