@@ -204,6 +204,7 @@ export default {
             this.$set(this, 'addedClasses', [])
 
             this.$emit('saved', this.group)
+            this.close()
         },
 
         // Pressing "Effacer" inside popper submenu

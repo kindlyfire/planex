@@ -128,6 +128,7 @@ export default {
                 {},
                 this.constraint
             )
+            this.close()
         }
     }
 }

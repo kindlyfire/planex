@@ -312,6 +312,7 @@ export default {
             this.selectedClasses = [...this.instance.classes]
 
             this.$emit('saved', this.instance)
+            this.close()
         }
     }
 }

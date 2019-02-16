@@ -19,7 +19,7 @@
             </div>
 
             <button class="btn ml-2 cursor-pointer" @click="close">Fermer</button>
-            
+
             <button
                 v-if="!m_saver_saving && !m_loader_loading"
                 class="btn btn-primary cursor-pointer ml-2"
@@ -106,6 +106,7 @@ export default {
         async m_saver_save() {
             await api.put('/exam/' + this.examId, {}, this.exam)
             this.$emit('saved')
+            this.close()
         }
     }
 }

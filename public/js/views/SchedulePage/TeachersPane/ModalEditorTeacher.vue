@@ -179,6 +179,7 @@ export default {
             })
 
             this.$emit('saved', this.teacher)
+            this.close()
         },
 
         async m_loader_loader() {
