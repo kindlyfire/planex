@@ -92,18 +92,23 @@
                                     >{{ displayType === 'exams' ? instance['class-group'].name : instance.exam.name }}</div>
 
                                     <div
-                                        class="advanced-table-content-cell no-border text-muted text-truncate"
-                                        style="width: 30%;"
-                                    >{{ instance.description }}</div>
+                                        v-if="displayType === 'class-groups'"
+                                        style="width: 15%;"
+                                        class="advanced-table-content-cell no-border can-be-clicked"
+                                    >{{ instance.exam.length }}h</div>
 
                                     <div class="advanced-table-content-cell no-border">
                                         <template v-if="instance.teachers">
                                             <span
                                                 v-if="instance.teachers.length === 1"
                                             >{{ instance.teachers[0].name }}</span>
-                                            <span
-                                                v-else-if="instance.teachers.length >= 1"
-                                            >{{ instance.teachers.length }} professeurs</span>
+                                            <span v-else-if="instance.teachers.length >= 1">
+                                                <small
+                                                    v-for="(teacher, i) in instance.teachers"
+                                                    :key="i"
+                                                    class="d-block"
+                                                >{{ teacher.name }}</small>
+                                            </span>
                                         </template>
                                     </div>
 

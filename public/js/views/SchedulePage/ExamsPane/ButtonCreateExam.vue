@@ -14,6 +14,14 @@
                     @keydown.enter="m_saver_save"
                 >
 
+                <input
+                    type="number"
+                    v-model="length"
+                    placeholder="Nombre d'heures"
+                    class="form-control mt-2"
+                    @keydown.enter="m_saver_save"
+                >
+
                 <button
                     v-if="!m_saver_saving"
                     @click="m_saver_save"
@@ -41,13 +49,18 @@ export default {
 
     data() {
         return {
-            name: ''
+            name: '',
+            length: 4
         }
     },
 
     methods: {
         async m_saver_saver() {
-            if (!this.name) {
+            if (
+                !this.name ||
+                !this.length ||
+                ![2, 4].includes(parseInt(this.length))
+            ) {
                 return
             }
 
@@ -56,7 +69,7 @@ export default {
                 {},
                 {
                     name: this.name,
-                    length: 4,
+                    length: this.length || 4,
                     schedule_id: this.schedule.id
                 }
             )

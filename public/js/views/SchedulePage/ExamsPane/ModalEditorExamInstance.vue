@@ -42,11 +42,24 @@
                             v-model="selectedExam"
                             :options="exams"
                             :allow-empty="false"
+                            :show-labels="false"
                             track-by="id"
-                            label="name"
-                            deselect-label
                         >
                             <template slot="noResult">Pas de résultats.</template>
+
+                            <template slot="option" slot-scope="props">
+                                <div class="d-flex">
+                                    <span>{{ props.option.name }}</span>
+                                    <span class="ml-auto">{{ props.option.length }}h</span>
+                                </div>
+                            </template>
+
+                            <template slot="singleLabel" slot-scope="props">
+                                <div class="d-flex">
+                                    <span>{{ props.option.name }}</span>
+                                    <span class="ml-auto">{{ props.option.length }}h</span>
+                                </div>
+                            </template>
                         </VSelect>
                     </template>
 
