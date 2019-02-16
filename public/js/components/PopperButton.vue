@@ -11,7 +11,7 @@
             ref="popper"
             @show="$emit('show')"
         >
-            <div class="popper">
+            <div class="popper" :style="{ width: width === 'auto' ? 'auto' : width + 'px' }">
                 <slot name="popper-content"></slot>
                 <slot></slot>
             </div>
@@ -32,6 +32,10 @@ export default {
         placement: {
             type: String,
             default: 'bottom-end'
+        },
+        width: {
+            type: [Number, String],
+            default: 'auto'
         }
     },
 

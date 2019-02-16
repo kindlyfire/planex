@@ -21,7 +21,7 @@
             <button class="btn ml-2 cursor-pointer" @click="close">Fermer</button>
 
             <PrimaryButton
-                :disabled="m_loader_loading || m_saver_saving"
+                :disabled="m_loader_loading || m_saver_saving || errors.any()"
                 class-name="ml-2"
                 @click="m_saver_save"
             >{{ teacherId === -1 ? 'Ajouter' : 'Sauvegarder' }}</PrimaryButton>
@@ -36,10 +36,14 @@
                         <label for="i_teachereditor_name" class="mb-0">Nom</label>
                         <input
                             v-model="teacher.name"
+                            v-validate="'required'"
+                            data-vv-as="Nom"
+                            name="name"
                             type="text"
                             class="form-control"
                             id="i_teachereditor_name"
                         >
+                        <small class="form-text text-muted">{{ errors.first('name') }}</small>
                     </div>
 
                     <div class="form-group">
@@ -52,7 +56,7 @@
                         >
                     </div>
 
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label for="i_teachereditor_size" class="mb-0">Taille</label>
                         <input
                             v-model="teacher.size"
@@ -60,8 +64,7 @@
                             class="form-control"
                             id="i_teachereditor_size"
                         >
-                    </div>
-
+                    </div>-->
                     <p class="mb-0">
                         <a
                             href

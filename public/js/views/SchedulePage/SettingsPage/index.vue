@@ -4,12 +4,25 @@
             <h2 class="d-flex flex-row">
                 <div>Paramètres</div>
                 <div class="ml-auto">
-                    <PrimaryButton @click="m_saver_save" :disabled="!changed">Sauvegarder</PrimaryButton>
+                    <PrimaryButton
+                        @click="m_saver_save"
+                        :disabled="!changed || errors.any()"
+                    >Sauvegarder</PrimaryButton>
                 </div>
             </h2>
 
             <div class="mcard">
-                <AppInput v-model="rSchedule.name" label="Nom de l'horaire" type="text"></AppInput>
+                <AppInput
+                    v-model="rSchedule.name"
+                    v-validate="'required'"
+                    data-vv-as="Nom"
+                    label="Nom de l'horaire"
+                    type="text"
+                    name="name"
+                ></AppInput>
+                <span class="d-block">
+                    <small>{{ errors.first('name') }}</small>
+                </span>
 
                 <label for="i_panesettings_startday" class="mt-3 mb-1">Jour de début</label>
                 <VSelect
@@ -22,9 +35,15 @@
 
                 <AppInput
                     v-model="rSchedule.days"
+                    v-validate="'required|integer'"
+                    data-vv-as="Nombre de jours"
                     label="Nombre de jours d'examens au total"
                     type="number"
+                    name="length"
                 ></AppInput>
+                <span class="d-block">
+                    <small>{{ errors.first('length') }}</small>
+                </span>
             </div>
 
             <h2 class="mt-4">Actions</h2>
@@ -40,7 +59,10 @@
                         ></AppInput>
                     </div>
 
-                    <AppButton @click="duplicateSchedule">Dupliquer</AppButton>
+                    <AppButton
+                        @click="duplicateSchedule"
+                        :disabled="duplicateScheduleName.length === 0"
+                    >Dupliquer</AppButton>
                 </div>
 
                 <hr>

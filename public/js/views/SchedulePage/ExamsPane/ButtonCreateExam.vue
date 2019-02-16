@@ -1,5 +1,5 @@
 <template>
-    <PopperButton ref="popper" @show="opened" :disabled="disabled">
+    <PopperButton ref="popper" @show="opened" :disabled="disabled" :width="300">
         <template slot="button-text">
             <i class="fas fa-plus"></i>&nbsp; Matière
         </template>
@@ -8,22 +8,30 @@
                 <input
                     type="text"
                     v-model="name"
+                    v-validate="'required'"
+                    data-vv-as="Nom"
                     placeholder="Nom de la matière"
                     ref="input"
                     class="form-control"
+                    name="exam_name"
                     @keydown.enter="m_saver_save"
                 >
+                <span class="d-block text-left">{{ errors.first('exam_name') }}</span>
 
                 <input
                     type="number"
                     v-model="length"
+                    v-validate="'required|integer|included:2,4'"
+                    data-vv-as="Nombre d'heures"
                     placeholder="Nombre d'heures"
                     class="form-control mt-2"
+                    name="exam_length"
                     @keydown.enter="m_saver_save"
                 >
+                <span class="d-block text-left">{{ errors.first('exam_length') }}</span>
 
                 <button
-                    v-if="!m_saver_saving"
+                    v-if="!m_saver_saving && formValidated"
                     @click="m_saver_save"
                     class="btn btn-primary d-block w-100 mt-2"
                 >Enregistrer</button>
@@ -51,6 +59,15 @@ export default {
         return {
             name: '',
             length: 4
+        }
+    },
+
+    computed: {
+        formValidated() {
+            return Object.keys(this.fields).every((key) => {
+                if (!this.fields[key].validated) return false
+                return this.fields[key].valid
+            })
         }
     },
 
