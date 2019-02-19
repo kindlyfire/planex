@@ -33,6 +33,7 @@
             v-if="!m_loader_loading"
             :is="activeComponent"
             :constraint="constraint"
+            :json-data="jsonData"
             :schedule="schedule"
         ></component>
     </AppModal>
@@ -47,9 +48,11 @@ import PopperButton from '&/components/PopperButton'
 import AppModal from '&/components/Modal'
 
 import PositionConstraint from './Constraints/PositionConstraint'
+import SyncConstraint from './Constraints/SyncConstraint'
 
 const compByType = {
-    position: PositionConstraint
+    position: PositionConstraint,
+    sync: SyncConstraint
 }
 
 export default {
@@ -69,7 +72,9 @@ export default {
                 position: 'Position',
                 capacity: 'Capacité',
                 sync: 'Synchronisation'
-            }
+            },
+
+            jsonData: {}
         }
     },
 
@@ -86,6 +91,13 @@ export default {
             deep: true,
             handler(v) {
                 console.log('Constraint update', JSON.parse(JSON.stringify(v)))
+            }
+        },
+
+        jsonData: {
+            deep: true,
+            handler(v) {
+                this.constraint.data_json = JSON.stringify(v)
             }
         }
     },
@@ -120,6 +132,13 @@ export default {
                     ].join(',')
                 }
             )
+
+            try {
+                this.jsonData = JSON.parse(this.constraint.data_json || '{}')
+                console.log('parsed')
+            } catch (e) {
+                this.jsonData = {}
+            }
         },
 
         async m_saver_saver() {
