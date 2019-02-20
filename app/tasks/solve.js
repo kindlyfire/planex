@@ -135,7 +135,11 @@ module.exports = async (s, schedule, sol) => {
 							return 'class_' + c.id
 						})
 					],
-					period: forcedPeriod
+					period: forcedPeriod,
+
+					// Not used by solver
+					// Used when adding CAP constraints
+					groupId: inst['class-group'].id
 				})
 			}
 		}
@@ -205,6 +209,53 @@ module.exports = async (s, schedule, sol) => {
 
 						ins[1].tags['constraint_' + c.id + '_int'] = 1
 						ins[1].tags['constraint_' + c.id + '_ext'] = 0
+					}
+				}
+			} catch (e) {
+				console.error(e)
+			}
+		}
+
+		//
+		// Cap constraints
+
+		let capConstraints = await s.models.Constraint.findAll({
+			where: {
+				schedule_id: schedule.id,
+				type: 'capacity'
+			}
+		})
+
+		for (let c of capConstraints) {
+			try {
+				let json = JSON.parse(c.data_json)
+
+				if (json.teacherId && json.groups) {
+					let teacher = solverData.resources.find(
+						(t) => t[0] === 'teacher_' + json.teacherId
+					)
+
+					// Increment teacher size by one
+					teacher[1] += 1
+
+					solverData.constraints.cap.push({
+						resource: t,
+						tags: [
+							'constraint_' + c.id + '_int',
+							'constraint_' + c.id + '_ext'
+						],
+						max: 1
+					})
+
+					let examInstances = solverData.tasks.filter((t) =>
+						json.groups.includes(t.groupId)
+					)
+
+					defaultTags['constraint_' + c.id + '_ext'] = 1
+
+					for (let ins of examInstances) {
+						ins.tags['constraint_' + c.id + '_int'] = 1
+						ins.tags['constraint_' + c.id + '_ext'] = 0
 					}
 				}
 			} catch (e) {
