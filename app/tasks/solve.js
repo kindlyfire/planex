@@ -12,7 +12,15 @@ module.exports = async (s, schedule, sol) => {
 			horizon: schedule.days * 4,
 			resources: [],
 			tasks: [],
-			blocks: []
+			blocks: [],
+			constraints: {
+				sync: [],
+				cap: []
+			}
+		}
+
+		let defaultTags = {
+			t_task: 1
 		}
 
 		//
@@ -25,7 +33,7 @@ module.exports = async (s, schedule, sol) => {
 		})
 
 		for (let t of teachers) {
-			solverData.resources.push(['teacher_' + t.id, t.size])
+			solverData.resources.push(['teacher_' + t.id, 1])
 
 			// Add blocks
 			try {
@@ -60,8 +68,6 @@ module.exports = async (s, schedule, sol) => {
 				// Add blocks
 				try {
 					let blocksByDay = JSON.parse(cg.availability_json)
-
-					console.log(blocksByDay)
 
 					for (const [i, day] of blocksByDay.entries()) {
 						for (let block of day) {
@@ -109,13 +115,18 @@ module.exports = async (s, schedule, sol) => {
 
 				if (positionConstraint) {
 					let d = JSON.parse(positionConstraint.data_json)
-					forcedPeriod = d.startTime[0] * 4 + d.startTime[1]
+
+					if (d.startTime.length === 2) {
+						forcedPeriod = d.startTime[0] * 4 + d.startTime[1]
+					}
 				}
 
 				solverData.tasks.push({
 					label: 'exam_instance_' + inst.id,
 					length: exam.length,
-					tags: ['group_' + inst['class-group'].id],
+					tags: {
+						['group_' + inst['class-group'].id]: 1
+					},
 					resources: [
 						...inst.teachers.map((t) => {
 							return 'teacher_' + t.id
@@ -126,6 +137,84 @@ module.exports = async (s, schedule, sol) => {
 					],
 					period: forcedPeriod
 				})
+			}
+		}
+
+		//
+		// Add constraints
+
+		// Sync constraint
+		let syncContraints = await s.models.Constraint.findAll({
+			where: {
+				type: 'sync'
+			}
+		})
+
+		for (let c of syncContraints) {
+			try {
+				let json = JSON.parse(c.data_json)
+
+				if (json.selectedInstance1 && json.selectedInstance2) {
+					solverData.constraints.sync.push({
+						tasks: [
+							'exam_instance_' + json.selectedInstance1,
+							'exam_instance_' + json.selectedInstance2
+						]
+					})
+
+					// Check if there are teachers in common
+					// Automatically add CAPMAX constraint
+					let ins = [
+						solverData.tasks.find(
+							(i) =>
+								i.label ===
+								'exam_instance_' + json.selectedInstance1
+						),
+						solverData.tasks.find(
+							(i) =>
+								i.label ===
+								'exam_instance_' + json.selectedInstance2
+						)
+					]
+
+					if (ins[0] && ins[1]) {
+						let teachersInCommon = ins[0].resources
+							.filter(
+								Set.prototype.has,
+								new Set(ins[1].resources)
+							)
+							.filter((r) => r[0] === 't')
+
+						for (let t of teachersInCommon) {
+							solverData.resources.find((r) => r[0] === t)[1] = 2
+							solverData.constraints.cap.push({
+								resource: t,
+								tags: [
+									'constraint_' + c.id + '_int',
+									'constraint_' + c.id + '_ext'
+								],
+								max: 1
+							})
+						}
+
+						defaultTags['constraint_' + c.id + '_ext'] = 1
+
+						ins[0].tags['constraint_' + c.id + '_int'] = 1
+						ins[0].tags['constraint_' + c.id + '_ext'] = 0
+
+						ins[1].tags['constraint_' + c.id + '_int'] = 1
+						ins[1].tags['constraint_' + c.id + '_ext'] = 0
+					}
+				}
+			} catch (e) {
+				console.error(e)
+			}
+		}
+
+		for (let t of solverData.tasks) {
+			t.tags = {
+				...defaultTags,
+				...t.tags
 			}
 		}
 

@@ -43,13 +43,8 @@ def solve(solver_data):
     for task in solver_data['tasks']:
         tname = 't' + str(tasks_ai)
 
-        # create tags
-        # TODO: tag names are unsafe (**tags_obj)
-        tags_obj = {}
-        for tag in task['tags']:
-            tags_obj[tag] = 1
-
-        tasks[tname] = scenario.Task(tname, length=task['length'], **tags_obj)
+        tasks[tname] = scenario.Task(
+            tname, length=task['length'], **task['tags'])
         tasks_map[tname] = task['label']
         tasks_mapi[task['label']] = tname
         tasks_ai += 1
@@ -75,18 +70,38 @@ def solve(solver_data):
         bname = 'b' + str(blocks_ai)
 
         task = scenario.Task(
-            bname, length=block["length"], periods=[block["start"]])
+            bname, length=block["length"], periods=[block["start"]], plot_color='#000000')
 
         task += resources[resources_mapi[block["resource"]]]
 
         blocks_ai += 1
 
     #
+    # enter sync constraints
+
+    for constraint in solver_data['constraints']['sync']:
+        scenario += tasks[tasks_mapi[constraint['tasks'][0]]] <= tasks[tasks_mapi[constraint['tasks']
+                                                                                  [1]]] + tasks[tasks_mapi[constraint['tasks'][0]]].length
+
+    #
+    # enter cap constraints
+
+    for constraint in solver_data['constraints']['cap']:
+        res = resources[resources_mapi[constraint['resource']]]
+
+        cond = res[constraint['tags'][0]][0:int(solver_data['horizon']):1].max
+
+        for t in constraint['tags'][1:]:
+            cond = cond + res[t][0:int(solver_data['horizon']):1].max
+
+        scenario += cond <= constraint['max']
+
+    #
     # solve
 
     if solvers.mip.solve(scenario, msg=1, time_limit=180):
-        # plotters.matplotlib.plot(scenario, img_filename='out.png', fig_size=(
-        #     resources_ai / 3, resources_ai / 2))
+        plotters.matplotlib.plot(scenario, img_filename='out.png', fig_size=(
+            resources_ai / 3, resources_ai / 2))
 
         solution = scenario.solution()
         real_solution = [[str(l[0]), str(l[1]), l[2], l[3]] for l in solution]
