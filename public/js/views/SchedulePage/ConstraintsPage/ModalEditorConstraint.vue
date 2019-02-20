@@ -49,10 +49,12 @@ import AppModal from '&/components/Modal'
 
 import PositionConstraint from './Constraints/PositionConstraint'
 import SyncConstraint from './Constraints/SyncConstraint'
+import CapacityConstraint from './Constraints/CapacityConstraint'
 
 const compByType = {
     position: PositionConstraint,
-    sync: SyncConstraint
+    sync: SyncConstraint,
+    capacity: CapacityConstraint
 }
 
 export default {
