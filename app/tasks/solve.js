@@ -146,6 +146,7 @@ module.exports = async (s, schedule, sol) => {
 		// Sync constraint
 		let syncContraints = await s.models.Constraint.findAll({
 			where: {
+				schedule_id: schedule.id,
 				type: 'sync'
 			}
 		})
