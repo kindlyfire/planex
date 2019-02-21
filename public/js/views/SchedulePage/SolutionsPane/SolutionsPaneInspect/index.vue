@@ -41,16 +41,16 @@
                         :style="{ 'width': (85 / (selectedData.classes.length)) + '%' }"
                         class="column"
                     >
-                        <div class="text-center">{{ cls.class.name }}</div>
+                        <div class="text-center">{{ cls.class.name || '&nbsp;' }}</div>
                         <div class="column-inner">
                             <template v-for="(day, j) in cls.schedule">
                                 <template v-for="k in (deepeq(day[0], day[2]) ? 1 : 2)">
                                     <div
                                         :key="`${j}_${k}`"
-                                        :class="{ 'line-occupied': day[(k - 1) * 2].exam, 'day-separator': j > 0 && k === 1, 'line-blocked': day[(k - 1) * 2].blocked, 'double-line': deepeq(day[0], day[2]) && !singleLines.includes(j + 1) }"
+                                        :class="{ 'line-occupied': day[(k - 1) * 2] && day[(k - 1) * 2].exam, 'day-separator': j > 0 && k === 1, 'line-blocked': day[(k - 1) * 2] && day[(k - 1) * 2].blocked, 'double-line': deepeq(day[0], day[2]) && !singleLines.includes(j + 1) }"
                                         class="line"
                                     >
-                                        <template v-if="day[(k - 1) * 2].exam">
+                                        <template v-if="day[(k - 1) * 2] && day[(k - 1) * 2].exam">
                                             <p class="m-0 nowrap">{{ day[(k - 1) * 2].exam.name }}</p>
                                             <small class="nowrap">
                                                 <abbr
@@ -117,6 +117,18 @@ export default {
                             name: cg.group.name
                         }
                     })
+                },
+                {
+                    name: 'Professeurs',
+                    classes: this.solutionData.teachers.map((t, i) => {
+                        console.log(t)
+                        return {
+                            type: 'teacher',
+                            trackBy: 'teacher_' + i,
+                            i,
+                            name: t.name
+                        }
+                    })
                 }
             ]
         },
@@ -129,7 +141,7 @@ export default {
             let res =
                 this.selectedResource.type === 'group'
                     ? this.solutionData.classGroups[this.selectedResource.i]
-                    : null
+                    : this.solutionData.teachers[this.selectedResource.i]
 
             return res
         },
@@ -146,7 +158,7 @@ export default {
                 let alleq = true
                 let ref = this.selectedData.classes[0]
 
-                for (let cls of this.selectedData.classes.slice(1)) {
+                for (let cls of this.selectedData.classes) {
                     if (
                         !this.deepeq(cls.schedule[i], ref.schedule[i]) ||
                         !this.deepeq(cls.schedule[i][0], cls.schedule[i][2])

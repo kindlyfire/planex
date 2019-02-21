@@ -315,7 +315,7 @@ module.exports = async (s, schedule, sol) => {
 			// Parse solution
 			let solutionData = {
 				classGroups: {},
-				teachers: []
+				teachers: {}
 			}
 
 			let classes = await s.models.Class.findAll({
@@ -323,6 +323,11 @@ module.exports = async (s, schedule, sol) => {
 					schedule_id: schedule.id
 				},
 				include: [s.models.ClassGroup]
+			})
+			let teachers = await s.models.Teacher.findAll({
+				where: {
+					schedule_id: schedule.id
+				}
 			})
 			let examInstances = await s.models.ExamInstance.findAll({
 				include: [
@@ -332,7 +337,9 @@ module.exports = async (s, schedule, sol) => {
 							schedule_id: schedule.id
 						}
 					},
-					s.models.Teacher
+					s.models.Teacher,
+					s.models.ClassGroup,
+					s.models.Class
 				]
 			})
 
@@ -389,6 +396,7 @@ module.exports = async (s, schedule, sol) => {
 								exam: { name: examInstance.exam.name },
 								teachers: examInstance.teachers.map((t) => {
 									return {
+										id: t.id,
 										name: t.name
 									}
 								})
@@ -413,7 +421,65 @@ module.exports = async (s, schedule, sol) => {
 				}
 			}
 
+			// Populate exams for teachers from the exams given to class groups
+			for (let teacherSlug of Object.keys(data.data.teachers)) {
+				if (!solutionData.teachers[teacherSlug]) {
+					solutionData.teachers[teacherSlug] = {
+						name: teachers.find(
+							(t) => 'teacher_' + t.id === teacherSlug
+						).name,
+						classes: []
+					}
+				}
+
+				for (let exam of data.data.teachers[teacherSlug]) {
+					let examInstance = examInstances.find(
+						(ei) => 'exam_instance_' + ei.id === exam.label
+					)
+
+					for (let i = 0; i < exam.length; i += 1) {
+						let j = 0
+
+						while (
+							solutionData.teachers[teacherSlug].classes[j] &&
+							solutionData.teachers[teacherSlug].classes[j]
+								.schedule[exam.day][exam.start_hour + i]
+						) {
+							j += 1
+						}
+
+						if (!solutionData.teachers[teacherSlug].classes[j]) {
+							solutionData.teachers[teacherSlug].classes[j] = {
+								class: { name: '' },
+								schedule: new Array(schedule.days)
+									.fill()
+									.map((e) =>
+										new Array(4).fill().map((e) => {})
+									)
+							}
+						}
+
+						solutionData.teachers[teacherSlug].classes[j].schedule[
+							exam.day
+						][exam.start_hour + i] = {
+							exam: { name: examInstance.exam.name },
+							teachers: [
+								{
+									name: `${
+										examInstance['class-group'].name
+									} (${examInstance.classes
+										.map((c) => c.name)
+										.join(', ')})`
+								}
+							]
+						}
+					}
+				}
+			}
+
+			// Convert object with ids to arrays
 			solutionData.classGroups = Object.values(solutionData.classGroups)
+			solutionData.teachers = Object.values(solutionData.teachers)
 
 			sol.solution_data = JSON.stringify(solutionData)
 
