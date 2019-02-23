@@ -190,7 +190,7 @@ module.exports = async (s, schedule, sol) => {
 
 						if (!solutionData.teachers[teacherSlug].classes[j]) {
 							solutionData.teachers[teacherSlug].classes[j] = {
-								class: { name: '' },
+								class: { name: '' + (j + 1) },
 								schedule: new Array(schedule.days)
 									.fill()
 									.map((e) =>

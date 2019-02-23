@@ -5,6 +5,7 @@
             v-model="realSelectedGroup"
             :allow-empty="false"
             :show-labels="false"
+            :custom-label="resourceLabel"
             track-by="id"
         >
             <template slot="option" slot-scope="props">
@@ -38,6 +39,7 @@
             v-model="realSelectedInstance"
             :allow-empty="false"
             :show-labels="false"
+            :custom-label="instanceLabel"
             track-by="id"
             class="mt-2"
         >
@@ -82,6 +84,14 @@ export default {
     },
 
     methods: {
+        resourceLabel(r) {
+            return r.name
+        },
+
+        instanceLabel(i) {
+            return i.exam.name
+        },
+
         async m_loader_loader() {
             this.classGroups = await api.get('/class-groups', {
                 schedule_id: this.schedule.id,

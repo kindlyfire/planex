@@ -43,6 +43,7 @@
                             :options="exams"
                             :allow-empty="false"
                             :show-labels="false"
+                            :custom-label="resourceLabel"
                             track-by="id"
                         >
                             <template slot="noResult">Pas de résultats.</template>
@@ -70,6 +71,7 @@
                             v-model="selectedClassGroup"
                             :options="classGroups"
                             :allow-empty="false"
+                            :custom-label="resourceLabel"
                             track-by="id"
                             label="name"
                             deselect-label
@@ -85,6 +87,7 @@
                         :allow-empty="true"
                         :multiple="true"
                         :close-on-select="false"
+                        :custom-label="resourceLabel"
                         track-by="id"
                         label="name"
                         deselect-label
@@ -214,6 +217,10 @@ export default {
             this.saving = false
         },
 
+        resourceLabel(r) {
+            return r.name
+        },
+
         toggleClassSelected(cls) {
             let length = this.selectedClasses.length
 
@@ -235,16 +242,19 @@ export default {
                     : this.instance,
 
                 api.get('/exams', {
-                    schedule_id: this.schedule.id
+                    schedule_id: this.schedule.id,
+                    $order: 'name:ASC'
                 }),
 
                 api.get('/teachers', {
-                    schedule_id: this.schedule.id
+                    schedule_id: this.schedule.id,
+                    $order: 'name:ASC'
                 }),
 
                 api.get('/class-groups', {
                     schedule_id: this.schedule.id,
-                    $include: 'classes'
+                    $include: 'classes',
+                    $order: 'name:ASC'
                 })
             ])
 

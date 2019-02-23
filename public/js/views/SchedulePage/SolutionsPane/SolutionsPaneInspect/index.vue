@@ -143,6 +143,12 @@ export default {
                     ? this.solutionData.classGroups[this.selectedResource.i]
                     : this.solutionData.teachers[this.selectedResource.i]
 
+            console.log(JSON.parse(JSON.stringify(res)))
+
+            res.classes = res.classes.sort((a, b) =>
+                ('' + a.class.name).localeCompare(b.class.name)
+            )
+
             return res
         },
 
