@@ -24,7 +24,7 @@
                 </div>
             </div>
 
-            <p>Appuiez sur le bouton "Lancer" ci-dessous pour créer une solution. Il ne sera pas possible de créer une nouvelle solution tant que celle-ci est en cours.</p>
+            <p>Appuyez sur le bouton "Lancer" ci-dessous pour créer une solution. Il ne sera pas possible de créer une nouvelle solution tant que celle-ci est en cours.</p>
 
             <div class="text-center">
                 <PrimaryButton @click="launch" :disabled="disabled">Lancer</PrimaryButton>

@@ -31,7 +31,7 @@
                 <span class="d-block text-left">{{ errors.first('exam_length') }}</span>
 
                 <button
-                    v-if="!m_saver_saving && formValidated"
+                    v-if="!m_saver_saving && !errors.any()"
                     @click="m_saver_save"
                     class="btn btn-primary d-block w-100 mt-2"
                 >Enregistrer</button>
@@ -59,15 +59,6 @@ export default {
         return {
             name: '',
             length: 4
-        }
-    },
-
-    computed: {
-        formValidated() {
-            return Object.keys(this.fields).every((key) => {
-                if (!this.fields[key].validated) return false
-                return this.fields[key].valid
-            })
         }
     },
 
