@@ -7,6 +7,23 @@
         </template>
 
         <div class="p-3">
+            <div
+                v-if="precheck === null"
+                class="alert alert-secondary"
+                role="alert"
+            >Recherche d'erreurs communes en cours...</div>
+            <div
+                v-else-if="precheck.length === 0"
+                class="alert alert-success"
+                role="alert"
+            >Pas d'erreurs trouvées !</div>
+            <div v-else class="alert alert-danger" role="alert">
+                <div v-for="(err, i) in precheck" :key="i" class="mb-2">
+                    <p v-html="err[0]" class="m-0"></p>
+                    <small v-html="err[1]"></small>
+                </div>
+            </div>
+
             <p>Appuiez sur le bouton "Lancer" ci-dessous pour créer une solution. Il ne sera pas possible de créer une nouvelle solution tant que celle-ci est en cours.</p>
 
             <div class="text-center">
@@ -17,11 +34,13 @@
 </template>
 
 <script>
+import loader from '&/mixins/loader'
 import api from '&/utils/api'
 
 import Modal from '&/components/Modal'
 
 export default {
+    mixins: [loader],
     props: ['schedule'],
 
     components: {
@@ -30,13 +49,21 @@ export default {
 
     data() {
         return {
-            disabled: false
+            disabled: false,
+
+            precheck: null
         }
     },
 
     methods: {
         close() {
             this.$emit('closed')
+        },
+
+        async m_loader_loader() {
+            this.precheck = await api.get('/actions/precheck', {
+                schedule_id: this.schedule.id
+            })
         },
 
         // Send request to start solving
