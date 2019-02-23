@@ -49,6 +49,8 @@ def solve(solver_data):
         tasks_mapi[task['label']] = tname
         tasks_ai += 1
 
+        tasks[tname]['r_' + tname] = 1
+
         if 'period' in task and task['period'] != -1:
             tasks[tname].periods = [task['period']]
         else:
@@ -95,6 +97,20 @@ def solve(solver_data):
             cond = cond + res[t][0:int(solver_data['horizon']):1].max
 
         scenario += cond <= constraint['max']
+
+        if 'capSum' in constraint:
+            for t, value in constraint['capSum'].items():
+                cond = None
+
+                # capsum for all tasks except those with `t`
+                for tname, task in tasks.items():
+                    if not (t in task and task[t] == value):
+                        s = res['r_' +
+                                tname][0:int(solver_data['horizon']):1].max
+
+                        cond = cond + s if cond else s
+
+                scenario += cond <= 1
 
     #
     # solve

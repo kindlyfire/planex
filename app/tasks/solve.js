@@ -141,6 +141,8 @@ module.exports = async (s, schedule, sol) => {
 					// Used when adding CAP constraints
 					groupId: inst['class-group'].id
 				})
+
+				defaultTags['group_' + inst['class-group'].id] = 0
 			}
 		}
 
@@ -160,15 +162,6 @@ module.exports = async (s, schedule, sol) => {
 				let json = JSON.parse(c.data_json)
 
 				if (json.selectedInstance1 && json.selectedInstance2) {
-					solverData.constraints.sync.push({
-						tasks: [
-							'exam_instance_' + json.selectedInstance1,
-							'exam_instance_' + json.selectedInstance2
-						]
-					})
-
-					// Check if there are teachers in common
-					// Automatically add CAPMAX constraint
 					let ins = [
 						solverData.tasks.find(
 							(i) =>
@@ -183,6 +176,15 @@ module.exports = async (s, schedule, sol) => {
 					]
 
 					if (ins[0] && ins[1]) {
+						solverData.constraints.sync.push({
+							tasks: [
+								'exam_instance_' + json.selectedInstance1,
+								'exam_instance_' + json.selectedInstance2
+							]
+						})
+
+						// Check if there are teachers in common
+						// Automatically add CAPMAX constraint
 						let teachersInCommon = ins[0].resources
 							.filter(
 								Set.prototype.has,
@@ -192,13 +194,17 @@ module.exports = async (s, schedule, sol) => {
 
 						for (let t of teachersInCommon) {
 							solverData.resources.find((r) => r[0] === t)[1] = 2
+
 							solverData.constraints.cap.push({
 								resource: t,
 								tags: [
 									'constraint_' + c.id + '_int',
 									'constraint_' + c.id + '_ext'
 								],
-								max: 1
+								max: 1,
+								capSum: {
+									['constraint_' + c.id + '_int']: 1
+								}
 							})
 						}
 
@@ -239,12 +245,15 @@ module.exports = async (s, schedule, sol) => {
 					teacher[1] += 1
 
 					solverData.constraints.cap.push({
-						resource: t,
+						resource: teacher[0],
 						tags: [
 							'constraint_' + c.id + '_int',
 							'constraint_' + c.id + '_ext'
 						],
-						max: 1
+						max: 1,
+						capSum: {
+							['constraint_' + c.id + '_int']: 1
+						}
 					})
 
 					let examInstances = solverData.tasks.filter((t) =>
