@@ -44,7 +44,7 @@ export default {
     computed: {
         resourcesRepr() {
             return this.examInstances
-                .map((ei) => `${ei.exam.name} (${ei['class-group'].name})`)
+                .map((ei) => `${ei['class-group'].name} (${ei.exam.name})`)
                 .join(', ')
         }
     }
