@@ -17,21 +17,13 @@ module.exports = async (s, schedule, sol) => {
 		let dataFile = await tempWrite(JSON.stringify(solverData))
 		let output = ''
 
-		let solver = spawn('python', [
-			'-B',
-			path.join(__dirname, '../../../solver/main.py'),
-			dataFile
-		])
-
-		solver.stdout.on('data', (data) => {
-			console.log(data.toString('utf-8'))
-			output += data.toString('utf-8')
-		})
-
-		solver.stderr.on('data', (data) => {
-			console.log(data.toString('utf-8'))
-			output += data.toString('utf-8')
-		})
+		let solver = spawn(
+			'python',
+			['-B', path.join(__dirname, '../../../solver/main.py'), dataFile],
+			{
+				stdio: 'inherit'
+			}
+		)
 
 		solver.on('exit', async (code, signal) => {
 			sol.solution_data = await new Promise((resolve, reject) => {

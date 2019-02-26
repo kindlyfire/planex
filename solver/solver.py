@@ -24,6 +24,7 @@ def solve(solver_data):
     #
     # enter resources
 
+    print('[INFO] Importing resources...')
     for resource in solver_data['resources']:
         # convert to [name, size = 1]
         if not isinstance(resource, list):
@@ -40,6 +41,7 @@ def solve(solver_data):
     #
     # enter tasks
 
+    print('[INFO] Importing tasks...')
     for task in solver_data['tasks']:
         tname = 't' + str(tasks_ai)
 
@@ -68,11 +70,23 @@ def solve(solver_data):
     #
     # enter blocks
 
+    print('[INFO] Importing blocks...')
     for block in solver_data['blocks']:
         bname = 'b' + str(blocks_ai)
 
         task = scenario.Task(
-            bname, length=block["length"], periods=[block["start"]], plot_color='#000000')
+            bname, length=1, periods=[block["start"]], plot_color='#000000')
+
+        task += resources[resources_mapi[block["resource"]]]
+
+        blocks_ai += 1
+
+    print('[INFO] Importing sblocks...')
+    for block in solver_data['sblocks']:
+        bname = 'b' + str(blocks_ai)
+
+        task = scenario.Task(
+            bname, length=1, periods=[block["start"]], plot_color='#000000', schedule_cost=block["cost"])
 
         task += resources[resources_mapi[block["resource"]]]
 
@@ -81,6 +95,7 @@ def solve(solver_data):
     #
     # enter sync constraints
 
+    print('[INFO] Importing sync constraints...')
     for constraint in solver_data['constraints']['sync']:
         scenario += tasks[tasks_mapi[constraint['tasks'][0]]] <= tasks[tasks_mapi[constraint['tasks']
                                                                                   [1]]] + tasks[tasks_mapi[constraint['tasks'][0]]].length
@@ -88,13 +103,15 @@ def solve(solver_data):
     #
     # enter cap constraints
 
-    for constraint in solver_data['constraints']['cap']:
+    for i, constraint in enumerate(solver_data['constraints']['cap']):
+        print('[INFO] Importing capacity constraints... ({}/{})'.format(i + 1,
+                                                                        len(solver_data['constraints']['cap'])))
         res = resources[resources_mapi[constraint['resource']]]
 
-        cond = res[constraint['tags'][0]][0:int(solver_data['horizon']):1].max
+        cond = res[constraint['tags'][0]][0:int(solver_data['horizon']):2].max
 
         for t in constraint['tags'][1:]:
-            cond = cond + res[t][0:int(solver_data['horizon']):1].max
+            cond = cond + res[t][0:int(solver_data['horizon']):2].max
 
         scenario += cond <= constraint['max']
 
@@ -106,7 +123,7 @@ def solve(solver_data):
                 for tname, task in tasks.items():
                     if not (t in task and task[t] == value):
                         s = res['r_' +
-                                tname][0:int(solver_data['horizon']):1].max
+                                tname][0:int(solver_data['horizon']):2].max
 
                         cond = cond + s if cond else s
 
@@ -115,7 +132,7 @@ def solve(solver_data):
     #
     # solve
 
-    if solvers.mip.solve(scenario, msg=1, time_limit=180):
+    if solvers.mip.solve(scenario, msg=1):
         plotters.matplotlib.plot(scenario, img_filename='out.png', fig_size=(
             resources_ai / 3, resources_ai / 2))
 

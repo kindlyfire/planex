@@ -6,15 +6,14 @@ module.exports = async (s, schedule) => {
 		resources: [],
 		tasks: [],
 		blocks: [],
+		sblocks: [],
 		constraints: {
 			sync: [],
 			cap: []
 		}
 	}
 
-	let defaultTags = {
-		t_task: 1
-	}
+	let defaultTags = {}
 
 	//
 	// Add all resources
@@ -26,7 +25,7 @@ module.exports = async (s, schedule) => {
 	})
 
 	for (let t of teachers) {
-		solverData.resources.push(['teacher_' + t.id, 1])
+		solverData.resources.push(['teacher_' + t.id, 2])
 
 		// Add blocks
 		try {
@@ -36,15 +35,29 @@ module.exports = async (s, schedule) => {
 				for (let block of day) {
 					// @TODO: Continuity dedupe
 					//        (a 4-hour long block could be one block of length 4 instead of 4 blocks of length 1)
-					solverData.blocks.push({
+					let obj = {
 						resource: 'teacher_' + t.id,
 						start: 4 * parseInt(i) + block,
 						length: 1
-					})
+					}
+
+					// Push twice (size = 2)
+					solverData.blocks.push(obj)
+					solverData.blocks.push(obj)
 				}
 			}
 		} catch (e) {
 			console.error(e)
+		}
+
+		// Add a line of sblocks
+		for (let i = 0; i < schedule.days; i++) {
+			solverData.sblocks.push({
+				resource: 'teacher_' + t.id,
+				start: i * 4,
+				length: 4,
+				cost: -1
+			})
 		}
 	}
 
@@ -64,12 +77,9 @@ module.exports = async (s, schedule) => {
 
 				for (const [i, day] of blocksByDay.entries()) {
 					for (let block of day) {
-						// @TODO: Continuity dedupe
-						//        (a 4-hour long block could be one block of length 4 instead of 4 blocks of length 1)
 						solverData.blocks.push({
 							resource: 'class_' + cls.id,
-							start: 4 * parseInt(i) + block,
-							length: 1
+							start: 4 * parseInt(i) + block
 						})
 					}
 				}
