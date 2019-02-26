@@ -1,21 +1,21 @@
 export default {
-    data() {
-        return {
-            m_saver_saving: false
-        }
-    },
+	data() {
+		return {
+			m_saver_saving: false
+		}
+	},
 
-    methods: {
-        async m_saver_save() {
-            this.$root.$emit('loader_push')
+	methods: {
+		async m_saver_save() {
+			this.$root.$emit('loader_push')
 
-            await this.m_saver_saver()
+			await this.m_saver_saver()
 
-            this.$root.$emit('loader_pop')
-        },
+			this.$root.$emit('loader_pop')
+		},
 
-        async m_saver_saver() {
-            console.log('saver not implemented')
-        }
-    }
+		async m_saver_saver() {
+			console.log('Saver not implemented')
+		}
+	}
 }

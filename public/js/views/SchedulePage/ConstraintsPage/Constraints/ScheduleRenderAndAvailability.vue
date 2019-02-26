@@ -134,7 +134,7 @@ export default {
     },
 
     methods: {
-        // i and j, both sero-indexed
+        // i and j, both zero-indexed
         // i = day
         // j = period
         cellClicked(i, j) {
@@ -146,7 +146,6 @@ export default {
 
             // Check all would-be active cells that they're not blocked
             for (let k = 0; k < this.exam.length; k += 1) {
-                console.log(i, j, k)
                 if (this.rColumns[i].includes(j + k)) {
                     return
                 }
@@ -155,8 +154,6 @@ export default {
             this.selectedStartTime = [i, j]
 
             this.$emit('start-time', this.selectedStartTime)
-
-            console.log(this.selectedStartTime)
         }
     }
 }

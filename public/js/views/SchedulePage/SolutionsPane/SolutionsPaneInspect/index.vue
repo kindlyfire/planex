@@ -121,7 +121,6 @@ export default {
                 {
                     name: 'Professeurs',
                     classes: this.solutionData.teachers.map((t, i) => {
-                        console.log(t)
                         return {
                             type: 'teacher',
                             trackBy: 'teacher_' + i,
@@ -142,8 +141,6 @@ export default {
                 this.selectedResource.type === 'group'
                     ? this.solutionData.classGroups[this.selectedResource.i]
                     : this.solutionData.teachers[this.selectedResource.i]
-
-            console.log(JSON.parse(JSON.stringify(res)))
 
             res.classes = res.classes.sort((a, b) =>
                 ('' + a.class.name).localeCompare(b.class.name)

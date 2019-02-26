@@ -212,7 +212,7 @@ export default {
                 this.$emit('deleted', this.instance)
                 this.close()
             } catch (e) {
-                console.log(e)
+                console.error(e)
             }
             this.saving = false
         },

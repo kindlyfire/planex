@@ -26,9 +26,7 @@
                         @click="editorConstraintId = constraint.id"
                         class="advanced-table-content-line with-border-between actionable"
                     >
-                        <div
-                            class="advanced-table-content-cell no-border"
-                        >{{ mapTypeToName[constraint.type] }}</div>
+                        <component :is="mapTypeToComp[constraint.type]" :constraint="constraint"></component>
                     </div>
 
                     <div v-if="constraints.length === 0" class="advanced-table-content-line">
@@ -57,6 +55,10 @@ import loader from '&/mixins/loader'
 import ModalEditorConstraint from './ModalEditorConstraint'
 import CreateConstraintButton from './CreateConstraintButton'
 
+import CapLine from './table-lines/CapLine'
+import PositionLine from './table-lines/PositionLine'
+import SyncLine from './table-lines/SyncLine'
+
 export default {
     mixins: [loader],
     props: ['schedule'],
@@ -72,10 +74,10 @@ export default {
 
             constraints: [],
 
-            mapTypeToName: {
-                position: 'Position',
-                capacity: 'Capacité',
-                sync: 'Synchronisation'
+            mapTypeToComp: {
+                capacity: CapLine,
+                position: PositionLine,
+                sync: SyncLine
             }
         }
     },
@@ -84,7 +86,12 @@ export default {
         async m_loader_loader() {
             this.constraints = await api.get('/constraints', {
                 schedule_id: this.schedule.id,
-                $include: ['teachers', 'exam-instances'].join(','),
+                $include: [
+                    'teachers',
+                    'exam-instances',
+                    'exam-instances.exams',
+                    'exam-instances.class-groups'
+                ].join(','),
                 $order: 'type'
             })
         }

@@ -89,12 +89,12 @@ export default {
     },
 
     watch: {
-        constraint: {
-            deep: true,
-            handler(v) {
-                console.log('Constraint update', JSON.parse(JSON.stringify(v)))
-            }
-        },
+        // constraint: {
+        //     deep: true,
+        //     handler(v) {
+        //         console.log('Constraint update', JSON.parse(JSON.stringify(v)))
+        //     }
+        // },
 
         jsonData: {
             deep: true,
@@ -128,7 +128,7 @@ export default {
                         'exam-instances.exams',
                         'exam-instances.class-groups',
 
-                        // That's just plain bad design and sub-zero optimisation
+                        // There's another way to do it
                         'exam-instances.exams.exam-instances',
                         'exam-instances.exams.exam-instances.class-groups'
                     ].join(',')
@@ -137,7 +137,6 @@ export default {
 
             try {
                 this.jsonData = JSON.parse(this.constraint.data_json || '{}')
-                console.log('parsed')
             } catch (e) {
                 this.jsonData = {}
             }
