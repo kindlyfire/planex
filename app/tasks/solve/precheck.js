@@ -34,9 +34,10 @@ const checkTeacher = async (s, solverData, teacherName) => {
 		.reduce((ret, task) => ret + task.length, 0)
 
 	// Count hours that are blocked
-	let blockedHours = solverData.blocks
-		.filter((block) => block.resource === teacherName)
-		.reduce((ret, block) => ret + block.length, 0)
+	let blockedHours =
+		solverData.blocks
+			.filter((block) => block.resource === teacherName)
+			.reduce((ret, block) => ret + block.length, 0) / 2
 
 	if (!hasCapConstraint && examHours + blockedHours > solverData.horizon) {
 		let teacher = await s.models.Teacher.findOne({
