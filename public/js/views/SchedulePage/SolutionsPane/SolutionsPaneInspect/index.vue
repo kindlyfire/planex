@@ -74,6 +74,8 @@
 import api from '&/utils/api'
 import loader from '&/mixins/loader'
 
+import { sortAlpha } from '&/utils'
+
 import VSelect from 'vue-multiselect'
 
 export default {
@@ -109,25 +111,31 @@ export default {
             return [
                 {
                     name: 'Classes',
-                    classes: this.solutionData.classGroups.map((cg, i) => {
-                        return {
-                            type: 'group',
-                            trackBy: 'group_' + i,
-                            i,
-                            name: cg.group.name
-                        }
-                    })
+                    classes: sortAlpha(
+                        this.solutionData.classGroups.map((cg, i) => {
+                            return {
+                                type: 'group',
+                                trackBy: 'group_' + i,
+                                i,
+                                name: cg.group.name
+                            }
+                        }),
+                        'name'
+                    )
                 },
                 {
                     name: 'Professeurs',
-                    classes: this.solutionData.teachers.map((t, i) => {
-                        return {
-                            type: 'teacher',
-                            trackBy: 'teacher_' + i,
-                            i,
-                            name: t.name
-                        }
-                    })
+                    classes: sortAlpha(
+                        this.solutionData.teachers.map((t, i) => {
+                            return {
+                                type: 'teacher',
+                                trackBy: 'teacher_' + i,
+                                i,
+                                name: t.name
+                            }
+                        }),
+                        'name'
+                    )
                 }
             ]
         },
