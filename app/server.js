@@ -15,21 +15,21 @@ app.use(body())
 
 // Logger
 app.use(async (ctx, next) => {
-    await next()
+	await next()
 
-    console.log(
-        chalk`{yellow [${dateFormat(
-            'yyyy-mm-dd HH:MM:ss'
-        )}]}{blue [${ctx.method.toUpperCase()}]} ${ctx.request.path} {yellow ${
-            ctx.status
-        }}`
-    )
+	console.log(
+		chalk`{yellow [${dateFormat(
+			'yyyy-mm-dd HH:MM:ss'
+		)}]}{blue [${ctx.method.toUpperCase()}]} ${ctx.request.path} {yellow ${
+			ctx.status
+		}}`
+	)
 })
 
 app.use(router.routes())
 app.use(router.allowedMethods())
 
 module.exports = {
-    app,
-    router
+	app,
+	router
 }

@@ -1,5 +1,17 @@
 //
 
+const objFilter = (obj, predicate) => {
+	let res = {}
+
+	for (let key in obj) {
+		if (obj.hasOwnProperty(key) && predicate(obj[key], key)) {
+			res[key] = obj[key]
+		}
+	}
+
+	return res
+}
+
 module.exports = async (s, schedule) => {
 	let solverData = {
 		horizon: schedule.days * 4,
@@ -13,7 +25,9 @@ module.exports = async (s, schedule) => {
 		}
 	}
 
-	let defaultTags = {}
+	let defaultTags = {
+		block_value: 4
+	}
 
 	//
 	// Add all resources
@@ -56,7 +70,7 @@ module.exports = async (s, schedule) => {
 				resource: 'teacher_' + t.id,
 				start: i * 4,
 				length: 4,
-				cost: -1
+				cost: -10
 			})
 		}
 	}
@@ -178,6 +192,9 @@ module.exports = async (s, schedule) => {
 					)
 				]
 
+				// ins[0].tags['block_value'] = 2
+				// ins[1].tags['block_value'] = 2
+
 				if (ins[0] && ins[1]) {
 					solverData.constraints.sync.push({
 						tasks: [
@@ -188,33 +205,33 @@ module.exports = async (s, schedule) => {
 
 					// Check if there are teachers in common
 					// Automatically add CAPMAX constraint
-					let teachersInCommon = ins[0].resources
-						.filter(Set.prototype.has, new Set(ins[1].resources))
-						.filter((r) => r[0] === 't')
+					// let teachersInCommon = ins[0].resources
+					// 	.filter(Set.prototype.has, new Set(ins[1].resources))
+					// 	.filter((r) => r[0] === 't')
 
-					for (let t of teachersInCommon) {
-						solverData.resources.find((r) => r[0] === t)[1] = 2
+					// for (let t of teachersInCommon) {
+					// 	solverData.resources.find((r) => r[0] === t)[1] = 2
 
-						solverData.constraints.cap.push({
-							resource: t,
-							tags: [
-								'constraint_' + c.id + '_int',
-								'constraint_' + c.id + '_ext'
-							],
-							max: 1,
-							capSum: {
-								['constraint_' + c.id + '_int']: 1
-							}
-						})
-					}
+					// 	solverData.constraints.cap.push({
+					// 		resource: t,
+					// 		tags: [
+					// 			'constraint_' + c.id + '_int',
+					// 			'constraint_' + c.id + '_ext'
+					// 		],
+					// 		max: 1,
+					// 		capSum: {
+					// 			['constraint_' + c.id + '_int']: 1
+					// 		}
+					// 	})
+					// }
 
-					defaultTags['constraint_' + c.id + '_ext'] = 1
+					// defaultTags['constraint_' + c.id + '_ext'] = 1
 
-					ins[0].tags['constraint_' + c.id + '_int'] = 1
-					ins[0].tags['constraint_' + c.id + '_ext'] = 0
+					// ins[0].tags['constraint_' + c.id + '_int'] = 1
+					// ins[0].tags['constraint_' + c.id + '_ext'] = 0
 
-					ins[1].tags['constraint_' + c.id + '_int'] = 1
-					ins[1].tags['constraint_' + c.id + '_ext'] = 0
+					// ins[1].tags['constraint_' + c.id + '_int'] = 1
+					// ins[1].tags['constraint_' + c.id + '_ext'] = 0
 				}
 			}
 		} catch (e) {
@@ -225,57 +242,70 @@ module.exports = async (s, schedule) => {
 	//
 	// Cap constraints
 
-	let capConstraints = await s.models.Constraint.findAll({
-		where: {
-			schedule_id: schedule.id,
-			type: 'capacity'
-		}
-	})
+	// let capConstraints = await s.models.Constraint.findAll({
+	// 	where: {
+	// 		schedule_id: schedule.id,
+	// 		type: 'capacity'
+	// 	}
+	// })
 
-	for (let c of capConstraints) {
-		try {
-			let json = JSON.parse(c.data_json)
+	// for (let c of capConstraints) {
+	// 	try {
+	// 		let json = JSON.parse(c.data_json)
 
-			if (json.teacherId && json.groups) {
-				let teacher = solverData.resources.find(
-					(t) => t[0] === 'teacher_' + json.teacherId
-				)
+	// 		if (json.teacherId && json.groups) {
+	// 			let teacher = solverData.resources.find(
+	// 				(t) => t[0] === 'teacher_' + json.teacherId
+	// 			)
 
-				// Increment teacher size by one
-				teacher[1] += 1
+	// 			// Increment teacher size by one
+	// 			teacher[1] += 1
 
-				solverData.constraints.cap.push({
-					resource: teacher[0],
-					tags: [
-						'constraint_' + c.id + '_int',
-						'constraint_' + c.id + '_ext'
-					],
-					max: 1,
-					capSum: {
-						['constraint_' + c.id + '_int']: 1
-					}
-				})
+	// 			solverData.constraints.cap.push({
+	// 				resource: teacher[0],
+	// 				tags: [
+	// 					'constraint_' + c.id + '_int',
+	// 					'constraint_' + c.id + '_ext'
+	// 				],
+	// 				max: 1,
+	// 				capSum: {
+	// 					['constraint_' + c.id + '_int']: 1
+	// 				}
+	// 			})
 
-				let examInstances = solverData.tasks.filter((t) =>
-					json.groups.includes(t.groupId)
-				)
+	// 			let examInstances = solverData.tasks.filter((t) =>
+	// 				json.groups.includes(t.groupId)
+	// 			)
 
-				defaultTags['constraint_' + c.id + '_ext'] = 1
+	// 			defaultTags['constraint_' + c.id + '_ext'] = 1
 
-				for (let ins of examInstances) {
-					ins.tags['constraint_' + c.id + '_int'] = 1
-					ins.tags['constraint_' + c.id + '_ext'] = 0
-				}
-			}
-		} catch (e) {
-			console.error(e)
-		}
-	}
+	// 			for (let ins of examInstances) {
+	// 				ins.tags['constraint_' + c.id + '_int'] = 1
+	// 				ins.tags['constraint_' + c.id + '_ext'] = 0
+	// 			}
+	// 		}
+	// 	} catch (e) {
+	// 		console.error(e)
+	// 	}
+	// }
 
 	for (let t of solverData.tasks) {
-		t.tags = {
-			...defaultTags,
-			...t.tags
+		// If the task is part of a CAP constraint
+		// Make it unaffected by other cap constraints
+		if (
+			Object.keys(
+				objFilter(t.tags || {}, (_, tag) => tag.endsWith('_int'))
+			).length
+		) {
+			t.tags = {
+				...objFilter(defaultTags, (_, tag) => !tag.endsWith('_ext')),
+				...t.tags
+			}
+		} else {
+			t.tags = {
+				...defaultTags,
+				...t.tags
+			}
 		}
 	}
 

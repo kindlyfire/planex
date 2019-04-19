@@ -25,7 +25,10 @@ def solve(solver_data):
     # enter resources
 
     print('[INFO] Importing resources...')
-    for resource in solver_data['resources']:
+    for i, resource in enumerate(solver_data['resources']):
+        print('[INFO] Importing resources... ({}/{})'.format(i + 1,
+                                                             len(solver_data['resources'])))
+
         # convert to [name, size = 1]
         if not isinstance(resource, list):
             resource = [resource, 1]
@@ -37,6 +40,9 @@ def solve(solver_data):
         resources_map[rname] = resource[0]
         resources_mapi[resource[0]] = rname
         resources_ai += 1
+
+        scenario += resources[rname]['block_value'][0:
+                                                    int(solver_data['horizon']):1] <= 4
 
     #
     # enter tasks
@@ -108,26 +114,31 @@ def solve(solver_data):
                                                                         len(solver_data['constraints']['cap'])))
         res = resources[resources_mapi[constraint['resource']]]
 
-        cond = res[constraint['tags'][0]][0:int(solver_data['horizon']):2].max
+        # cond = res[constraint['tags'][0]][0:int(solver_data['horizon']):2].max
 
-        for t in constraint['tags'][1:]:
-            cond = cond + res[t][0:int(solver_data['horizon']):2].max
+        # for t in constraint['tags'][1:]:
+        #     cond = cond + res[t][0:int(solver_data['horizon']):2].max
 
-        scenario += cond <= constraint['max']
+        # scenario += cond <= constraint['max']
 
-        if 'capSum' in constraint:
-            for t, value in constraint['capSum'].items():
-                cond = None
+        # if 'capSum' in constraint:
+        #     for t, value in constraint['capSum'].items():
+        #         cond = None
 
-                # capsum for all tasks except those with `t`
-                for tname, task in tasks.items():
-                    if not (t in task and task[t] == value):
-                        s = res['r_' +
-                                tname][0:int(solver_data['horizon']):2].max
+        #         print(t.replace('_int', '_ext'))
 
-                        cond = cond + s if cond else s
+        #         scenario += res[t.replace('_int', '_ext')
+        #                         ][0:int(solver_data['horizon']):1] <= 1
 
-                scenario += cond <= 1
+        #         # capsum for all tasks except those with `t`
+        #         for tname, task in tasks.items():
+        #             if not (t in task and task[t] == value):
+        #                 s = res['r_' +
+        #                         tname][0:int(solver_data['horizon']):2].max
+
+        #                 cond = cond + s if cond else s
+
+        #         scenario += cond <= 1
 
     #
     # solve
