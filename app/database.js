@@ -1,5 +1,10 @@
-const mysql = require('mysql2/promise')
+//
+//     Connect database & load models
+//
+
 const Sequelize = require('sequelize')
+const globby = require('globby')
+const path = require('path')
 
 module.exports = async (s) => {
 	const db = new Sequelize(
@@ -25,6 +30,24 @@ module.exports = async (s) => {
 	)
 
 	await db.authenticate()
+	await loadModels(db, s.models)
 
 	return db
+}
+
+const loadModels = async (db, models) => {
+	const files = await globby(path.join(__dirname, 'models'))
+	const mods = files.map((f) => require(f))
+
+	// Call install on all of them
+	for (let mod of mods.filter((m) => typeof m.install === 'function')) {
+		mod.install(db, models)
+	}
+
+	// Call associate on all of them
+	for (let mod of mods.filter((m) => typeof m.associate === 'function')) {
+		mod.associate(db, models)
+	}
+
+	return models
 }
