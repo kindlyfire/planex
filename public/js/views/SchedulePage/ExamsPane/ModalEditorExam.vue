@@ -51,6 +51,11 @@
                         id="i_exameditor_length"
                     >
                 </div>
+
+                <div class="form-group mt-2">
+                    <label for="i_exameditor_name" class="mb-0">Examen parallèle?</label>
+                    <YesNoToggler v-model="exam.can_parallel" :can-inherit="false"></YesNoToggler>
+                </div>
             </div>
         </div>
     </Modal>

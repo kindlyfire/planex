@@ -25,10 +25,6 @@ module.exports = async (s, schedule) => {
 		}
 	}
 
-	let defaultTags = {
-		block_value: 4
-	}
-
 	//
 	// Add all resources
 	//
@@ -39,7 +35,7 @@ module.exports = async (s, schedule) => {
 	})
 
 	for (let t of teachers) {
-		solverData.resources.push(['teacher_' + t.id, 2])
+		solverData.resources.push(['teacher_' + t.id, 1])
 
 		// Add blocks
 		try {
@@ -55,8 +51,6 @@ module.exports = async (s, schedule) => {
 						length: 1
 					}
 
-					// Push twice (size = 2)
-					solverData.blocks.push(obj)
 					solverData.blocks.push(obj)
 				}
 			}
@@ -65,14 +59,14 @@ module.exports = async (s, schedule) => {
 		}
 
 		// Add a line of sblocks
-		for (let i = 0; i < schedule.days; i++) {
-			solverData.sblocks.push({
-				resource: 'teacher_' + t.id,
-				start: i * 4,
-				length: 4,
-				cost: -10
-			})
-		}
+		// for (let i = 0; i < schedule.days; i++) {
+		// 	solverData.sblocks.push({
+		// 		resource: 'teacher_' + t.id,
+		// 		start: i * 4,
+		// 		length: 4,
+		// 		cost: -10
+		// 	})
+		// }
 	}
 
 	// Classes and class groups
@@ -138,19 +132,25 @@ module.exports = async (s, schedule) => {
 				}
 			}
 
+			let blockValue = exam.length
+
+			if (
+				inst.can_parallel === 1 ||
+				(inst.can_parallel === 0 && exam.can_parallel === 1)
+			) {
+				blockValue = blockValue / 2
+			}
+
 			solverData.tasks.push({
 				label: 'exam_instance_' + inst.id,
 				length: exam.length,
 				tags: {
-					['group_' + inst['class-group'].id]: 1
+					['group_' + inst['class-group'].id]: 1,
+					block_value: blockValue
 				},
 				resources: [
-					...inst.teachers.map((t) => {
-						return 'teacher_' + t.id
-					}),
-					...inst.classes.map((c) => {
-						return 'class_' + c.id
-					})
+					...inst.teachers.map((t) => 'teacher_' + t.id),
+					...inst.classes.map((c) => 'class_' + c.id)
 				],
 				period: forcedPeriod,
 
@@ -159,7 +159,7 @@ module.exports = async (s, schedule) => {
 				groupId: inst['class-group'].id
 			})
 
-			defaultTags['group_' + inst['class-group'].id] = 0
+			// defaultTags['group_' + inst['class-group'].id] = 0
 		}
 	}
 
@@ -192,8 +192,8 @@ module.exports = async (s, schedule) => {
 					)
 				]
 
-				// ins[0].tags['block_value'] = 2
-				// ins[1].tags['block_value'] = 2
+				ins[0].tags['block_value'] = 2
+				ins[1].tags['block_value'] = 2
 
 				if (ins[0] && ins[1]) {
 					solverData.constraints.sync.push({
@@ -295,7 +295,8 @@ module.exports = async (s, schedule) => {
 		if (
 			Object.keys(
 				objFilter(t.tags || {}, (_, tag) => tag.endsWith('_int'))
-			).length
+			).length &&
+			false
 		) {
 			t.tags = {
 				...objFilter(defaultTags, (_, tag) => !tag.endsWith('_ext')),
@@ -303,7 +304,7 @@ module.exports = async (s, schedule) => {
 			}
 		} else {
 			t.tags = {
-				...defaultTags,
+				// ...defaultTags,
 				...t.tags
 			}
 		}

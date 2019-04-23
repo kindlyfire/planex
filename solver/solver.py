@@ -36,13 +36,23 @@ def solve(solver_data):
         # label given to the solver backend
         rname = 'r' + str(resources_ai)
 
-        resources[rname] = scenario.Resource(rname, size=resource[1])
+        has_parallel = False
+        for task in solver_data['tasks']:
+            if resource[0] in task['resources'] and task['tags']['block_value'] != task['length']:
+                has_parallel = True
+                print('Found', resource)
+                break
+
+        size = 2 if has_parallel else 1
+
+        resources[rname] = scenario.Resource(rname, size=size)
         resources_map[rname] = resource[0]
         resources_mapi[resource[0]] = rname
         resources_ai += 1
 
-        scenario += resources[rname]['block_value'][0:
-                                                    int(solver_data['horizon']):1] <= 4
+        if has_parallel:
+            scenario += resources[rname]['block_value'][0:
+                                                        int(solver_data['horizon']):1] <= 1
 
     #
     # enter tasks
@@ -81,7 +91,7 @@ def solve(solver_data):
         bname = 'b' + str(blocks_ai)
 
         task = scenario.Task(
-            bname, length=1, periods=[block["start"]], plot_color='#000000')
+            bname, length=1, periods=[block["start"]], plot_color='#000000', block_value=1)
 
         task += resources[resources_mapi[block["resource"]]]
 
