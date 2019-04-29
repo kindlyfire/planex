@@ -138,6 +138,11 @@ module.exports = async (s, schedule) => {
 				inst.can_parallel === 1 ||
 				(inst.can_parallel === 0 && exam.can_parallel === 1)
 			) {
+				console.log(
+					'Parallel: ' +
+						`${exam.name} for ${inst['class-group'].name}`
+				)
+
 				blockValue = blockValue / 2
 			}
 
@@ -192,10 +197,10 @@ module.exports = async (s, schedule) => {
 					)
 				]
 
-				ins[0].tags['block_value'] = 2
-				ins[1].tags['block_value'] = 2
-
 				if (ins[0] && ins[1]) {
+					ins[0].tags['block_value'] = ins[0].length / 2
+					ins[1].tags['block_value'] = ins[1].length / 2
+
 					solverData.constraints.sync.push({
 						tasks: [
 							'exam_instance_' + json.selectedInstance1,
@@ -289,26 +294,26 @@ module.exports = async (s, schedule) => {
 	// 	}
 	// }
 
-	for (let t of solverData.tasks) {
-		// If the task is part of a CAP constraint
-		// Make it unaffected by other cap constraints
-		if (
-			Object.keys(
-				objFilter(t.tags || {}, (_, tag) => tag.endsWith('_int'))
-			).length &&
-			false
-		) {
-			t.tags = {
-				...objFilter(defaultTags, (_, tag) => !tag.endsWith('_ext')),
-				...t.tags
-			}
-		} else {
-			t.tags = {
-				// ...defaultTags,
-				...t.tags
-			}
-		}
-	}
+	// for (let t of solverData.tasks) {
+	// 	// If the task is part of a CAP constraint
+	// 	// Make it unaffected by other cap constraints
+	// 	if (
+	// 		Object.keys(
+	// 			objFilter(t.tags || {}, (_, tag) => tag.endsWith('_int'))
+	// 		).length &&
+	// 		false
+	// 	) {
+	// 		t.tags = {
+	// 			...objFilter(defaultTags, (_, tag) => !tag.endsWith('_ext')),
+	// 			...t.tags
+	// 		}
+	// 	} else {
+	// 		t.tags = {
+	// 			// ...defaultTags,
+	// 			...t.tags
+	// 		}
+	// 	}
+	// }
 
 	return solverData
 }

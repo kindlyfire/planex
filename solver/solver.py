@@ -27,7 +27,7 @@ def solve(solver_data):
     print('[INFO] Importing resources...')
     for i, resource in enumerate(solver_data['resources']):
         print('[INFO] Importing resources... ({}/{})'.format(i + 1,
-                                                             len(solver_data['resources'])))
+                                                             len(solver_data['resources'])), end='\r')
 
         # convert to [name, size = 1]
         if not isinstance(resource, list):
@@ -37,11 +37,12 @@ def solve(solver_data):
         rname = 'r' + str(resources_ai)
 
         has_parallel = False
-        for task in solver_data['tasks']:
-            if resource[0] in task['resources'] and task['tags']['block_value'] != task['length']:
-                has_parallel = True
-                print('Found', resource)
-                break
+        if resource[0].startswith('teacher_'):
+            for task in solver_data['tasks']:
+                if resource[0] in task['resources'] and task['tags']['block_value'] != task['length']:
+                    has_parallel = True
+                    print('Found parallel', resource, '                     ')
+                    break
 
         size = 2 if has_parallel else 1
 
@@ -102,7 +103,7 @@ def solve(solver_data):
         bname = 'b' + str(blocks_ai)
 
         task = scenario.Task(
-            bname, length=1, periods=[block["start"]], plot_color='#000000', schedule_cost=block["cost"])
+            bname, length=1, periods=[block["start"]], plot_color='#000000', schedule_cost=block["cost"], block_value=1)
 
         task += resources[resources_mapi[block["resource"]]]
 
@@ -119,10 +120,10 @@ def solve(solver_data):
     #
     # enter cap constraints
 
-    for i, constraint in enumerate(solver_data['constraints']['cap']):
-        print('[INFO] Importing capacity constraints... ({}/{})'.format(i + 1,
-                                                                        len(solver_data['constraints']['cap'])))
-        res = resources[resources_mapi[constraint['resource']]]
+    # for i, constraint in enumerate(solver_data['constraints']['cap']):
+    #     print('[INFO] Importing capacity constraints... ({}/{})'.format(i + 1,
+    #                                                                     len(solver_data['constraints']['cap'])))
+    #     res = resources[resources_mapi[constraint['resource']]]
 
         # cond = res[constraint['tags'][0]][0:int(solver_data['horizon']):2].max
 
