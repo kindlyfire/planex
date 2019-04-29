@@ -11,10 +11,12 @@ import routes from './routes'
 import PrimaryButton from '&/components/ui/PrimaryButton'
 import AppInput from '&/components/ui/AppInput'
 import AppButton from '&/components/ui/AppButton'
+import YesNoToggler from '&/components/ui/YesNoToggler'
 
 Vue.component('PrimaryButton', PrimaryButton)
 Vue.component('AppInput', AppInput)
 Vue.component('AppButton', AppButton)
+Vue.component('YesNoToggler', YesNoToggler)
 
 // Lib registration
 Vue.use(VueProgress, {

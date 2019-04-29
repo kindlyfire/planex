@@ -1,5 +1,17 @@
 //
 
+const objFilter = (obj, predicate) => {
+	let res = {}
+
+	for (let key in obj) {
+		if (obj.hasOwnProperty(key) && predicate(obj[key], key)) {
+			res[key] = obj[key]
+		}
+	}
+
+	return res
+}
+
 module.exports = async (s, schedule) => {
 	let solverData = {
 		horizon: schedule.days * 4,
@@ -13,8 +25,6 @@ module.exports = async (s, schedule) => {
 		}
 	}
 
-	let defaultTags = {}
-
 	//
 	// Add all resources
 	//
@@ -25,7 +35,7 @@ module.exports = async (s, schedule) => {
 	})
 
 	for (let t of teachers) {
-		solverData.resources.push(['teacher_' + t.id, 2])
+		solverData.resources.push(['teacher_' + t.id, 1])
 
 		// Add blocks
 		try {
@@ -41,8 +51,6 @@ module.exports = async (s, schedule) => {
 						length: 1
 					}
 
-					// Push twice (size = 2)
-					solverData.blocks.push(obj)
 					solverData.blocks.push(obj)
 				}
 			}
@@ -51,14 +59,14 @@ module.exports = async (s, schedule) => {
 		}
 
 		// Add a line of sblocks
-		for (let i = 0; i < schedule.days; i++) {
-			solverData.sblocks.push({
-				resource: 'teacher_' + t.id,
-				start: i * 4,
-				length: 4,
-				cost: -1
-			})
-		}
+		// for (let i = 0; i < schedule.days; i++) {
+		// 	solverData.sblocks.push({
+		// 		resource: 'teacher_' + t.id,
+		// 		start: i * 4,
+		// 		length: 4,
+		// 		cost: -10
+		// 	})
+		// }
 	}
 
 	// Classes and class groups
@@ -124,19 +132,30 @@ module.exports = async (s, schedule) => {
 				}
 			}
 
+			let blockValue = exam.length
+
+			if (
+				inst.can_parallel === 1 ||
+				(inst.can_parallel === 0 && exam.can_parallel === 1)
+			) {
+				console.log(
+					'Parallel: ' +
+						`${exam.name} for ${inst['class-group'].name}`
+				)
+
+				blockValue = blockValue / 2
+			}
+
 			solverData.tasks.push({
 				label: 'exam_instance_' + inst.id,
 				length: exam.length,
 				tags: {
-					['group_' + inst['class-group'].id]: 1
+					['group_' + inst['class-group'].id]: 1,
+					block_value: blockValue
 				},
 				resources: [
-					...inst.teachers.map((t) => {
-						return 'teacher_' + t.id
-					}),
-					...inst.classes.map((c) => {
-						return 'class_' + c.id
-					})
+					...inst.teachers.map((t) => 'teacher_' + t.id),
+					...inst.classes.map((c) => 'class_' + c.id)
 				],
 				period: forcedPeriod,
 
@@ -145,7 +164,7 @@ module.exports = async (s, schedule) => {
 				groupId: inst['class-group'].id
 			})
 
-			defaultTags['group_' + inst['class-group'].id] = 0
+			// defaultTags['group_' + inst['class-group'].id] = 0
 		}
 	}
 
@@ -179,6 +198,9 @@ module.exports = async (s, schedule) => {
 				]
 
 				if (ins[0] && ins[1]) {
+					ins[0].tags['block_value'] = ins[0].length / 2
+					ins[1].tags['block_value'] = ins[1].length / 2
+
 					solverData.constraints.sync.push({
 						tasks: [
 							'exam_instance_' + json.selectedInstance1,
@@ -188,33 +210,33 @@ module.exports = async (s, schedule) => {
 
 					// Check if there are teachers in common
 					// Automatically add CAPMAX constraint
-					let teachersInCommon = ins[0].resources
-						.filter(Set.prototype.has, new Set(ins[1].resources))
-						.filter((r) => r[0] === 't')
+					// let teachersInCommon = ins[0].resources
+					// 	.filter(Set.prototype.has, new Set(ins[1].resources))
+					// 	.filter((r) => r[0] === 't')
 
-					for (let t of teachersInCommon) {
-						solverData.resources.find((r) => r[0] === t)[1] = 2
+					// for (let t of teachersInCommon) {
+					// 	solverData.resources.find((r) => r[0] === t)[1] = 2
 
-						solverData.constraints.cap.push({
-							resource: t,
-							tags: [
-								'constraint_' + c.id + '_int',
-								'constraint_' + c.id + '_ext'
-							],
-							max: 1,
-							capSum: {
-								['constraint_' + c.id + '_int']: 1
-							}
-						})
-					}
+					// 	solverData.constraints.cap.push({
+					// 		resource: t,
+					// 		tags: [
+					// 			'constraint_' + c.id + '_int',
+					// 			'constraint_' + c.id + '_ext'
+					// 		],
+					// 		max: 1,
+					// 		capSum: {
+					// 			['constraint_' + c.id + '_int']: 1
+					// 		}
+					// 	})
+					// }
 
-					defaultTags['constraint_' + c.id + '_ext'] = 1
+					// defaultTags['constraint_' + c.id + '_ext'] = 1
 
-					ins[0].tags['constraint_' + c.id + '_int'] = 1
-					ins[0].tags['constraint_' + c.id + '_ext'] = 0
+					// ins[0].tags['constraint_' + c.id + '_int'] = 1
+					// ins[0].tags['constraint_' + c.id + '_ext'] = 0
 
-					ins[1].tags['constraint_' + c.id + '_int'] = 1
-					ins[1].tags['constraint_' + c.id + '_ext'] = 0
+					// ins[1].tags['constraint_' + c.id + '_int'] = 1
+					// ins[1].tags['constraint_' + c.id + '_ext'] = 0
 				}
 			}
 		} catch (e) {
@@ -225,59 +247,73 @@ module.exports = async (s, schedule) => {
 	//
 	// Cap constraints
 
-	let capConstraints = await s.models.Constraint.findAll({
-		where: {
-			schedule_id: schedule.id,
-			type: 'capacity'
-		}
-	})
+	// let capConstraints = await s.models.Constraint.findAll({
+	// 	where: {
+	// 		schedule_id: schedule.id,
+	// 		type: 'capacity'
+	// 	}
+	// })
 
-	for (let c of capConstraints) {
-		try {
-			let json = JSON.parse(c.data_json)
+	// for (let c of capConstraints) {
+	// 	try {
+	// 		let json = JSON.parse(c.data_json)
 
-			if (json.teacherId && json.groups) {
-				let teacher = solverData.resources.find(
-					(t) => t[0] === 'teacher_' + json.teacherId
-				)
+	// 		if (json.teacherId && json.groups) {
+	// 			let teacher = solverData.resources.find(
+	// 				(t) => t[0] === 'teacher_' + json.teacherId
+	// 			)
 
-				// Increment teacher size by one
-				teacher[1] += 1
+	// 			// Increment teacher size by one
+	// 			teacher[1] += 1
 
-				solverData.constraints.cap.push({
-					resource: teacher[0],
-					tags: [
-						'constraint_' + c.id + '_int',
-						'constraint_' + c.id + '_ext'
-					],
-					max: 1,
-					capSum: {
-						['constraint_' + c.id + '_int']: 1
-					}
-				})
+	// 			solverData.constraints.cap.push({
+	// 				resource: teacher[0],
+	// 				tags: [
+	// 					'constraint_' + c.id + '_int',
+	// 					'constraint_' + c.id + '_ext'
+	// 				],
+	// 				max: 1,
+	// 				capSum: {
+	// 					['constraint_' + c.id + '_int']: 1
+	// 				}
+	// 			})
 
-				let examInstances = solverData.tasks.filter((t) =>
-					json.groups.includes(t.groupId)
-				)
+	// 			let examInstances = solverData.tasks.filter((t) =>
+	// 				json.groups.includes(t.groupId)
+	// 			)
 
-				defaultTags['constraint_' + c.id + '_ext'] = 1
+	// 			defaultTags['constraint_' + c.id + '_ext'] = 1
 
-				for (let ins of examInstances) {
-					ins.tags['constraint_' + c.id + '_int'] = 1
-					ins.tags['constraint_' + c.id + '_ext'] = 0
-				}
-			}
-		} catch (e) {
-			console.error(e)
-		}
-	}
+	// 			for (let ins of examInstances) {
+	// 				ins.tags['constraint_' + c.id + '_int'] = 1
+	// 				ins.tags['constraint_' + c.id + '_ext'] = 0
+	// 			}
+	// 		}
+	// 	} catch (e) {
+	// 		console.error(e)
+	// 	}
+	// }
 
-	for (let t of solverData.tasks) {
-		t.tags = {
-			...defaultTags,
-			...t.tags
-		}
-	}
+	// for (let t of solverData.tasks) {
+	// 	// If the task is part of a CAP constraint
+	// 	// Make it unaffected by other cap constraints
+	// 	if (
+	// 		Object.keys(
+	// 			objFilter(t.tags || {}, (_, tag) => tag.endsWith('_int'))
+	// 		).length &&
+	// 		false
+	// 	) {
+	// 		t.tags = {
+	// 			...objFilter(defaultTags, (_, tag) => !tag.endsWith('_ext')),
+	// 			...t.tags
+	// 		}
+	// 	} else {
+	// 		t.tags = {
+	// 			// ...defaultTags,
+	// 			...t.tags
+	// 		}
+	// 	}
+	// }
 
 	return solverData
 }

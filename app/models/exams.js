@@ -1,8 +1,11 @@
 const Sequelize = require('sequelize')
 
-module.exports = (s) => {
-    s.models.Exam = s.db.define('exams', {
-        name: Sequelize.STRING,
-        length: Sequelize.INTEGER
-    })
+module.exports = {
+	install(db, m) {
+		m.Exam = db.define('exams', {
+			name: Sequelize.STRING,
+			length: Sequelize.INTEGER,
+			can_parallel: Sequelize.INTEGER
+		})
+	}
 }

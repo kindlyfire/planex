@@ -97,13 +97,12 @@
                     </VSelect>
 
                     <div class="form-group mt-2">
-                        <label for="i_exameditor_name" class="mb-0">Description</label>
-                        <input
-                            v-model="instance.description"
-                            type="text"
-                            class="form-control"
-                            id="i_exameditor_name"
-                        >
+                        <label for="i_exameditor_name" class="mb-0">Examen parallèle?</label>
+                        <YesNoToggler
+                            v-model="instance.can_parallel"
+                            :can-inherit="true"
+                            :inherit-label="selectedExam.can_parallel === 1 ? '(oui)' : '(non)'"
+                        ></YesNoToggler>
                     </div>
                 </div>
             </div>

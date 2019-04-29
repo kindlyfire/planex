@@ -1,8 +1,10 @@
 const Sequelize = require('sequelize')
 
-module.exports = (s) => {
-	s.models.Constraint = s.db.define('constraints', {
-		type: Sequelize.STRING,
-		data_json: Sequelize.STRING
-	})
+module.exports = {
+	install(db, m) {
+		m.Constraint = db.define('constraints', {
+			type: Sequelize.STRING,
+			data_json: Sequelize.STRING
+		})
+	}
 }
