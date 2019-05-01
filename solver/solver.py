@@ -120,36 +120,21 @@ def solve(solver_data):
     #
     # enter cap constraints
 
-    # for i, constraint in enumerate(solver_data['constraints']['cap']):
-    #     print('[INFO] Importing capacity constraints... ({}/{})'.format(i + 1,
-    #                                                                     len(solver_data['constraints']['cap'])))
-    #     res = resources[resources_mapi[constraint['resource']]]
+    print(solver_data['constraints']['cap'])
+    for i, constraint in enumerate(solver_data['constraints']['cap']):
+        print('[INFO] Importing capacity constraints... ({}/{})'.format(i + 1,
+                                                                        len(solver_data['constraints']['cap'])))
 
-        # cond = res[constraint['tags'][0]][0:int(solver_data['horizon']):2].max
+        for res in resources.values():
+            if res.size == 1:
+                continue
 
-        # for t in constraint['tags'][1:]:
-        #     cond = cond + res[t][0:int(solver_data['horizon']):2].max
+            cond = res[constraint[0]][0:int(solver_data['horizon']):1].max
 
-        # scenario += cond <= constraint['max']
+            for t in constraint[1:]:
+                cond = cond + res[t][0:int(solver_data['horizon']):1].max
 
-        # if 'capSum' in constraint:
-        #     for t, value in constraint['capSum'].items():
-        #         cond = None
-
-        #         print(t.replace('_int', '_ext'))
-
-        #         scenario += res[t.replace('_int', '_ext')
-        #                         ][0:int(solver_data['horizon']):1] <= 1
-
-        #         # capsum for all tasks except those with `t`
-        #         for tname, task in tasks.items():
-        #             if not (t in task and task[t] == value):
-        #                 s = res['r_' +
-        #                         tname][0:int(solver_data['horizon']):2].max
-
-        #                 cond = cond + s if cond else s
-
-        #         scenario += cond <= 1
+            scenario += cond <= 1
 
     #
     # solve

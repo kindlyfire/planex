@@ -144,6 +144,16 @@ module.exports = async (s, schedule) => {
 				)
 
 				blockValue = blockValue / 2
+
+				if (
+					!solverData.constraints.cap.includes(
+						'group_' + inst['class-group'].id
+					)
+				) {
+					solverData.constraints.cap.push(
+						'group_' + inst['class-group'].id
+					)
+				}
 			}
 
 			solverData.tasks.push({
