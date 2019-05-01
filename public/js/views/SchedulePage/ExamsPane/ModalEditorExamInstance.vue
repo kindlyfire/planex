@@ -101,7 +101,7 @@
                         <YesNoToggler
                             v-model="instance.can_parallel"
                             :can-inherit="true"
-                            :inherit-label="selectedExam.can_parallel === 1 ? '(oui)' : '(non)'"
+                            :inherit-label="selectedExam && selectedExam.can_parallel === 1 ? '(oui)' : '(non)'"
                         ></YesNoToggler>
                     </div>
                 </div>
