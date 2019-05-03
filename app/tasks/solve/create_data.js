@@ -21,7 +21,7 @@ module.exports = async (s, schedule) => {
 		sblocks: [],
 		constraints: {
 			sync: [],
-			cap: []
+			cap: [[]]
 		}
 	}
 
@@ -146,11 +146,11 @@ module.exports = async (s, schedule) => {
 				blockValue = blockValue / 2
 
 				if (
-					!solverData.constraints.cap.includes(
+					!solverData.constraints.cap[0].includes(
 						'group_' + inst['class-group'].id
 					)
 				) {
-					solverData.constraints.cap.push(
+					solverData.constraints.cap[0].push(
 						'group_' + inst['class-group'].id
 					)
 				}
@@ -208,8 +208,14 @@ module.exports = async (s, schedule) => {
 				]
 
 				if (ins[0] && ins[1]) {
-					ins[0].tags['block_value'] = ins[0].length / 2
-					ins[1].tags['block_value'] = ins[1].length / 2
+					// Any "group" tag is deleted here
+					ins[0].tags = {
+						block_value: ins[0].length / 2
+					}
+
+					ins[1].tags = {
+						block_value: ins[1].length / 2
+					}
 
 					solverData.constraints.sync.push({
 						tasks: [

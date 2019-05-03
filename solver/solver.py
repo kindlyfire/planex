@@ -121,6 +121,8 @@ def solve(solver_data):
     # enter cap constraints
 
     print(solver_data['constraints']['cap'])
+    # solver_data['constraints']['cap'] = [
+    #     ['group_118', 'group_117'], ['group_118', 'group_116']]
     for i, constraint in enumerate(solver_data['constraints']['cap']):
         print('[INFO] Importing capacity constraints... ({}/{})'.format(i + 1,
                                                                         len(solver_data['constraints']['cap'])))
