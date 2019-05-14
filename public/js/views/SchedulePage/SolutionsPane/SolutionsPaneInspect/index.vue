@@ -6,7 +6,7 @@
                     <h2 class="mb-0">Solution</h2>
                     <p class="mt-0 mb-0">{{ solution.name }}</p>
                 </div>
-                <div class="ml-auto" style="min-width: 300px;">
+                <div class="ml-auto selector-container" style="min-width: 300px;">
                     <VSelect
                         v-model="selectedResource"
                         :options="resources"
@@ -35,12 +35,8 @@
                     </div>
 
                     <!-- Schedule columns -->
-                    <div
-                        v-for="(cls, i) in selectedData.classes"
-                        :key="i"
-                        :style="{ 'width': (85 / (selectedData.classes.length)) + '%' }"
-                        class="column"
-                    >
+                    <!-- :style="{ 'width': (85 / (selectedData.classes.length)) + '%' }" -->
+                    <div v-for="(cls, i) in selectedData.classes" :key="i" class="column">
                         <div class="text-center">{{ cls.class.name || '&nbsp;' }}</div>
                         <div class="column-inner">
                             <template v-for="(day, j) in cls.schedule">

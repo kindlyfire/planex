@@ -2,20 +2,20 @@ $primary-color: #2b579a;
 
 html,
 body {
-    padding: 0;
-    margin: 0;
+	padding: 0;
+	margin: 0;
 
-    color: #333;
-    background-color: #fff;
+	color: #333;
+	background-color: #fff;
 
-    font-family: 'Roboto', 'Open Sans', sans-serif;
-    font-size: 1.06em;
+	font-family: 'Roboto', 'Open Sans', sans-serif;
+	font-size: 1.06em;
 }
 
 html,
 body,
 #app {
-    height: 100%;
+	height: 100%;
 }
 
 h1,
@@ -24,25 +24,25 @@ h3,
 h4,
 h5,
 h6 {
-    font-weight: 300;
+	font-weight: 300;
 }
 
 // Utils
 .cursor-pointer {
-    cursor: pointer;
+	cursor: pointer;
 }
 
 .no-select {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 .badge-primary {
-    background-color: $primary-color;
+	background-color: $primary-color;
 }
 
 // Imports
@@ -61,3 +61,13 @@ h6 {
 @import 'advanced_table';
 @import 'modal';
 @import 'fonts';
+
+@media only print {
+	.main-layout-sidebar {
+		display: none;
+	}
+
+	.main-layout-content .main-layout-content-inner {
+		padding-left: 0;
+	}
+}
