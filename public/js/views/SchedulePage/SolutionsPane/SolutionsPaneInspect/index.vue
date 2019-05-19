@@ -21,43 +21,51 @@
 
             <div class="p-2 pl-3 pr-3 c-card">
                 <div class="schedule-display-container" v-if="selectedData">
-                    <!-- Information columns (days) -->
-                    <div class="column" style="width: 10%">
-                        <div class="text-center">&nbsp;</div>
-                        <div class="column-inner">
-                            <div
-                                v-for="i in solution.days"
-                                :class="{'double-line': !singleLines.includes(i)}"
-                                :key="i"
-                                class="line day-separator"
-                            >{{ i }}</div>
-                        </div>
+                    <div class="title-line">
+                        <div class="cell invisible" style="width: 10%">&nbsp;</div>
+                        <div
+                            class="cell-sizer cell-center"
+                            v-for="(cls, i) in selectedData.classes"
+                            :key="i"
+                        >{{ cls.class.name }}</div>
                     </div>
 
-                    <!-- Schedule columns -->
-                    <!-- :style="{ 'width': (85 / (selectedData.classes.length)) + '%' }" -->
-                    <div v-for="(cls, i) in selectedData.classes" :key="i" class="column">
-                        <div class="text-center">{{ cls.class.name || '&nbsp;' }}</div>
-                        <div class="column-inner">
-                            <template v-for="(day, j) in cls.schedule">
-                                <template v-for="k in (deepeq(day[0], day[2]) ? 1 : 2)">
-                                    <div
-                                        :key="`${j}_${k}`"
-                                        :class="{ 'line-occupied': day[(k - 1) * 2] && day[(k - 1) * 2].exam, 'day-separator': j > 0 && k === 1, 'line-blocked': day[(k - 1) * 2] && day[(k - 1) * 2].blocked, 'double-line': deepeq(day[0], day[2]) && !singleLines.includes(j + 1) }"
-                                        class="line"
+                    <div>
+                        <div
+                            v-for="j in solution.days"
+                            :key="j"
+                            class="line"
+                            :class="{ 'line-collapsed': singleLines.includes(j - 1) }"
+                        >
+                            <div class="cell cell-center" style="width: 10%">{{ j-- }}</div>
+
+                            <div v-for="(cls, i) in selectedData.classes" :key="i" class="cell">
+                                <!-- <div class="text-center">{{ cls.class.name || '&nbsp;' }}</div> -->
+                                <template v-if="cls.schedule[j]">
+                                    <template
+                                        v-for="k in (deepeq(cls.schedule[j][0], cls.schedule[j][2]) ? 1 : 2)"
                                     >
-                                        <template v-if="day[(k - 1) * 2] && day[(k - 1) * 2].exam">
-                                            <p class="m-0 nowrap">{{ day[(k - 1) * 2].exam.name }}</p>
-                                            <small class="nowrap">
-                                                <abbr
-                                                    :title="day[(k - 1) * 2].teachers.map(t => t.name).join(', ')"
-                                                    class="hidden-abbr"
-                                                >{{ day[(k - 1) * 2].teachers.map(t => t.name).join(', ') }}</abbr>
-                                            </small>
-                                        </template>
-                                    </div>
+                                        <div
+                                            :key="`${j}_${k}`"
+                                            :class="{ 'line-occupied': cls.schedule[j][(k - 1) * 2] && cls.schedule[j][(k - 1) * 2].exam, 'day-separator': j > 0 && k === 1, 'cell-part-blocked': cls.schedule[j][(k - 1) * 2] && cls.schedule[j][(k - 1) * 2].blocked }"
+                                            class="cell-part text-center"
+                                        >
+                                            <template
+                                                v-if="cls.schedule[j][(k - 1) * 2] && cls.schedule[j][(k - 1) * 2].exam"
+                                            >
+                                                <p
+                                                    style="font-size: 16px"
+                                                    class="m-0 nowrap"
+                                                >{{ cls.schedule[j][(k - 1) * 2].exam.name }}</p>
+                                                <p
+                                                    style="font-size: 13px; color: rgba(0, 0, 0, 0.7);"
+                                                    class="m-0"
+                                                >{{ cls.schedule[j][(k - 1) * 2].teachers.map(t => t.name).join(', ') }}</p>
+                                            </template>
+                                        </div>
+                                    </template>
                                 </template>
-                            </template>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -167,8 +175,10 @@ export default {
 
                 for (let cls of this.selectedData.classes) {
                     if (
-                        !this.deepeq(cls.schedule[i], ref.schedule[i]) ||
-                        !this.deepeq(cls.schedule[i][0], cls.schedule[i][2])
+                        !cls.schedule[i][0] ||
+                        !cls.schedule[i][2] ||
+                        !cls.schedule[i][0].blocked ||
+                        !cls.schedule[i][2].blocked
                     ) {
                         alleq = false
                         break
@@ -176,7 +186,7 @@ export default {
                 }
 
                 if (alleq) {
-                    singleLines.push(i + 1)
+                    singleLines.push(i)
                 }
             }
 
@@ -205,12 +215,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.schedule-display-container {
-    display: flex;
-    align-items: stretch;
-    justify-content: flex-start;
-}
-
 .c-card {
     background-color: white;
     border: 1px solid transparent;
@@ -219,74 +223,83 @@ export default {
     border-radius: 5px;
 }
 
-.column {
+.line {
+    min-height: 90px;
+
+    display: flex;
+    flex-direction: row;
+}
+
+.title-line {
+    display: flex;
+    flex-direction: row;
+}
+
+.line-collapsed {
+    min-height: auto;
+}
+
+.cell {
+    border: 1px solid rgba(black, 0.3);
+    border-top: 0;
+    margin-right: 10px;
+
     width: 100%;
     max-width: 200px;
 
-    flex: 0 0 auto;
-    margin-right: 10px;
-}
-
-.column-inner {
-    border-radius: 5px;
-
     background-color: rgba(black, 0.05);
-}
 
-.line {
-    height: 50px;
-    flex-direction: column;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+}
+
+.cell-sizer {
+    margin-right: 10px;
+    display: flex;
+
+    width: 100%;
+    max-width: 200px;
+}
+
+.cell-center {
     align-items: center;
+    justify-content: center;
+}
 
-    border-left: 1px solid rgba(black, 0.1);
-    border-right: 1px solid rgba(black, 0.1);
+.line:first-child .cell,
+.line:first-child .cell .cell-part-blocked:first-child {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border: 1px solid rgba(black, 0.3);
+}
 
-    padding: 0 10px;
+.line:last-child .cell,
+.line:last-child .cell .cell-part-blocked:last-child {
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
 
-    &.double-line {
-        height: 100px;
-    }
+.cell-part {
+    min-height: 45px;
+    width: 100%;
+    border-top: 1px solid rgba(black, 0.1);
 
-    &:not(:first-child) {
-        border-top: 1px solid rgba(black, 0.2);
-    }
+    flex: 1 0 auto;
 
-    &:first-child {
-        border-top-left-radius: 5px;
-        border-top-right-radius: 5px;
-        border-top: 1px solid rgba(black, 0.1);
-    }
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
 
-    &:last-child {
-        border-bottom-left-radius: 5px;
-        border-bottom-right-radius: 5px;
-        border-bottom: 1px solid rgba(black, 0.1);
-    }
+.cell-part:first-child {
+    border: 0;
+}
 
-    &.line-occupied {
-        background-color: rgba(black, 0);
-    }
-
-    &:not(:first-child).day-separator {
-        border-top: 1px solid rgba(black, 0.5);
-    }
-
-    &.line-blocked {
+@media only screen {
+    .cell-part-blocked {
         background-color: rgba(black, 0.7);
+        margin: -1px;
     }
-}
-
-.nowrap {
-    max-width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.hidden-abbr {
-    text-decoration: none;
-    border-bottom: 0;
 }
 </style>
